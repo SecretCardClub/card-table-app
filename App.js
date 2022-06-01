@@ -26,7 +26,9 @@ export default function App() {
           y: pan.y._value,
         });
       },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
       onPanResponderRelease: () => {
         console.log("panRelease!");
         pan.flattenOffset();
@@ -37,8 +39,10 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Table text="I am a discard pile" />
-      <Table text="I am another pile" />
-      <SnappyCard text="Mr. Snappy Card"/>
+      <Table text="I am another pile">
+        <SnappyCard text="Mr. Snappy Card" />
+      </Table>
+      <SnappyCard text="Mr. Snappy Card" />
       <Animated.View
         style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }] }}
         {...panResponder.panHandlers}
