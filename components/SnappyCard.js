@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 
-const Card = (props) => {
+const SnappyCard = (props) => {
   const [highlighted, setHighlighted] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -23,8 +23,9 @@ const Card = (props) => {
         });
       },
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
-      onPanResponderRelease: () => {
-        pan.flattenOffset();
+      onPanResponderRelease: (e, gesture) => {
+        Animated.spring(pan, {toValue: {x: 0, y: 0}}).start();
+        // pan.flattenOffset();
       },
     })
   ).current;
@@ -38,17 +39,22 @@ const Card = (props) => {
   };
 
   return (
-    <View
-      style={[styles.card, highlighted && styles.highlighted]}
-      onTouchStart={touchStartHandler}
-      onTouchEnd={touchEndHandler}
+    <Animated.View
+      style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], width: "15%" }}
+      {...panResponder.panHandlers}
     >
-      <Text>{props.text}</Text>
-    </View>
+      <View
+        style={[styles.card, highlighted && styles.highlighted]}
+        onTouchStart={touchStartHandler}
+        onTouchEnd={touchEndHandler}
+      >
+        <Text>{props.text}</Text>
+      </View>
+    </Animated.View>
   );
 };
 
-export default Card;
+export default SnappyCard;
 
 const styles = StyleSheet.create({
   card: {

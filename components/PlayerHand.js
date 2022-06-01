@@ -31,10 +31,12 @@ const styles = StyleSheet.create({
     position: "relative",
     width: "90%",
     height: "20%",
-    bottom: 0,
     backgroundColor: "blue",
     alignItems: "center",
     justifyContent: "center",
+    bottom: 15,
+    borderRadius: 10,
+    borderRadiusBottom: 25,
   },
   highlighted: {
     backgroundColor: "yellow",

@@ -12,6 +12,7 @@ import {
 import Card from "./components/Card";
 import Table from "./components/Table";
 import PlayerHand from "./components/PlayerHand";
+import SnappyCard from "./components/SnappyCard";
 
 export default function App() {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -25,7 +26,7 @@ export default function App() {
           y: pan.y._value,
         });
       },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
       onPanResponderRelease: () => {
         console.log("panRelease!");
         pan.flattenOffset();
@@ -35,16 +36,16 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Table text="I am a card table" />
-      <PlayerHand text="I am a card table" />
-
+      <Table text="I am a discard pile" />
+      <Table text="I am another pile" />
+      <SnappyCard text="Mr. Snappy Card"/>
       <Animated.View
         style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }] }}
         {...panResponder.panHandlers}
       >
-        <Card text="I am a card" />
+        <Card text="I'm an ace Baby!" />
       </Animated.View>
-      {/* <PlayerHand text="I am a player hand" /> */}
+      <PlayerHand text="I am a player hand" />
       <StatusBar style="auto" />
     </View>
   );

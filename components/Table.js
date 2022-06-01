@@ -22,7 +22,7 @@ const Table = (props) => {
           y: pan.y._value,
         });
       },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: true}),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
       onPanResponderRelease: () => {
         pan.flattenOffset();
       },
@@ -63,8 +63,10 @@ const styles = StyleSheet.create({
     width: "90%",
     height: "40%",
     backgroundColor: "red",
+    padding: 5,
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 10,
   },
   highlighted: {
     borderColor: "black",
