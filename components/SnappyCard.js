@@ -17,6 +17,7 @@ import {
 } from "react-native";
 
 import SandboxContext from "../context/sandboxContext";
+import helpers from "../helpers/helpers"
 
 const SnappyCard = (props) => {
   const ctx = useContext(SandboxContext);
@@ -39,10 +40,10 @@ const SnappyCard = (props) => {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gesture) => {
-        if (isDropZone(gesture)) {
-          console.log("inDropZone, pan: ", pan);
+        if (helpers.isDropZone(gesture, [ctx.playerHandDropZone])) {
+          // console.log("inDropZone, pan: ", pan);
           pan.flattenOffset();
-          console.log("pan after flattenoffset: ", pan)
+          // console.log("pan after flattenoffset: ", pan)
         } else {
           Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
         }
@@ -50,12 +51,12 @@ const SnappyCard = (props) => {
     });
   }, [ctx.playerHandDropZone]);
 
-  const isDropZone = (gesture) => {
-    const dz = ctx.playerHandDropZone;
-    console.log("const dz = ctx.playerHandDropZone; dz: ", dz);
-    console.log("gesture: ", gesture);
-    return gesture.moveY > dz.y && gesture.moveY < dz.y + dz.height;
-  };
+  // const isDropZone = (gesture) => {
+  //   const dz = ctx.playerHandDropZone;
+  //   console.log("const dz = ctx.playerHandDropZone; dz: ", dz);
+  //   console.log("gesture: ", gesture);
+  //   return gesture.moveY > dz.y && gesture.moveY < dz.y + dz.height;
+  // };
 
   const touchStartHandler = () => {
     setHighlighted(true);

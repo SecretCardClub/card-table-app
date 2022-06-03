@@ -1,15 +1,18 @@
-export default helpers = {
+const helpers = {
   isDropZone: (gesture, dropZones) => {
+    let overlap = null;
     dropZones.forEach((dz) => {
       if (
         gesture.moveY > dz.y &&
         gesture.moveY < dz.y + dz.height &&
         gesture.moveX > dz.x &&
-        gesture.moveX < dz.x + dx.width
+        gesture.moveX < dz.x + dz.width
       ) {
-        return dz;
+        overlap = dz;
       }
     });
-    return null;
+    return overlap;
   },
 };
+
+export default helpers;
