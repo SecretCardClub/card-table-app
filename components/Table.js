@@ -61,7 +61,7 @@ const Table = (props) => {
 
   return (
     <Animated.View
-      style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }] }}
+      style={[{ transform: [{ translateX: pan.x }, { translateY: pan.y }]}, styles.animatedView]}
       {...panResponder.panHandlers}
     >
       <View
@@ -79,10 +79,13 @@ const Table = (props) => {
 export default Table;
 
 const styles = StyleSheet.create({
+  animatedView: {
+    width: "40%",
+    height: "18%"
+  },
   table: {
     position: "relative",
-    width: "90%",
-    height: "40%",
+    flex: 1,
     backgroundColor: "red",
     padding: 5,
     alignItems: "center",
