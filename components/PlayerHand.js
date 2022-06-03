@@ -2,10 +2,12 @@ import React, {useState, useContext} from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import SandboxContext from "../context/sandboxContext"
+import helpers from "../helpers/helpers"
 
 const PlayerHand = (props) => {
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
+  const [pile, setPile] = useState(null);
 
 
   const touchStartHandler = () => {
@@ -17,12 +19,16 @@ const PlayerHand = (props) => {
     console.log("ctx.playerHandDropZone: ", ctx.playerHandDropZone)
   }
 
+  const layoutHandler = (e) => {
+    const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
+    setPile(pileObj);
+    ctx.addPile(pileObj);
+  }
+
   return (
     <View
       style={[styles.hand, highlighted && styles.highlighted]}
-      onLayout={(e) => {
-        ctx.setPlayerHandDropZone(e.nativeEvent.layout);
-      }}
+      onLayout={layoutHandler}
       onTouchStart={touchStartHandler}
       onTouchEnd={touchEndHandler}
     >

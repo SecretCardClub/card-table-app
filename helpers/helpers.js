@@ -1,3 +1,5 @@
+import Pile from "./Pile";
+
 const helpers = {
   isDropZone: (gesture, dropZones) => {
     let overlap = null;
@@ -12,6 +14,10 @@ const helpers = {
       }
     });
     return overlap;
+  },
+
+  instantiatePile: (dz) => {
+    return new Pile(dz);
   },
 };
 
