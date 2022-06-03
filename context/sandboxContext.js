@@ -9,7 +9,7 @@ export const SandboxContextProvider = (props) => {
   const [piles, setPiles] = useState([]);
 
   const addPile = (pile) => {
-    setPiles([...piles, pile]);
+    setPiles(piles => [...piles, pile]);
   };
 
   return (
