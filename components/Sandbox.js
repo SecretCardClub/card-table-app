@@ -32,7 +32,6 @@ export default function App() {
         useNativeDriver: false,
       }),
       onPanResponderRelease: () => {
-        console.log("panRelease!");
         pan.flattenOffset();
       },
     })
@@ -41,17 +40,18 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Table text="I am a discard pile" />
-      <Table text="I am another pile">
+      {/* <Table text="I am another pile">
         <SnappyCard text="Mr. Snappy Card" />
-      </Table>
+      </Table> */}
       <SnappyCard text="Mr. Snappy Card" />
       <Animated.View
-        style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }] }}
+        style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], zIndex: 100 }}
         {...panResponder.panHandlers}
       >
         <Card text="I'm an ace Baby!" />
       </Animated.View>
       <PlayerHand text="I am a player hand" />
+
       <StatusBar style="auto" />
     </View>
   );

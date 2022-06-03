@@ -40,11 +40,8 @@ const SnappyCard = (props) => {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gesture) => {
-        console.log(ctx.piles)
         if (helpers.isDropZone(gesture, ctx.piles)) {
-
           pan.flattenOffset();
-          // console.log("pan after flattenoffset: ", pan)
         } else {
           Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
         }
@@ -56,7 +53,6 @@ const SnappyCard = (props) => {
 
   const touchStartHandler = () => {
     setHighlighted(true);
-    console.log("panResponhder: ", panResponder);
   };
 
   const touchEndHandler = () => {
