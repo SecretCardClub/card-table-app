@@ -45,12 +45,10 @@ const Table = (props) => {
 
   const touchStartHandler = () => {
     setHighlighted(true);
-    console.log("table touch start!");
   };
 
   const touchEndHandler = () => {
     setHighlighted(false);
-    console.log("table touch end!");
   };
 
   const layoutHandler = (e) => {
