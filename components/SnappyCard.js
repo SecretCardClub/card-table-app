@@ -40,8 +40,9 @@ const SnappyCard = (props) => {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gesture) => {
-        if (helpers.isDropZone(gesture, [ctx.playerHandDropZone])) {
-          // console.log("inDropZone, pan: ", pan);
+        console.log(ctx.piles)
+        if (helpers.isDropZone(gesture, ctx.piles)) {
+
           pan.flattenOffset();
           // console.log("pan after flattenoffset: ", pan)
         } else {
@@ -49,14 +50,9 @@ const SnappyCard = (props) => {
         }
       },
     });
-  }, [ctx.playerHandDropZone]);
+  }, [ctx.piles]);
 
-  // const isDropZone = (gesture) => {
-  //   const dz = ctx.playerHandDropZone;
-  //   console.log("const dz = ctx.playerHandDropZone; dz: ", dz);
-  //   console.log("gesture: ", gesture);
-  //   return gesture.moveY > dz.y && gesture.moveY < dz.y + dz.height;
-  // };
+
 
   const touchStartHandler = () => {
     setHighlighted(true);

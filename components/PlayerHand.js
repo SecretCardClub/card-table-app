@@ -16,7 +16,7 @@ const PlayerHand = (props) => {
 
   const touchEndHandler = () => {
     setHighlighted(false);
-    console.log("ctx.playerHandDropZone: ", ctx.playerHandDropZone)
+    console.log("ctx.piles: ", ctx.piles, pile)
   }
 
   const layoutHandler = (e) => {
