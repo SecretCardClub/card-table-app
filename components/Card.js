@@ -53,8 +53,8 @@ export default Card;
 const styles = StyleSheet.create({
   card: {
     position: "absolute",
-    zIndex: 10,
-    width: "15%",
+    zIndex: 100,
+    flex: 1,
     height: "auto",
     padding: 5,
     backgroundColor: "green",

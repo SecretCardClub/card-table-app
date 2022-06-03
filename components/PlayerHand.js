@@ -7,7 +7,7 @@ import helpers from "../helpers/helpers"
 const PlayerHand = (props) => {
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
-  const [pile, setPile] = useState(null);
+  const [pile, setPile] = useState({});
 
 
   const touchStartHandler = () => {
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     zIndex: 0,
     width: "90%",
     height: "20%",
-
+    backgroundColor: "blue",
     alignItems: "center",
     justifyContent: "center",
     bottom: 15,

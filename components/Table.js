@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useContext, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -9,13 +9,17 @@ import {
   Dimensions,
 } from "react-native";
 
+import SandboxContext from "../context/sandboxContext"
+import helpers from "../helpers/helpers"
+
 const Table = (props) => {
   const [highlighted, setHighlighted] = useState(false);
-  const [dropZone, setDropZone] = useState({});
+  const [pile, setPile] = useState({})
   const pan = useRef(new Animated.ValueXY()).current;
+  const ctx = useContext(SandboxContext);
 
-  const panResponder = useRef(
-    PanResponder.create({
+  let panResponder = useMemo(() => {
+    return PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
         pan.setOffset({
@@ -29,12 +33,11 @@ const Table = (props) => {
         pan.flattenOffset();
       },
     })
-  ).current;
+}, [ctx.piles])
 
 
   const layoutChangeHandler = (pan) => {
     console.log(panResponder)
-    console.log(dropZone)
     console.log(pan);
 
   }
@@ -42,7 +45,6 @@ const Table = (props) => {
 
   const touchStartHandler = () => {
     setHighlighted(true);
-    console.log(dropZone)
     console.log("table touch start!");
   };
 
@@ -51,6 +53,12 @@ const Table = (props) => {
     console.log("table touch end!");
   };
 
+  const layoutHandler = (e) => {
+    const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
+    setPile(pileObj);
+    ctx.addPile(pileObj);
+  }
+
   return (
     <Animated.View
       style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }] }}
@@ -58,9 +66,7 @@ const Table = (props) => {
     >
       <View
         style={[styles.table, highlighted && styles.highlighted]}
-        onLayout={(e) => {
-          setDropZone(e.nativeEvent.layout);
-        }}
+        onLayout={layoutHandler}
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
       >

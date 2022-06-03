@@ -67,7 +67,7 @@ const SnappyCard = (props) => {
     <Animated.View
       style={{
         transform: [{ translateX: pan.x }, { translateY: pan.y }],
-        width: "15%",
+        width: "10%",
         zIndex: 100,
       }}
       {...panResponder.panHandlers}
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   card: {
     position: "absolute",
     zIndex: 10,
-    width: "15%",
+    flex: 1,
     height: "auto",
     padding: 5,
     backgroundColor: "green",
