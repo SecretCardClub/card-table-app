@@ -11,6 +11,7 @@ import {
 
 const Table = (props) => {
   const [highlighted, setHighlighted] = useState(false);
+  const [dropZone, setDropZone] = useState({});
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
@@ -24,13 +25,24 @@ const Table = (props) => {
       },
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
       onPanResponderRelease: () => {
+        layoutChangeHandler(pan);
         pan.flattenOffset();
       },
     })
   ).current;
 
+
+  const layoutChangeHandler = (pan) => {
+    console.log(panResponder)
+    console.log(dropZone)
+    console.log(pan);
+
+  }
+
+
   const touchStartHandler = () => {
     setHighlighted(true);
+    console.log(dropZone)
     console.log("table touch start!");
   };
 
@@ -46,6 +58,9 @@ const Table = (props) => {
     >
       <View
         style={[styles.table, highlighted && styles.highlighted]}
+        onLayout={(e) => {
+          setDropZone(e.nativeEvent.layout);
+        }}
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
       >

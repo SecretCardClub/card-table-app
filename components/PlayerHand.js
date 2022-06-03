@@ -1,7 +1,10 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import SandboxContext from "../context/sandboxContext"
+
 const PlayerHand = (props) => {
+  const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
 
 
@@ -11,11 +14,15 @@ const PlayerHand = (props) => {
 
   const touchEndHandler = () => {
     setHighlighted(false);
-  };
+    console.log("ctx.playerHandDropZone: ", ctx.playerHandDropZone)
+  }
 
   return (
     <View
       style={[styles.hand, highlighted && styles.highlighted]}
+      onLayout={(e) => {
+        ctx.setPlayerHandDropZone(e.nativeEvent.layout);
+      }}
       onTouchStart={touchStartHandler}
       onTouchEnd={touchEndHandler}
     >
@@ -29,9 +36,10 @@ export default PlayerHand;
 const styles = StyleSheet.create({
   hand: {
     position: "relative",
+    zIndex: 0,
     width: "90%",
     height: "20%",
-    backgroundColor: "blue",
+
     alignItems: "center",
     justifyContent: "center",
     bottom: 15,
