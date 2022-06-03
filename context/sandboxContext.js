@@ -1,18 +1,22 @@
 import React, { useState } from "react";
 
 const SandboxContext = React.createContext({
-  playerHandDropZone: {},
-  setPlayerHandDropZone: () => {},
+  piles: [],
+  addPile: () => {},
 });
 
 export const SandboxContextProvider = (props) => {
-  const [playerHandDropZone, setPlayerHandDropZone] = useState(0);
+  const [piles, setPiles] = useState([]);
+
+  const addPile = (pile) => {
+    setPiles([...piles, pile]);
+  };
 
   return (
     <SandboxContext.Provider
       value={{
-        playerHandDropZone,
-        setPlayerHandDropZone,
+        piles,
+        addPile,
       }}
     >
       {props.children}
