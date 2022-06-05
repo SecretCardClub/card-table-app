@@ -11,11 +11,12 @@ import {
 
 import SandboxContext from "../context/sandboxContext"
 import helpers from "../helpers/helpers"
+import SnappyCard from "./SnappyCard"
 
 
 const Table = (props) => {
   const [highlighted, setHighlighted] = useState(false);
-  const [pile, setPile] = useState({})
+  const [pileId, setPileId] = useState(null)
   const pan = useRef(new Animated.ValueXY()).current;
   const ctx = useContext(SandboxContext);
 
@@ -29,8 +30,8 @@ const Table = (props) => {
         });
       },
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
-      onPanResponderRelease: () => {
-        layoutChangeHandler(pan);
+      onPanResponderRelease: (evt, gesture) => {
+        ctx.updatePileDz(pan, pileId)
         pan.flattenOffset();
       },
     })
@@ -43,7 +44,6 @@ const Table = (props) => {
 
   }
 
-
   const touchStartHandler = () => {
     setHighlighted(true);
   };
@@ -54,7 +54,7 @@ const Table = (props) => {
 
   const layoutHandler = (e) => {
     const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
-    setPile(pileObj);
+    setPileId(pileObj.id);
     ctx.addPile(pileObj);
   }
 
@@ -69,6 +69,7 @@ const Table = (props) => {
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
       >
+        <SnappyCard text="Ace Hearts" />
         <Text>{props.text}</Text>
       </View>
     </Animated.View>
