@@ -18,7 +18,7 @@ export const SandboxContextProvider = (props) => {
     let oldPiles = piles.filter(pile => pile.id !==pileId)
     piles.forEach(pile => {
       if (pile.id === pileId) {
-        newPile = pile.updateDz(pan); // Is this introducting mutation bugs? I think it is.
+        newPile = pile.updateDz(pan);
       }
       setPiles([...oldPiles, newPile])
     })

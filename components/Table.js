@@ -80,6 +80,7 @@ export default Table;
 
 const styles = StyleSheet.create({
   animatedView: {
+    position: "relative",
     width: "40%",
     height: "18%"
   },

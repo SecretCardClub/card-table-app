@@ -40,7 +40,8 @@ const SnappyCard = (props) => {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gesture) => {
-        if (helpers.isDropZone(gesture, ctx.piles)) {
+        let pileId = helpers.isDropZone(gesture, ctx.piles);
+        if (pileId) {
           pan.flattenOffset();
         } else {
           Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
@@ -96,6 +97,6 @@ const styles = StyleSheet.create({
   highlighted: {
     borderColor: "black",
     borderSize: "5",
-    backgroundColor: "yellow",
+    backgroundColor: "pink",
   },
 });
