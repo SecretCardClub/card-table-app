@@ -7,21 +7,19 @@ const SandboxContext = React.createContext({
 });
 
 export const SandboxContextProvider = (props) => {
-  const [piles, setPiles] = useState([]);
+  const [piles, setPiles] = useState({});
 
   const addPile = (pile) => {
-    setPiles(piles => [...piles, pile]);
+    setPiles(currentPiles => {
+      return {...currentPiles, [pile.id]: pile};
+    });
   };
 
   const updatePileDz = (pan, pileId) => {
-    let newPile;
-    let oldPiles = piles.filter(pile => pile.id !==pileId)
-    piles.forEach(pile => {
-      if (pile.id === pileId) {
-        newPile = pile.updateDz(pan);
-      }
-      setPiles([...oldPiles, newPile])
-    })
+    if (piles[pileId]) {
+      const updatedPile = piles[pileId].updateDz(pan)
+      setPiles({...piles, [pileId]: updatedPile});
+    }
   };
 
   return (

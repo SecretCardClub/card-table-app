@@ -60,6 +60,7 @@ const SnappyCard = (props) => {
     setHighlighted(false);
   };
 
+  console.log("pan: ", pan);
   return (
     <Animated.View
       style={{

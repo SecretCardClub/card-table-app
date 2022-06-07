@@ -5,12 +5,6 @@ class Pile {
     this.cards = [];
   }
   isInDropZone(gesture) {
-    // if (
-    //   gesture.moveY > this.dz.top + this.dz.y &&
-    //   gesture.moveY < this.dz.top + this.dz.y + this.dz.height &&
-    //   gesture.moveX > this.dz.left + this.dz.x &&
-    //   gesture.moveX < this.dz.left + this.dz.x + this.dz.width
-    // ) {
     if (
       gesture.moveY > this.dz.top &&
       gesture.moveY < this.dz.top  + this.dz.height &&

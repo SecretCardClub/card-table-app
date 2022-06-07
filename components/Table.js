@@ -20,6 +20,8 @@ const Table = (props) => {
   const pan = useRef(new Animated.ValueXY()).current;
   const ctx = useContext(SandboxContext);
 
+  const panResponderMove = Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false});
+
   let panResponder = useMemo(() => {
     return PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
@@ -29,7 +31,11 @@ const Table = (props) => {
           y: pan.y._value,
         });
       },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
+      onPanResponderMove: function() {
+        const result = panResponderMove(...arguments);
+        console.log({result}, arguments)
+        return panResponderMove(...arguments);
+      },
       onPanResponderRelease: (evt, gesture) => {
         ctx.updatePileDz(pan, pileId)
         pan.flattenOffset();

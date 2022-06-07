@@ -1,10 +1,9 @@
-import Pile from "./Pile";
+import Pile from "../classes/Pile";
 
 const helpers = {
   isDropZone: (gesture, piles) => {
     let id = false;
-    piles.forEach((pile) => {
-      console.log(pile)
+    Object.values(piles).forEach((pile) => {
       let returnedId = pile.isInDropZone(gesture);
       if (returnedId) {
         id = returnedId;
@@ -16,6 +15,7 @@ const helpers = {
   instantiatePile: (dz) => {
     return new Pile(dz);
   },
+
 };
 
 export default helpers;
