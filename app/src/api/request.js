@@ -28,7 +28,7 @@ const buildPostOptions = (endpoint, params = {}, reqData = {}, method = 'POST') 
 const getReqest = (endpoint, params) => {
   return axios(buildGetOptions(endpoint, params))
     .then(res => {
-      console.log({ res })
+      // console.log({ res })
       return res.data
     })
 };
@@ -38,7 +38,7 @@ const getReqest = (endpoint, params) => {
 const postRequest = (endpoint, params, data) => {
   return axios(buildPostOptions(endpoint, params, data, 'POST'))
     .then(res => {
-      console.log({ res })
+      // console.log({ res })
       return res.data
     })
 }
@@ -46,7 +46,7 @@ const postRequest = (endpoint, params, data) => {
 const putRequest = (endpoint, params, data) => {
   return axios(buildPostOptions(endpoint, params, data, 'PUT'))
     .then(res => {
-      console.log({ res })
+      // console.log({ res })
       return res.data
     })
 }

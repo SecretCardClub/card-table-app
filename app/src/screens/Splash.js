@@ -12,8 +12,8 @@ export default function Splash({ navigation }) {
   const { user } = state
 
   useEffect(async() => {
-    // await AsyncStorage.setItem('user', '{}')
     try {
+      // await AsyncStorage.setItem('user', '{}')
       const storedUser = await AsyncStorage.getItem('user').then(res => JSON.parse(res))
       const nextUser = { ...user, ...storedUser }
       const apiRes = await api.get.user(null, nextUser.session_id)
