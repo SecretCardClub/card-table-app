@@ -1,5 +1,5 @@
 class Pile {
-  constructor(dz) {
+  constructor(dz = {}) {
     this.id = Math.random();
     this.dz = dz;
     this.cards = [];
@@ -18,7 +18,12 @@ class Pile {
 
   addCard(card) {
     this.cards.push(card);
-    return this.cards;
+    return this;
+  }
+
+  concatenateCards(cards) {
+    this.cards = [...cards, ...this.cards];
+    return this;
   }
 
   removeCard(id) {
@@ -33,6 +38,11 @@ class Pile {
   updateDz(pan) {
     this.dz.top += pan.y._value;
     this.dz.left += pan.x._value;
+    return this;
+  }
+
+  initalizeDz(dz) {
+    this.dz = dz;
     return this;
   }
 }

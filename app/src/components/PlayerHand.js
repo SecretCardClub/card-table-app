@@ -22,7 +22,7 @@ const PlayerHand = (props) => {
   const layoutHandler = (e) => {
     const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
     setPile(pileObj);
-    ctx.addPile(pileObj);
+    // ctx.addPile(pileObj);
   }
 
   return (
@@ -41,14 +41,15 @@ export default PlayerHand;
 
 const styles = StyleSheet.create({
   hand: {
-    position: "relative",
+    position: "absolute",
+    bottom: 15,
     zIndex: 0,
     width: "90%",
     height: "20%",
     backgroundColor: "blue",
     alignItems: "center",
     justifyContent: "center",
-    bottom: 15,
+    padding: 15,
     borderRadius: 10,
     borderRadiusBottom: 25,
   },
