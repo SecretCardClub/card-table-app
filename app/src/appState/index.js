@@ -38,7 +38,7 @@ const initPageState = {
   dev: { logs: false, renders: logRenders, state: logState, reducer: false },
   user: { theme: 'dark', name: null, rooms: [], },
   home: { socket: null, users: [], rooms: [] },
-  room: { socket: null, name: ``, users: [], chat: [] },
+  room: { socket: null, name: ``, users: [], chat: [], tableState: {} },
 };
 
 const AppContextProvider = ({ children, passedState }) => {

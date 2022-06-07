@@ -41,7 +41,6 @@ export default function Home({ navigation }) {
         console.log(`Home socket disconnected `)
         // navigate('AuthStack')
       });
-
     }
     else {
       if (homeSocket) {
@@ -52,7 +51,6 @@ export default function Home({ navigation }) {
         })
       }
     }
-
   }, [user.id])
 
   const nav = (screenName) => {
@@ -64,7 +62,6 @@ export default function Home({ navigation }) {
   const openRoom = (room) => {
 
     const newRoomSocket = socket.create(room.id, { user_id: user.id })
-
     newRoomSocket.on("connect", () => {
       dispatch({
         type: `UPDATE_ROOM`,
@@ -75,7 +72,6 @@ export default function Home({ navigation }) {
 
     newRoomSocket.on("update_state", (newRoomState) => {
       const nextRoomState = { ...state.room, ...newRoomState, socket: newRoomSocket }
-      console.log({ nextRoomState })
       dispatch({
         type: `UPDATE_ROOM`,
         payload : nextRoomState
