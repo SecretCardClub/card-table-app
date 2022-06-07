@@ -1,31 +1,22 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useContext,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useRef, useContext, useMemo } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  PanResponder,
-  Animated,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, Text, View, PanResponder, Animated } from "react-native";
 
 import SandboxContext from "../context/sandboxContext";
-import helpers from "../helpers/helpers"
+import helpers from "../helpers/helpers";
+import Card from "../classes/Card";
 
-const CardPile = (props) => {
+const CardPile = ({pile}) => {
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
-  const [pileId, setPileId] = useState(null)
+  const [text, setText] = useState("Card");
 
-
+  useEffect(() => {
+      setText(
+        `${pile.cards[0].rank} ${pile.cards[0].suit}`
+      );
+  }, [pile]);
 
   let panResponder = useMemo(() => {
     return PanResponder.create({
@@ -42,23 +33,24 @@ const CardPile = (props) => {
         useNativeDriver: false,
       }),
       onPanResponderRelease: (evt, gesture) => {
-        let pileId = helpers.isDropZone(gesture, ctx.piles);
-        if (pileId) {
-          pan.flattenOffset();
+        let dzId = helpers.isDropZone(gesture, ctx.piles, pile.id);
+        if (dzId) {
+          ctx.concatenateCards(pile.id, dzId)
+          // pan.flattenOffset();
         } else {
-          Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
+          ctx.updatePileDz(pan, pile.id);
+          pan.flattenOffset();
         }
       },
     });
   }, [ctx.piles]);
 
   const layoutHandler = (e) => {
-    const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
-    setPileId(pileObj.id);
-    ctx.addPile(pileObj);
-  }
+    ctx.initalizeDz(e.nativeEvent.layout, pile.id);
+  };
 
   const touchStartHandler = () => {
+
     setHighlighted(true);
   };
 
@@ -68,11 +60,7 @@ const CardPile = (props) => {
 
   return (
     <Animated.View
-      style={{
-        transform: [{ translateX: pan.x }, { translateY: pan.y }],
-        width: "10%",
-        zIndex: 100,
-      }}
+    style={[{transform: [{ translateX: pan.x }, { translateY: pan.y }]}, styles.animatedView]}
       {...panResponder.panHandlers}
     >
       <View
@@ -81,7 +69,9 @@ const CardPile = (props) => {
         onTouchEnd={touchEndHandler}
         onLayout={layoutHandler}
       >
-        <Text>{props.text}</Text>
+        <Text>{pile.cards[0].rank}</Text>
+        <Text>{pile.cards[0].suit}</Text>
+        <Text>{pile.cards.length}</Text>
       </View>
     </Animated.View>
   );
@@ -90,12 +80,19 @@ const CardPile = (props) => {
 export default CardPile;
 
 const styles = StyleSheet.create({
+  animatedView: {
+    width: "10%",
+    zIndex: 100,
+  },
   card: {
-    position: "absolute",
+    position: "relative",
     zIndex: 10,
     flex: 1,
     height: "auto",
-    padding: 5,
+    padding: 10,
+    paddingLeft: 25,
+    paddingRight: 25,
+    margin: 15,
     backgroundColor: "green",
     alignItems: "center",
     justifyContent: "center",
