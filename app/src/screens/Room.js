@@ -6,6 +6,7 @@ import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 
 export default function Room ({ navigation }) {
+  const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [chatText, setChatText] = useState('')
@@ -72,6 +73,9 @@ export default function Room ({ navigation }) {
           (<Button onPress={closeRoom} >
             <P>Close Room</P>
           </Button>)}
+          <Button onPress={() => navigate('Home')} >
+            <P>Back</P>
+          </Button>
         </ScreenView>
       // <SandboxContextProvider>
       //     <Sandbox />
