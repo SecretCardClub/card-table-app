@@ -18,37 +18,23 @@ import {
 
 import SandboxContext from "../context/sandboxContext";
 import helpers from "../helpers/helpers"
+import usePan from '../hooks/usePan'
+
 
 const SnappyCard = (props) => {
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
-  const pan = useRef(new Animated.ValueXY()).current;
 
+  const panReleaseCB = useCallback((evt, gesture, pan) => {
+      let pileId = helpers.isDropZone(gesture, ctx.piles);
+      if (pileId) {
+        pan.flattenOffset();
+      } else {
+        Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
+      }
+  }, [ctx.piles])
 
-  let panResponder = useMemo(() => {
-    return PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gesture) => true,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-      },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (evt, gesture) => {
-        let pileId = helpers.isDropZone(gesture, ctx.piles);
-        if (pileId) {
-          pan.flattenOffset();
-        } else {
-          Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
-        }
-      },
-    });
-  }, [ctx.piles]);
+  const [pan, panResponder] = usePan(undefined, panReleaseCB)
 
 
 
@@ -59,12 +45,11 @@ const SnappyCard = (props) => {
   const touchEndHandler = () => {
     setHighlighted(false);
   };
-
-  console.log("pan: ", pan);
+  console.log(`pan x, y: `, pan.getTranslateTransform())
   return (
     <Animated.View
       style={{
-        transform: [{ translateX: pan.x }, { translateY: pan.y }],
+        transform: pan.getTranslateTransform(),
         width: "10%",
         zIndex: 100,
       }}
@@ -101,3 +86,32 @@ const styles = StyleSheet.create({
     backgroundColor: "pink",
   },
 });
+
+
+// const pan = useRef(new Animated.ValueXY()).current;
+
+
+// let panResponder = useMemo(() => {
+//   return PanResponder.create({
+//     onStartShouldSetPanResponder: (evt, gestureState) => true,
+//     onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+//     onMoveShouldSetPanResponder: (evt, gesture) => true,
+//     onPanResponderGrant: () => {
+//       pan.setOffset({
+//         x: pan.x._value,
+//         y: pan.y._value,
+//       });
+//     },
+//     onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+//       useNativeDriver: false,
+//     }),
+//     onPanResponderRelease: (evt, gesture) => {
+//       let pileId = helpers.isDropZone(gesture, ctx.piles);
+//       if (pileId) {
+//         pan.flattenOffset();
+//       } else {
+//         Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
+//       }
+//     },
+//   });
+// }, [ctx.piles]);

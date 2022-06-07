@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext, useRef } from "react";
+import React, { useState, useEffect, useMemo, useContext, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -12,36 +12,18 @@ import {
 import SandboxContext from "../context/sandboxContext"
 import helpers from "../helpers/helpers"
 import SnappyCard from "./SnappyCard"
-
+import usePan from '../hooks/usePan'
 
 const Table = (props) => {
-  const [highlighted, setHighlighted] = useState(false);
-  const [pileId, setPileId] = useState(null)
-  const pan = useRef(new Animated.ValueXY()).current;
+
   const ctx = useContext(SandboxContext);
+  const [highlighted, setHighlighted] = useState(false);
+  const [pileId, setPileId] = useState(Math.random())
 
-  const panResponderMove = Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false});
-
-  let panResponder = useMemo(() => {
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-      },
-      onPanResponderMove: function() {
-        const result = panResponderMove(...arguments);
-        // console.log({result}, arguments)
-        return panResponderMove(...arguments);
-      },
-      onPanResponderRelease: (evt, gesture) => {
-        ctx.updatePileDz(pan, pileId)
-        pan.flattenOffset();
-      },
-    })
-}, [ctx.piles])
+  const panReleaseCB = useCallback((evt, gesture, pan) => {
+    ctx.updatePileDz(pan, pileId)
+  }, [ctx.piles, pileId])
+  const [pan, panResponder] = usePan(undefined, panReleaseCB)
 
 
   const layoutChangeHandler = (pan) => {
@@ -60,7 +42,8 @@ const Table = (props) => {
 
   const layoutHandler = (e) => {
     const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
-    setPileId(pileObj.id);
+    pileObj.id = pileId
+    // setPileId(pileObj.id);
     ctx.addPile(pileObj);
   }
 
@@ -105,3 +88,31 @@ const styles = StyleSheet.create({
     backgroundColor: "yellow",
   },
 });
+
+
+// const pan = useRef(new Animated.ValueXY()).current;
+// const ctx = useContext(SandboxContext);
+
+// const panResponderMove = Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false});
+
+// let panResponder = useMemo(() => {
+//   return PanResponder.create({
+//     onMoveShouldSetPanResponder: () => true,
+//     onPanResponderGrant: () => {
+//       pan.setOffset({
+//         x: pan.x._value,
+//         y: pan.y._value,
+//       });
+//     },
+//     onPanResponderMove: function() {
+//       const result = panResponderMove(...arguments);
+//       // console.log({result}, arguments)
+//       return panResponderMove(...arguments);
+//     },
+//     onPanResponderRelease: (evt, gesture) => {
+//       ctx.updatePileDz(pan, pileId)
+//       pan.flattenOffset();
+//     },
+//   })
+// }, [ctx.piles])
+

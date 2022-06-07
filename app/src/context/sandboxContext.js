@@ -11,7 +11,7 @@ export const SandboxContextProvider = (props) => {
 
   const addPile = (pile) => {
     setPiles(currentPiles => {
-      return {...currentPiles, [pile.id]: pile};
+      return { ...currentPiles, [pile.id]: pile};
     });
   };
 

@@ -8,26 +8,14 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
+import usePan from '../hooks/usePan'
+
+
 
 const Card = (props) => {
   const [highlighted, setHighlighted] = useState(false);
-  const pan = useRef(new Animated.ValueXY()).current;
+  // const [pan, panResponder] = usePan()
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-      },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
-      onPanResponderRelease: () => {
-        pan.flattenOffset();
-      },
-    })
-  ).current;
 
   const touchStartHandler = () => {
     setHighlighted(true);
@@ -70,3 +58,20 @@ const styles = StyleSheet.create({
 });
 
 
+// const pan = useRef(new Animated.ValueXY()).current;
+
+// const panResponder = useRef(
+//   PanResponder.create({
+//     onMoveShouldSetPanResponder: () => true,
+//     onPanResponderGrant: () => {
+//       pan.setOffset({
+//         x: pan.x._value,
+//         y: pan.y._value,
+//       });
+//     },
+//     onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
+//     onPanResponderRelease: () => {
+//       pan.flattenOffset();
+//     },
+//   })
+// ).current;
