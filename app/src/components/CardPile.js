@@ -10,13 +10,6 @@ const CardPile = ({pile}) => {
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
-  const [text, setText] = useState("Card");
-
-  useEffect(() => {
-      setText(
-        `${pile.cards[0].rank} ${pile.cards[0].suit}`
-      );
-  }, [pile]);
 
   let panResponder = useMemo(() => {
     return PanResponder.create({
@@ -50,7 +43,6 @@ const CardPile = ({pile}) => {
   };
 
   const touchStartHandler = () => {
-
     setHighlighted(true);
   };
 
