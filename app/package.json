@@ -19,7 +19,9 @@
     "react-native": "0.68.2",
     "react-native-web": "0.17.7",
     "socket.io-client": "^4.5.1",
-    "styled-components": "^5.3.5"
+    "styled-components": "^5.3.5",
+    "webpack-dev-server": "~3.11.0",
+    "@expo/webpack-config": "~0.16.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

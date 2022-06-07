@@ -11,13 +11,16 @@ import {
 
 import SandboxContext from "../context/sandboxContext"
 import helpers from "../helpers/helpers"
+import SnappyCard from "./SnappyCard"
 
 
 const Table = (props) => {
   const [highlighted, setHighlighted] = useState(false);
-  const [pile, setPile] = useState({})
+  const [pileId, setPileId] = useState(null)
   const pan = useRef(new Animated.ValueXY()).current;
   const ctx = useContext(SandboxContext);
+
+  const panResponderMove = Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false});
 
   let panResponder = useMemo(() => {
     return PanResponder.create({
@@ -28,9 +31,13 @@ const Table = (props) => {
           y: pan.y._value,
         });
       },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {useNativeDriver: false}),
-      onPanResponderRelease: () => {
-        layoutChangeHandler(pan);
+      onPanResponderMove: function() {
+        const result = panResponderMove(...arguments);
+        console.log({result}, arguments)
+        return panResponderMove(...arguments);
+      },
+      onPanResponderRelease: (evt, gesture) => {
+        ctx.updatePileDz(pan, pileId)
         pan.flattenOffset();
       },
     })
@@ -43,7 +50,6 @@ const Table = (props) => {
 
   }
 
-
   const touchStartHandler = () => {
     setHighlighted(true);
   };
@@ -54,7 +60,7 @@ const Table = (props) => {
 
   const layoutHandler = (e) => {
     const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
-    setPile(pileObj);
+    setPileId(pileObj.id);
     ctx.addPile(pileObj);
   }
 
@@ -69,6 +75,7 @@ const Table = (props) => {
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
       >
+        <SnappyCard text="Ace Hearts" />
         <Text>{props.text}</Text>
       </View>
     </Animated.View>
@@ -79,6 +86,7 @@ export default Table;
 
 const styles = StyleSheet.create({
   animatedView: {
+    position: "relative",
     width: "40%",
     height: "18%"
   },
