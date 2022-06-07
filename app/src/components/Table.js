@@ -33,7 +33,7 @@ const Table = (props) => {
       },
       onPanResponderMove: function() {
         const result = panResponderMove(...arguments);
-        console.log({result}, arguments)
+        // console.log({result}, arguments)
         return panResponderMove(...arguments);
       },
       onPanResponderRelease: (evt, gesture) => {

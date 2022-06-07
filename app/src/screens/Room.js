@@ -43,39 +43,39 @@ export default function Room ({ navigation }) {
   }
 
   return (
-      // <SandboxContextProvider>
-        <ScreenView>
-          <P>Connected users</P>
-          <UserList>
-            {users && users.map((connUser, ind) => {
-              return (
-                <P key={ind} >  {connUser.name}  </P>
-              )
-            })}
-          </UserList>
-          <P>Chat</P>
-          <ChatList>
-            {chat && chat.map((msg, ind) => {
-              return (
-                <P key={ind} >{msg.user}: {msg.text} </P>
-              )
-            })}
-          </ChatList>
-          <Input
-            value={chatText}
-            onChangeText={setChatText}
-            placeholder="type to chat..."
-          />
-          <Button onPress={sendChat} >
-            <P>Send</P>
-          </Button>
-          {room.admin_id === user.id &&
-          (<Button onPress={closeRoom} >
-            <P>Close Room</P>
-          </Button>)}
-          {/* <Sandbox /> */}
-        </ScreenView>
-      // </SandboxContextProvider>
+        // <ScreenView>
+        //   <P>Connected users</P>
+        //   <UserList>
+        //     {users && users.map((connUser, ind) => {
+        //       return (
+        //         <P key={ind} >  {connUser.name}  </P>
+        //       )
+        //     })}
+        //   </UserList>
+        //   <P>Chat</P>
+        //   <ChatList>
+        //     {chat && chat.map((msg, ind) => {
+        //       return (
+        //         <P key={ind} >{msg.user}: {msg.text} </P>
+        //       )
+        //     })}
+        //   </ChatList>
+        //   <Input
+        //     value={chatText}
+        //     onChangeText={setChatText}
+        //     placeholder="type to chat..."
+        //   />
+        //   <Button onPress={sendChat} >
+        //     <P>Send</P>
+        //   </Button>
+        //   {room.admin_id === user.id &&
+        //   (<Button onPress={closeRoom} >
+        //     <P>Close Room</P>
+        //   </Button>)}
+        // </ScreenView>
+      <SandboxContextProvider>
+          <Sandbox />
+      </SandboxContextProvider>
   );
 };
 
