@@ -76,10 +76,11 @@ export default function Room ({ navigation }) {
           <Button onPress={() => navigate('Home')} >
             <P>Back</P>
           </Button>
+          <SandboxContextProvider>
+            <Sandbox />
+        </SandboxContextProvider>
         </ScreenView>
-      // <SandboxContextProvider>
-      //     <Sandbox />
-      // </SandboxContextProvider>
+
   );
 };
 
