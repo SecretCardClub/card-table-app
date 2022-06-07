@@ -1,17 +1,12 @@
 import React, { useReducer } from 'react';
+import { io } from "socket.io-client";
 import { API_URL } from '../../.config'
 import reducer from './reducer.js';
-import { io } from "socket.io-client";
 
 
 export const DispatchContext = React.createContext([null, () => {}]);
 export const StateContext = React.createContext([{}]);
 
-
-// const savedInLocal = localStorage.getItem('user');
-// const localStoreUser = savedInLocal
-//   ? JSON.parse(savedInLocal)
-//   : { cart: [], outfit: [], theme: 'light', upVoted: [] , reviews: [], currentProduct: 37311 };
 
 
 const newSocket = (endpoint, query = {}) => {
