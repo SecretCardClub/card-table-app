@@ -10,10 +10,10 @@ import {
 } from "react-native";
 
 import SandboxContext from "../context/sandboxContext"
-import Card from "./Card";
+import Deck from "./Deck";
 import Table from "./Table";
 import PlayerHand from "./PlayerHand";
-import SnappyCard from "./SnappyCard";
+import CardPile from "./CardPile";
 
 export default function App() {
   const ctx = useContext(SandboxContext);
@@ -39,17 +39,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Table text="I am a discard pile" />
-      {/* <Table text="I am another pile">
-        <SnappyCard text="Mr. Snappy Card" />
-      </Table> */}
-      <SnappyCard text="Mr. Snappy Card" />
-      <Animated.View
-        style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], zIndex: 100 }}
-        {...panResponder.panHandlers}
-      >
-        <Card text="I'm an ace Baby!" />
-      </Animated.View>
+      <CardPile  text="Ace Hearts"/>
+      <Deck text="huh"/>
       <PlayerHand text="I am a player hand" />
 
       <StatusBar style="auto" />

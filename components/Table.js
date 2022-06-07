@@ -11,7 +11,6 @@ import {
 
 import SandboxContext from "../context/sandboxContext"
 import helpers from "../helpers/helpers"
-import SnappyCard from "./SnappyCard"
 
 
 const Table = (props) => {
@@ -32,8 +31,6 @@ const Table = (props) => {
         });
       },
       onPanResponderMove: function() {
-        const result = panResponderMove(...arguments);
-        console.log({result}, arguments)
         return panResponderMove(...arguments);
       },
       onPanResponderRelease: (evt, gesture) => {
@@ -75,7 +72,6 @@ const Table = (props) => {
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
       >
-        <SnappyCard text="Ace Hearts" />
         <Text>{props.text}</Text>
       </View>
     </Animated.View>

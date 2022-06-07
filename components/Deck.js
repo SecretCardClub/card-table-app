@@ -18,12 +18,24 @@ import {
 
 import SandboxContext from "../context/sandboxContext";
 import helpers from "../helpers/helpers"
+import Card from "../classes/Card"
 
-const SnappyCard = (props) => {
+const Deck = (props) => {
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
+  const [pileId, setPileId] = useState(null);
+  const [text, setText] = useState('Card');
 
+  const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
+  const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
+
+  useEffect(() => {
+    if (ctx.piles[pileId]) {
+      setText(`${ctx.piles[pileId].cards[0].rank} ${ctx.piles[pileId].cards[0].suit}`)
+    }
+
+  }, [ctx.piles[pileId]])
 
   let panResponder = useMemo(() => {
     return PanResponder.create({
@@ -42,15 +54,29 @@ const SnappyCard = (props) => {
       onPanResponderRelease: (evt, gesture) => {
         let pileId = helpers.isDropZone(gesture, ctx.piles);
         if (pileId) {
+          ctx.updatePileDz(pan, pileId)
           pan.flattenOffset();
         } else {
-          Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
+          ctx.updatePileDz(pan, pileId)
+          pan.flattenOffset();
+            // Animated.spring(pan, { toValue: { x: 0, y: 0 } }).start();
         }
       },
     });
-  }, [ctx.piles]);
+  }, [ctx.piles[pileId]]);
 
+  const layoutHandler = (e) => {
+    const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
+    setPileId(pileObj.id);
+    for (let i = 0; i < suits.length; i++) {
+      for (let j = 0; j < ranks.length; j++) {
+        const newCard = new Card(suits[i], ranks[j]);
+        pileObj.addCard(newCard);
+      }
+    }
 
+    ctx.addPile(pileObj);
+  }
 
   const touchStartHandler = () => {
     setHighlighted(true);
@@ -60,7 +86,6 @@ const SnappyCard = (props) => {
     setHighlighted(false);
   };
 
-  console.log("pan: ", pan);
   return (
     <Animated.View
       style={{
@@ -74,14 +99,15 @@ const SnappyCard = (props) => {
         style={[styles.card, highlighted && styles.highlighted]}
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
+        onLayout={layoutHandler}
       >
-        <Text>{props.text}</Text>
+        <Text>{text}</Text>
       </View>
     </Animated.View>
   );
 };
 
-export default SnappyCard;
+export default Deck;
 
 const styles = StyleSheet.create({
   card: {
