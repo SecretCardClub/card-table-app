@@ -58,7 +58,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
     // // console.log({ pan })
     const x_calc = Math.abs(width * x_per) - widthDiv
     const y_calc = Math.abs(height * y_per) - heightDiv
-    console.log({ x_calc, y_calc })
+    // console.log({ x_calc, y_calc })
     if ( width + 100 > x_calc && height + 100 > y_calc ) {
       pan.setValue({ x: x_calc, y: y_calc })
     }
@@ -73,7 +73,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt, gesture) => {
         // console.log(`GRANT: `, { evt, gesture })
-        console.log(`GRANT: `, { x: pan.x._value, y: pan.y._value })
+        // console.log(`GRANT: `, { x: pan.x._value, y: pan.y._value })
 
         pan.setOffset({
           x: pan.x._value,
@@ -85,7 +85,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       },
       onPanResponderMove: (evt, gesture) => {
         // console.log(`MOVE: `, { evt, gesture })
-        console.log(`MOVE: `, { x: pan.x, y: pan.y })
+        // console.log(`MOVE: `, { x: pan.x, y: pan.y })
 
         const result = panResponderMove(evt, gesture);
         moveCB(evt, gesture, pan)
