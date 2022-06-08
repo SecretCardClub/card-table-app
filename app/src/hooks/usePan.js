@@ -39,7 +39,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
     const x_per = (pan.x._value + widthDiv)  / width
     const y_per = (pan.y._value + heightDiv) / height
     const newPanState = { ...panState, x: pan.x._value, y: pan.y._value, x_per, y_per }
-    newRoomState.tableState[newPanState.id] = newPanState
+    newRoomState.tableState[newPanState.id].panState = newPanState;
     // dbEmit(newRoomState)
     socketCB(newRoomState)
     // delete newRoomState.socket
@@ -99,7 +99,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
         const x_per = width / pan.x._value
         const y_per = height / pan.y._value
         const newPanState = { ...panState, x: pan.x._value, y: pan.y._value, x_per, y_per }
-        newRoomState.tableState[newPanState.id] = newPanState
+        newRoomState.tableState[newPanState.id].panState = newPanState;
         dispatch({
           type:`UPDATE_ROOM_EMIT`,
           payload: newRoomState,

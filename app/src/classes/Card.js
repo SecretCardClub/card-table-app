@@ -4,6 +4,9 @@ class Card {
     this.suit = suit;
     this.rank = rank;
   }
+
+
 }
+
 
 export default Card;

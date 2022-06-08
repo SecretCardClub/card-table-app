@@ -41,15 +41,19 @@ export default function Room ({ navigation }) {
     socket.emit(`close_room`)
   }
 
-  const addCard = (e) => {
+  const addPile = (e) => {
     const newRoomState = { ...room }
     const newTableState = newRoomState.tableState
     const newMovable = {
-      x: 0,
-      y: 0,
-      x_per: 0.5,
-      y_per: 0.5,
       id: Object.keys(newTableState).length,
+      component: "CardPile",
+      panState: {
+        x: 0,
+        y: 0,
+        x_per: 0.5,
+        y_per: 0.5,
+      },
+      componentState: {},
     }
     newTableState[newMovable.id] = newMovable
     dispatch({
@@ -57,7 +61,9 @@ export default function Room ({ navigation }) {
       payload: newRoomState
     })
   }
-  const movables = Object.values(room.tableState)
+
+  const movables = Object.values(room.tableState);
+  console.log("room: ", room)
   return (
         // <ScreenView>
         //   <P>Connected users</P>
@@ -91,8 +97,8 @@ export default function Room ({ navigation }) {
         // </ScreenView>
       <SandboxContextProvider>
           <Sandbox movables={movables} />
-          <Button onPress={addCard} >
-            <P>Add Card</P>
+          <Button onPress={addPile} >
+            <P>Add Pile</P>
           </Button>
           <Button onPress={() => navigate('Home')} >
             <P>Back</P>

@@ -35,6 +35,8 @@ class Pile {
     return this.cards;
   }
 
+
+
   updateDz(pan) {
     this.dz.top += pan.y._value;
     this.dz.left += pan.x._value;
