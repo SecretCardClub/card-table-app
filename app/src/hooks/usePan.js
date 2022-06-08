@@ -26,29 +26,17 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
   const [state] = useContext(StateContext);
   const { socket, tableState } = state.room;
   const pan = useRef(new Animated.ValueXY()).current;
-  // const newRoomState = { ...state.room }
-  const socketCB = (newRoomState) => {
-    delete newRoomState.socket
-    socket.emit(`update_state`, newRoomState)
-  }
-  const dbEmit = debounce(socketCB, 10)
-
-
-  const panCb = useCallback((evt, gesture) => {
-    const newRoomState = { ...state.room }
+  const emitMove = (currentPan) => {
     const x_per = (pan.x._value + widthDiv)  / width
     const y_per = (pan.y._value + heightDiv) / height
     const newPanState = { ...panState, x: pan.x._value, y: pan.y._value, x_per, y_per }
-    newRoomState.tableState[newPanState.id] = newPanState
-    // dbEmit(newRoomState)
-    socketCB(newRoomState)
-    // delete newRoomState.socket
-    // socket.emit(`update_state`, newRoomState)
-    // dispatch({
-    //   type:`UPDATE_ROOM_EMIT`,
-    //   payload: newRoomState,
-    // })
-  }, [socket, state.room])
+    socket.emit(`update_movable`, newPanState)
+  }
+
+
+  const panCb = useCallback((evt, gesture) => {
+    emitMove(pan)
+  }, [socket, state.room.tableState, panState, pan])
 
   const panResponderMove = Animated.event([null, { dx: pan.x, dy: pan.y }], { useNativeDriver: false, listener: panCb });
 
@@ -74,19 +62,16 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       onPanResponderGrant: (evt, gesture) => {
         // console.log(`GRANT: `, { evt, gesture })
         // console.log(`GRANT: `, { x: pan.x._value, y: pan.y._value })
-
         pan.setOffset({
           x: pan.x._value,
           y: pan.y._value,
         });
-        console.log(`GRANT post offset: `, { x: pan.x._value, y: pan.y._value })
-
+        emitMove(pan)
         grantCB(evt, gesture, pan)
       },
       onPanResponderMove: (evt, gesture) => {
         // console.log(`MOVE: `, { evt, gesture })
         // console.log(`MOVE: `, { x: pan.x, y: pan.y })
-
         const result = panResponderMove(evt, gesture);
         moveCB(evt, gesture, pan)
         return result;

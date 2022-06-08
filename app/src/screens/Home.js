@@ -78,6 +78,23 @@ export default function Home({ navigation }) {
       })
     });
 
+    newRoomSocket.on("update_table", (newtableState) => {
+      const nextRoomState = { ...state.room, tableState: newtableState, socket: newRoomSocket }
+      dispatch({
+        type: `UPDATE_ROOM`,
+        payload : nextRoomState
+      })
+    });
+
+    newRoomSocket.on("update_movable", (newMovableState) => {
+      const nextRoomState = { ...state.room, socket: newRoomSocket }
+      nextRoomState.tableState[newMovableState.id] = newMovableState;
+      dispatch({
+        type: `UPDATE_ROOM`,
+        payload : nextRoomState
+      })
+    });
+
     newRoomSocket.on("connect_error", (err) => {
       console.log(`connect_error `, err)
       // roomSocket.connect();
