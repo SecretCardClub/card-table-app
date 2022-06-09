@@ -1,8 +1,13 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import SandboxContext from "../context/sandboxContext"
+import helpers from "../helpers/helpers"
+
 const PlayerHand = (props) => {
+  const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
+  const [pile, setPile] = useState({});
 
 
   const touchStartHandler = () => {
@@ -11,11 +16,19 @@ const PlayerHand = (props) => {
 
   const touchEndHandler = () => {
     setHighlighted(false);
-  };
+    console.log("ctx.piles: ", ctx.piles)
+  }
+
+  const layoutHandler = (e) => {
+    const pileObj = helpers.instantiatePile(e.nativeEvent.layout);
+    setPile(pileObj);
+    // ctx.addPile(pileObj);
+  }
 
   return (
     <View
       style={[styles.hand, highlighted && styles.highlighted]}
+      onLayout={layoutHandler}
       onTouchStart={touchStartHandler}
       onTouchEnd={touchEndHandler}
     >
@@ -28,13 +41,17 @@ export default PlayerHand;
 
 const styles = StyleSheet.create({
   hand: {
-    position: "relative",
+    position: "absolute",
+    bottom: 15,
+    zIndex: 0,
     width: "90%",
     height: "20%",
-    bottom: 0,
     backgroundColor: "blue",
     alignItems: "center",
     justifyContent: "center",
+    padding: 15,
+    borderRadius: 10,
+    borderRadiusBottom: 25,
   },
   highlighted: {
     backgroundColor: "yellow",
