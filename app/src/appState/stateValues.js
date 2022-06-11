@@ -156,8 +156,16 @@ const encodeAndSend = (socket, message) => {
 
 const parseMessage = async (event) => {
   const { data } = event
-  const UTF = await data.text()
-  return JSON.parse(UTF)
+  const dataConstrutor = data.constructor.name
+  let msg;
+
+  if( dataConstrutor ===  'ArrayBuffer') {
+    msg = decoder.decode(data)
+  }
+  if( dataConstrutor ===  'Blob') {
+    msg = await data.text()
+  }
+  return JSON.parse(msg)
 }
 
 
