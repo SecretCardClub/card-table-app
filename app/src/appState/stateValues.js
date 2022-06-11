@@ -167,7 +167,7 @@ const parseMessage = async (event) => {
 // export const WS_URL = `ws://localhost:3030`
 // export const WS_URL = `ws://eac1-2601-6c3-4001-8140-200c-c1c0-7206-eb34.ngrok.io`
 
-const logEvents = true
+const logEvents = false
 
 
 export const getSocketCreator = (dispatch) => {
