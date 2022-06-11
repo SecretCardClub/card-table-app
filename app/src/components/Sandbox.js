@@ -1,5 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View } from "react-native";
+import { StateContext, DispatchContext } from '../appState/index'
 
 import Pile from "../classes/Pile"
 import CardClass from "../classes/Card"
@@ -8,18 +9,90 @@ import CardPile from "./CardPile";
 import SandboxContext from "../context/sandboxContext"
 import usePan from '../hooks/usePan'
 import Movable from './Movable'
-import Card from './Card'
+import helpers from '../helpers/helpers'
 
+
+const getComponents = (movables, dispatch) => {
+  return {
+
+    CardPile: (movable) => {
+      const pile = movable.componentState
+
+      return {
+
+        Component: CardPile,
+        CB: {
+          releaseCB: (evt, gesture, currentPan) => {
+            const pileId = pile.id
+            let dzId = helpers.isDropZone(gesture, movables, pile.id);
+            if (dzId) {
+              const matchedPile = movables[dzId].componentState
+              const updatedPile = matchedPile.concatenateCards(movables[pileId].cards);
+              let updatedMovable = { ...movable, componentState: updatedPile }
+              let updatedMovables = { ...movables, [pileId]: updatedMovable };
+              delete updatedMovables[dzId];
+              dispatch({
+                type:`UPDATE_ROOM_MOVABLES_EMIT`,
+                payload: updatedMovables,
+              })
+
+            } else {
+              const updatedPile = pile.updateDz(currentPan)
+              let updatedMovable = { ...movable, componentState: updatedPile }
+              let updatedMovables = {...movables, [pileId]: updatedMovable};
+              dispatch({
+                type:`UPDATE_ROOM_MOVABLES_EMIT`,
+                payload: updatedMovables,
+              })
+            }
+          }
+        }
+      }
+    },
+
+
+  }
+};
 
 
 export default function Sandbox({ movables }) {
-  const ctx = useContext(SandboxContext);
+  const [, dispatch] = useContext(DispatchContext);
+  const components = getComponents(movables, dispatch)
 
-  const piles = Object.values(ctx.piles);
+  return (
+    <View style={styles.container}>
+      {Object.values(movables).map((movable, ind) => {
+        // console.log("movable", movable)
+        const { panState, componentState } = movable;
+        panState.id = movable.id;
+        const { Component, CB } = components[movable.component](movable);
+        return  (
+          // <Movable key={ind} state={panState} {...CB} >
+          <Movable key={ind} state={panState} >
+            <Component  state={componentState} />
+          </Movable>)
+      })}
+    </View>
+);
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
+});
+
+
+  // const ctx = useContext(SandboxContext);
+
+  // const piles = Object.values(ctx.piles);
 
   // useEffect(() => {
   //   //this is a test card
-  //   const newCard = new Card("Tests", "Ace");
+  //   const newCard = new CardClass("Tests", "Ace");
   //   let newPile = new Pile();
   //   newPile = newPile.addCard(newCard);
   //   ctx.addPile(newPile);
@@ -37,33 +110,11 @@ export default function Sandbox({ movables }) {
   //   ctx.addPile(deck);
   // }, []);
 
-  return (
-    <View style={styles.container}>
-      {movables.map((movableState, ind) => {
-        return  (
-          <Movable key={ind} state={movableState} >
-            <Card text="I'm an ace Baby!" />
-          </Movable>)
-      })}
-      {/* <Button  onPress={() => console.log(ctx.piles)}  title="log state" /> */}
-    </View>
-    //    <View style={styles.container}>
-    //    {piles.map((pile, idx) => {
-    //      return <CardPile pile={pile} key={idx}/>
-    //    })}
-    //    <PlayerHand text="I am a player hand" />
-    //    <StatusBar style="auto" />
-    //  </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-});
-
-
+      //   <View style={styles.container}>
+    //   {piles.map((pile, idx) => {
+    //     return
+    //     <CardPile pile={pile} key={idx}/>
+    //   })}
+    //   <PlayerHand text="I am a player hand" />
+    //   <StatusBar style="auto" />
+    // </View>

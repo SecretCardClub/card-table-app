@@ -1,1 +1,0 @@
-export const API_URL = `https://d194-2601-6c3-4001-8140-ad18-986f-e299-765e.ngrok.io`

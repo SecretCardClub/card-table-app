@@ -5,14 +5,24 @@ import { StateContext, DispatchContext } from '../appState/index'
 import styled from 'styled-components/native'
 import { Text } from "react-native";
 
+const SCREEN = `Login screen`
+const ERROR_MSG = `${SCREEN} ERROR ->`
+let renders = 0;
 export default function Login({ navigation }) {
+  renders++;
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
-  const { user } = state
-  console.log({ user })
+  const { User } = state
+  const { UT, dev } = User;
+  if (dev.state) {
+    console.log(`${SCREEN} STATE: `, { User, userName, password })
+  }
+  if (dev.renders) {
+    console.log(`${SCREEN} RENDERS = ${renders}`)
+  }
 
   const nav = (screen) => {
     return () => {
@@ -22,23 +32,21 @@ export default function Login({ navigation }) {
 
 
   const login = (e) => {
-    console.log(`Attempting log in for user name `, userName)
     api.get.user(userName)
     .then(res => {
-      console.log('GET ', { res })
       if ( res.name ) {
         setUserName('')
         dispatch({
-          type: `UPDATE_USER`,
-          payload : { ...user, ...res  }
+          type: UT.UPDATE_USER,
+          payload : { ...User, ...res  }
         })
         navigate('MainStack')
       }
       else {
-        console.log( 'NO USER FOUND', res)
+        console.log( `${ERROR_MSG} NO USER FOUND`, res)
       }
     })
-    .catch(err => console.log('login err',  JSON.stringify(err)))
+    .catch(err => console.log(`${ERROR_MSG} login err`,  err))
   }
 
   return (

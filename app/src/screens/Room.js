@@ -4,21 +4,34 @@ import styled from 'styled-components/native'
 import { P, ScreenView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
+import Pile from '../classes/Pile'
+
+const SCREEN = `Room screen`
+const ERROR_MSG = `${SCREEN} ERROR ->`
+let renders = 0;
 
 export default function Room ({ navigation }) {
+  renders++;
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [chatText, setChatText] = useState('')
-  const { user, room } = state
-  const { users, chat, socket } = room;
+  const { User, Room } = state
+  const { Users, chat, socket, RT, dev } = Room;
+  if (dev.state) {
+    console.log(`${SCREEN} STATE: `, { Room, User })
+  }
+  if (dev.renders) {
+    console.log(`${SCREEN} RENDERS = ${renders}`)
+  }
 
   useEffect(() => {
-    return () => {
-      socket.disconnect()
-      console.log(`socket.disconnected = `, socket.disconnected)
+
+    return () => { // socket clean up  on Room exit
+      socket.close(100, 'Leaving Room')
       dispatch({
-        type:  `UPDATE_ROOM`,
+        type: RT.UPDATE_ROOM_STATE,
+        payload: { socket: null }
       })
     }
   }, [])
@@ -26,39 +39,74 @@ export default function Room ({ navigation }) {
   const sendChat = (e) => {
     const newChat = {
       text: chatText,
-      user: user.name,
-      user_id: user.id,
+      User: User.name,
+      User_id: User.id,
       sent_at: Date.now(),
     }
-    const oldChat = room.chat || []
-    const newRoomState = { ...room, chat: [ ...oldChat, newChat ] }
-    delete newRoomState.socket
-    socket.emit(`update_state`, newRoomState)
+    socket.emit({
+      type: RT.ADD_CHAT,
+      payload: newChat,
+      emitAll: true,
+    })
     setChatText('')
   }
 
-  const closeRoom = (e) => {
-    socket.emit(`close_room`)
-  }
+  // const closeRoom = (e) => {
+  //   socket.emit(`close_room`)
+  // }
 
-  const addCard = (e) => {
-    const newRoomState = { ...room }
-    const newTableState = newRoomState.tableState
+  const addPile = (e) => {
+    const newPile = new Pile()
     const newMovable = {
-      x: 0,
-      y: 0,
-      x_per: 0.5,
-      y_per: 0.5,
-      id: Object.keys(newTableState).length,
+      id: newPile.id,
+      component: "CardPile",
+      panState: {
+        x: 0,
+        y: 0,
+        x_per: 0.5,
+        y_per: 0.5,
+      },
+      componentState: newPile,
     }
-    newTableState[newMovable.id] = newMovable
-    dispatch({
-      type: `UPDATE_ROOM_EMIT`,
-      payload: newRoomState
+    socket.emit({
+      type: RT.UPDATE_MOVABLE,
+      payload: newMovable,
+      emitAll: true,
     })
   }
-  const movables = Object.values(room.tableState)
+
   return (
+    <SandboxContextProvider>
+        <Sandbox movables={Room.table} />
+        <Button onPress={addPile} >
+          <P>Add Pile</P>
+        </Button>
+        <Button onPress={() => navigate('Home')} >
+          <P>Back</P>
+        </Button>
+    </SandboxContextProvider>
+  );
+};
+
+const UserList = styled.View`
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+`
+const ChatList = styled.View`
+  width: 100%;
+  height: auto;
+  display: flex;
+`
+const Footer = styled.View`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+`
+
+
         // <ScreenView>
         //   <P>Connected users</P>
         //   <UserList>
@@ -89,32 +137,3 @@ export default function Room ({ navigation }) {
         //     <P>Close Room</P>
         //   </Button>)}
         // </ScreenView>
-      <SandboxContextProvider>
-          <Sandbox movables={movables} />
-          <Button onPress={addCard} >
-            <P>Add Card</P>
-          </Button>
-          <Button onPress={() => navigate('Home')} >
-            <P>Back</P>
-          </Button>
-      </SandboxContextProvider>
-  );
-};
-
-const UserList = styled.View`
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: row;
-`
-const ChatList = styled.View`
-  width: 100%;
-  height: auto;
-  display: flex;
-`
-const Footer = styled.View`
-  width: 100%;
-  height: 50px;
-  display: flex;
-  flex-direction: row;
-`

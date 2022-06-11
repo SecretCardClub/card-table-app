@@ -1,6 +1,8 @@
+
+
 class Pile {
-  constructor(dz = {}) {
-    this.id = Math.random();
+  constructor(id, dz = { top: 0, left: 0 }, cards ) {
+    this.id = id ||  Math.round(Math.random() * 100000);
     this.dz = dz;
     this.cards = [];
   }
@@ -34,6 +36,8 @@ class Pile {
   getCards() {
     return this.cards;
   }
+
+
 
   updateDz(pan) {
     this.dz.top += pan.y._value;

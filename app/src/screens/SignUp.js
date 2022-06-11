@@ -1,37 +1,46 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StateContext, DispatchContext } from '../appState/index'
-import styled from 'styled-components/native'
 import { P, H1, ScreenView, Button, Input } from './components/index'
-
 import api from '../api/index'
 
+const SCREEN = `SignUp screen`
+const ERROR_MSG = `${SCREEN} ERROR ->`
+let renders = 0;
 
 export default function SignUp({ navigation }) {
+  renders++
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
-  const { user } = state;
+  const { User, SignUp } = state;
+  const { dev } = SignUp
+  if (dev.state) {
+    console.log(`${SCREEN} STATE: `, { SignUp, User, userName, password })
+  }
+  if (dev.renders) {
+    console.log(`${SCREEN} RENDERS = ${renders}`)
+  }
+
 
   const signUp = (e) => {
 
     api.post.user({ user_name: userName })
     .then(res => {
-      console.log('POST ', { res })
       if ( res.name ) {
         setUserName('')
         dispatch({
-          type: `UPDATE_USER`,
-          payload : { ...user, ...res  }
+          type: User.UT.UPDATE_USER,
+          payload : { ...User, ...res  }
         })
         navigate('MainStack')
       }
       else {
-        console.log( 'NO USER FOUND', res)
+        console.log(`${ERROR_MSG} NO USER FOUND`, res)
       }
     })
-    .catch(err => console.log(err))
+    .catch(err => console.log(`${ERROR_MSG} post error: `, err))
   }
 
   return (

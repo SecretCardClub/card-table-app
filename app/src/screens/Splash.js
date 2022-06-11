@@ -5,42 +5,53 @@ import { H1, ScreenView } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import api from '../api/index'
 
+const SCREEN = `Splash screen`
+const ERROR_MSG = `${SCREEN} ERROR ->`
+let renders = 0;
+
 export default function Splash({ navigation }) {
+  renders++
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
-  const [state] = useContext(StateContext);
-  const { user } = state
+  const [ state ] = useContext(StateContext);
+  const { User, Splash, socket } = state;
+  const { dev } = Splash
+  const { UT } = User
+  if (dev.state) {
+    console.log(`${SCREEN} STATE: `, { Splash, User, socket })
+  }
+  if (dev.renders) {
+    console.log(`${SCREEN} RENDERS = ${renders}`)
+  }
 
-  useEffect(async() => {
-    try {
-      // await AsyncStorage.setItem('user', '{}')
-      const storedUser = await AsyncStorage.getItem('user').then(res => JSON.parse(res))
-      const nextUser = { ...user, ...storedUser }
-      const apiRes = await api.get.user(null, nextUser.session_id)
-      if (apiRes.name) {
-        dispatch({
-          type: `UPDATE_USER`,
-          payload : { ...nextUser, ...apiRes  }
-        })
-        navigate('MainStack')
+  useEffect(() => {
+
+    const init = async () => {
+      // await AsyncStorage.setItem('User', '{}')
+        try {
+        const storedUser = await AsyncStorage.getItem('User').then(res => JSON.parse(res))
+        const nextUser = { ...User, ...storedUser }
+        const apiRes = await api.get.user(null, nextUser.session_id)
+        if (apiRes.name) {
+          const homeSocket = socket.create('', { User_id: apiRes.id })
+          dispatch({
+            type: UT.UPDATE_USER,
+            payload : { ...nextUser, socket: homeSocket, session_id: apiRes.session_id  }
+          })
+          navigate('MainStack')
+          // navigate('Login')
+        }
+        else {
+          console.log(`${SCREEN} init NO User FOUND `, apiRes)
+          navigate(`Login`)
+        }
       }
-      else if (apiRes.id) {
-        dispatch({
-          type: `UPDATE_USER`,
-          payload : { ...nextUser, session_id: apiRes.id  }
-        })
-        navigate('Login')
-      }
-      else {
-        console.log('NO USER FOUND ', apiRes)
-        navigate('Login')
+      catch(err) {
+        console.log(`${SCREEN} init error: `,  err.message)
+        navigate(`Login`)
       }
     }
-    catch(err) {
-      console.log(err.message)
-      navigate('Login')
-    }
-
+    init()
   }, [])
 
   return (

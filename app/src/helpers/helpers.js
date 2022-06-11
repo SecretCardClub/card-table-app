@@ -1,10 +1,12 @@
 import Pile from "../classes/Pile";
 
 const helpers = {
-  isDropZone: (gesture, piles, pileId) => {
+  isDropZone: (gesture, movables, pileId) => {
     let id = false;
-    console.log('isDropZone ', { piles })
-    Object.values(piles).forEach((pile) => {
+    console.log('isDropZone ', { movables })
+    Object.values(movables).forEach((movable) => {
+      const pile = movable.componentState
+      console.log({ pile })
       let returnedId = pile.isInDropZone(gesture);
       if (returnedId && pile.id !== pileId) {
         id = returnedId;
