@@ -62,12 +62,10 @@ export default function Sandbox({ movables }) {
   return (
     <View style={styles.container}>
       {Object.values(movables).map((movable, ind) => {
-        // console.log("movable", movable)
         const { panState, componentState } = movable;
         panState.id = movable.id;
         const { Component, CB } = components[movable.component](movable);
         return  (
-          // <Movable key={ind} state={panState} {...CB} >
           <Movable key={ind} state={panState} >
             <Component  state={componentState} />
           </Movable>)

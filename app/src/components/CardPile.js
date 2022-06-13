@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from 'styled-components/native'
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, PanResponder, Animated } from "react-native";
 
+import { StateContext, DispatchContext } from '../appState/index'
 import helpers from "../helpers/helpers";
 import Card from "../classes/Card";
 import usePan from "../hooks/usePan";
@@ -34,22 +35,14 @@ import Pile from '../classes/Pile'
 
 const CardPile = ({ state }) => {
 
+  const [, dispatch] = useContext(DispatchContext);
 
-  // Making a 52 card deck
-  const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
-  const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
-  const pile = new Pile();
-  for (let i = 0; i < suits.length; i++) {
-    for (let j = 0; j < ranks.length; j++) {
-      const newCard = new CardClass(suits[i], ranks[j]);
-      pile.addCard(newCard);
-    }
-  }
 
   const [highlighted, setHighlighted] = useState(false);
 
   const layoutHandler = (e) => {
-    // ctx.initalizeDz(e.nativeEvent.layout, pile.id);
+    console.log(state)
+    console.log(e.nativeEvent.layout, state.id);
   };
 
   const touchStartHandler = () => {
@@ -67,12 +60,12 @@ const CardPile = ({ state }) => {
         onLayout={layoutHandler}
       >
         {
-          pile.cards.length ?
+          state.cards.length ?
           (
             <>
-              <Text>{pile.cards[0].rank}</Text>
-              <Text>{pile.cards[0].suit}</Text>
-              <Text>{pile.cards.length}</Text>
+              <Text>{state.cards[0].rank}</Text>
+              <Text>{state.cards[0].suit}</Text>
+              <Text>{state.cards.length}</Text>
             </>
           )
           :

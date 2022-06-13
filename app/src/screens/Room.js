@@ -5,6 +5,7 @@ import { P, ScreenView, UserView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
+import Card from "../classes/Card"
 
 const SCREEN = `Room screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
@@ -55,7 +56,15 @@ export default function Room ({ navigation }) {
   // }
 
   const addPile = (e) => {
-    const newPile = new Pile()
+    const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
+    const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
+    const newPile = new Pile();
+    for (let i = 0; i < suits.length; i++) {
+      for (let j = 0; j < ranks.length; j++) {
+        const newCard = new Card(suits[i], ranks[j]);
+        newPile.addCard(newCard);
+      }
+    }
     const newMovable = {
       id: newPile.id,
       component: "CardPile",
@@ -67,7 +76,7 @@ export default function Room ({ navigation }) {
       },
       componentState: newPile,
     }
-    socket.emit({
+    socket.emit && socket.emit({
       type: RT.UPDATE_MOVABLE,
       payload: newMovable,
       emitAll: true,
