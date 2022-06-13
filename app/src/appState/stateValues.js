@@ -176,74 +176,127 @@ const parseMessage = async (event) => {
 // export const WS_URL = `ws://eac1-2601-6c3-4001-8140-200c-c1c0-7206-eb34.ngrok.io`
 
 const logEvents = false
-
+const logMessages = false
 
 export const getSocketCreator = (dispatch) => {
 
 
-  const newSocket = (endpoint, query = {}) => {
+  const newSocket = (endpoint, query = {}, TYPE = 'Room', split = false) => {
+
+
+    const TYPES = TYPE === 'Room' ? ROOM_TYPES : HOME_TYPES;
     endpoint = endpoint[0] === '/' ? endpoint : endpoint.length ? '/' + endpoint : '';
     const { User_id } = query;
     const URL = `${WS_URL}${endpoint}?User_id=${User_id}`
-    const newWS = new WebSocket(URL, ['http'])
+    console.log(`ATTEMPTING ws connection of TYPE: ${TYPE} @ ${URL}`)
+    let receiver = new WebSocket(URL)
+    // let receiver, sender;
+    // if (split) {
+    //   receiver = new WebSocket(`${URL}&mode=receiver`)
+    //   sender = new WebSocket(`${URL}&mode=emitter`)
+    // }
+    // else {
+    //   receiver = new WebSocket(URL)
+    //   // receiver = new WebSocket(`${URL}&mode=all`)
+    //   sender = receiver;
+    // }
+
 
     const encodeAndSend = (message) => {
-      if (newWS.readyState === 1) {
+      logMessages && console.log(`EMMITED `, { message, receiver })
+      if (receiver.readyState === 1) {
         const encoded = encoder.encode(JSON.stringify(message))
-        newWS.send(encoded)
+        receiver.send(encoded)
       }
       else {
         console.log(`Socket not open so send lol`)
       }
     }
-    newWS.emit = encodeAndSend
+    receiver.emit = encodeAndSend
 
-    newWS.open = async (event) => {
+    receiver.open = async (event) => {
        if (logEvents) {
         console.log(`OPEN at SOCKET `, event)
         console.log(`SOCKET url = ${URL}`)
       }
+      if ( TYPE === 'Room' ) {
+        dispatch({
+          type: TYPES.UPDATE_ROOM_STATE,
+          payload: { socket: receiver },
+        })
+      }
+      else {
+        dispatch({
+          type: TYPES.UPDATE_HOME_STATE,
+          payload: { socket: receiver },
+        })
+      }
     }
 
-    newWS.close = async (event) => {
+    receiver.close = async (event) => {
+      console.log(`CLOSE at SOCKET `, event)
+      console.log(`SOCKET url = ${URL}`)
       if (logEvents) {
         console.log(`CLOSE at SOCKET `, event)
         console.log(`SOCKET url = ${URL}`)
       }
+      if ( TYPE === 'Room' ) {
+        dispatch({
+          type: TYPES.UPDATE_ROOM_STATE,
+          payload: { socket: null },
+        })
+      }
+      else {
+        dispatch({
+          type: TYPES.UPDATE_HOME_STATE,
+          payload: { socket: null },
+        })
+      }
     }
 
-    newWS.onmessage = async (event) => {
+    receiver.onmessage = async (event) => {
       const msg = await parseMessage(event)
+      logMessages && console.log(`RECEIVED `, { msg, receiver })
       if (logEvents) {
-        console.log(`MESSAGE at SOCKET `, msg)
         console.log(`SOCKET url = ${URL}`)
       }
-
       dispatch(msg)
     }
 
-    newWS.error = async (err) => {
+    receiver.error = async (err) => {
       console.log(`ERROR at SOCKET `, err)
+      console.log(`ERROR code ${err.code}`)
       console.log(`SOCKET url = ${URL}`)
+      if ( TYPE === 'Room' ) {
+        dispatch({
+          type: TYPES.UPDATE_ROOM_STATE,
+          payload: { socket: null },
+        })
+      }
+      else {
+        dispatch({
+          type: TYPES.UPDATE_HOME_STATE,
+          payload: { socket: null },
+        })
+      }
     }
 
 
-    newWS.addEventListener('open', function (event) {
-      newWS.open(event)
+    receiver.addEventListener('open', function (event) {
+      receiver.open(event)
     });
-    newWS.addEventListener('close', function (event) {
-      newWS.close(event)
+    receiver.addEventListener('close', function (event) {
+      receiver.close(event)
     });
-    newWS.addEventListener('message', function (event) {
-      newWS.onmessage(event)
+    receiver.addEventListener('message', function (event) {
+      receiver.onmessage(event)
     });
-    newWS.addEventListener('error', function (event) {
-      newWS.error(event)
+    receiver.addEventListener('error', function (event) {
+      receiver.error(event)
     });
 
-    return newWS;
+    // return receiver;
   }
-
 
   return newSocket
 }

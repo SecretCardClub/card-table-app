@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import Sandbox from "../components/Sandbox";
 import styled from 'styled-components/native'
-import { P, ScreenView, Button, Input } from './components/index'
+import { P, ScreenView, UserView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
@@ -26,15 +26,9 @@ export default function Room ({ navigation }) {
   }
 
   useEffect(() => {
+    console.log(`ROOM state.socket `, { socket })
+  }, [socket])
 
-    return () => { // socket clean up  on Room exit
-      socket.close(100, 'Leaving Room')
-      dispatch({
-        type: RT.UPDATE_ROOM_STATE,
-        payload: { socket: null }
-      })
-    }
-  }, [])
 
   const sendChat = (e) => {
     const newChat = {
@@ -49,6 +43,11 @@ export default function Room ({ navigation }) {
       emitAll: true,
     })
     setChatText('')
+  }
+
+  const goBack = (e) => {
+    socket && socket.close(100, 'Leaving Room')
+    navigate('Home')
   }
 
   // const closeRoom = (e) => {
@@ -77,23 +76,21 @@ export default function Room ({ navigation }) {
 
   return (
     <SandboxContextProvider>
-        <Sandbox movables={Room.table} />
-        <Button onPress={addPile} >
-          <P>Add Pile</P>
-        </Button>
-        <Button onPress={() => navigate('Home')} >
-          <P>Back</P>
-        </Button>
+      <UserList>
+        {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
+      </UserList>
+      <Sandbox movables={Room.table} />
+      <Button onPress={addPile} >
+        <P>Add Pile</P>
+      </Button>
+      <Button onPress={goBack} >
+        <P>Back</P>
+      </Button>
     </SandboxContextProvider>
   );
 };
 
-const UserList = styled.View`
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: row;
-`
+
 const ChatList = styled.View`
   width: 100%;
   height: auto;
@@ -104,6 +101,14 @@ const Footer = styled.View`
   height: 50px;
   display: flex;
   flex-direction: row;
+`
+
+const UserList = styled.View`
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `
 
 

@@ -32,7 +32,7 @@ const getComponents = (movables, dispatch) => {
               let updatedMovables = { ...movables, [pileId]: updatedMovable };
               delete updatedMovables[dzId];
               dispatch({
-                type:`UPDATE_ROOM_MOVABLES_EMIT`,
+                type:`UPDATE_TABLE`,
                 payload: updatedMovables,
               })
 
@@ -41,7 +41,7 @@ const getComponents = (movables, dispatch) => {
               let updatedMovable = { ...movable, componentState: updatedPile }
               let updatedMovables = {...movables, [pileId]: updatedMovable};
               dispatch({
-                type:`UPDATE_ROOM_MOVABLES_EMIT`,
+                type:`UPDATE_TABLE`,
                 payload: updatedMovables,
               })
             }

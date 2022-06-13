@@ -21,6 +21,17 @@ import Pile from '../classes/Pile'
   // }, [ctx.piles, pile]);
 
 
+
+
+// MARK LOOK AT ME!!! from Ian lol, just came across this, dont know much about it myself but it sounds useful
+
+//  Since this value is an instance of a class, we will wrap it in a useRef call
+//  so that it only gets created once, when the component renders for the first time:
+//  const translation = useRef(new Animated.Value(0)).current;
+//  LINK: https://eveningkid.medium.com/the-basics-of-react-native-animations-fb00a8ccc178
+
+
+
 const CardPile = ({ state }) => {
 
 
@@ -85,7 +96,7 @@ const PileView = styled.View`
   border-radius: 5px;
   align-items: center;
   justify-content: center;
-  background-color: ${({ highlighted }) => (highlighted ? "pink" : "green")};
+  background-color: ${({ highlighted }) => (highlighted ? "pink" : "grey")};
 `
 
 
@@ -101,7 +112,7 @@ const styles = StyleSheet.create({
     paddingLeft: 25,
     paddingRight: 25,
     margin: 15,
-    backgroundColor: "green",
+    backgroundColor: "grey",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,

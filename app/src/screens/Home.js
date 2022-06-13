@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import styled from 'styled-components/native'
-import { P, H1, ScreenView, Button, Input, Text } from './components/index'
+import { P, H1, ScreenView, Button, Input, Text, UserView } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import api from '../api/index'
 
@@ -24,6 +24,7 @@ export default function Home({ navigation }) {
     console.log(`${SCREEN} RENDERS = ${renders}`)
   }
 
+
   const nav = (screenName) => {
     return (e) => {
       navigate(screenName)
@@ -31,11 +32,7 @@ export default function Home({ navigation }) {
   }
 
   const openRoom = (room) => {
-    const newRoomSocket = socket.create(room.id, { User_id: User.id })
-    dispatch({
-      type: RT.UPDATE_ROOM_STATE,
-      payload : { socket: newRoomSocket }
-    })
+    socket.create(room.id, { User_id: User.id }, 'Room')
     navigate('Room')
   }
 
@@ -52,6 +49,11 @@ export default function Home({ navigation }) {
     }).catch(err => console.log(err.message))
   }
 
+  const testConnection = () => {
+    socket.create(newRoomname, { User_id: User.id }, 'Room')
+    // navigate('Room')
+  }
+
 
   return (
     <ScreenView>
@@ -60,7 +62,7 @@ export default function Home({ navigation }) {
         <DashView>
           <P>Users</P>
           {Home.Users.map((wssUser, ind) => {
-            return <P key={ind} >{wssUser.name}</P>
+            return <UserView key={ind} {...wssUser} />
           })}
         </DashView>
         <DashView>
@@ -77,6 +79,9 @@ export default function Home({ navigation }) {
       <Input value={newRoomname} onChangeText={setNewRoomname} />
       <Button onPress={createRoom} >
         <Text>Create room</Text>
+      </Button>
+      <Button onPress={testConnection} >
+        <Text>Test Url</Text>
       </Button>
     </ScreenView>
   )
@@ -99,93 +104,3 @@ const DashView = styled.View`
   flex-direction: column;
   justify-content: space-evenly;
 `
-
-
-// useEffect(() => {
-//   const homeSocket = home.socket;
-
-//   if (user.id) {
-//     const newHomeSocket = socket.create('', { User_id: user.id });
-//     newHomeSocket.on("connect", () => {
-//       dispatch({
-//         type: `UPDATE_HOME`,
-//         payload : { ...home, socket: newHomeSocket }
-//       })
-//     });
-
-//     newHomeSocket.on("update_state", (newHomeState) => {
-//       const nextHomeState = { ...home, ...newHomeState, socket: newHomeSocket }
-//       dispatch({
-//         type: `UPDATE_HOME`,
-//         payload : nextHomeState
-//       })
-//     });
-
-//     newHomeSocket.on("connect_error", () => {
-//       console.log(`connect_error `)
-//       newHomeSocket.connect();
-//     });
-
-//     newHomeSocket.on("disconnect", (err) => {
-//       console.log(`Home socket disconnected `)
-//       // navigate('AuthStack')
-//     });
-//   }
-//   else {
-//     if (homeSocket) {
-//       homeSocket.close()
-//       dispatch({
-//         type: `UPDATE_HOME`,
-//         payload : { ...home, socket: null }
-//       })
-//     }
-//   }
-// }, [user.id])
-
-// newRoomSocket.on("connect", () => {
-//   dispatch({
-//     type: `UPDATE_ROOM`,
-//     payload : { ...state.room, socket: newRoomSocket }
-//   })
-//   navigate('Room')
-// });
-
-// newRoomSocket.on("update_state", (newRoomState) => {
-//   const nextRoomState = { ...state.room, ...newRoomState, socket: newRoomSocket }
-//   dispatch({
-//     type: `UPDATE_ROOM`,
-//     payload : nextRoomState
-//   })
-// });
-
-// newRoomSocket.on("update_table", (newtableState) => {
-//   const nextRoomState = { ...state.room, tableState: newtableState, socket: newRoomSocket }
-//   dispatch({
-//     type: `UPDATE_ROOM`,
-//     payload : nextRoomState
-//   })
-// });
-
-// newRoomSocket.on("update_movable", (newMovableState) => {
-//   const nextRoomState = { ...state.room, socket: newRoomSocket }
-//   nextRoomState.tableState[newMovableState.id] = newMovableState;
-//   dispatch({
-//     type: `UPDATE_ROOM`,
-//     payload : nextRoomState
-//   })
-// });
-
-// newRoomSocket.on("connect_error", (err) => {
-//   console.log(`connect_error `, err)
-//   // roomSocket.connect();
-// });
-
-// newRoomSocket.on("close_room", (err) => {
-//   console.log(`Room closed `)
-//   navigate('Home')
-// });
-
-// newRoomSocket.on("disconnect", (err) => {
-//   console.log(`Room socket disconnected `)
-//   // navigate('Home')
-// });

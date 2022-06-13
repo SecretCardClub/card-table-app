@@ -14,7 +14,7 @@ export default function Splash({ navigation }) {
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [ state ] = useContext(StateContext);
-  const { User, Splash, socket } = state;
+  const { User, Home, Splash, socket } = state;
   const { dev } = Splash
   const { UT } = User
   if (dev.state) {
@@ -33,10 +33,10 @@ export default function Splash({ navigation }) {
         const nextUser = { ...User, ...storedUser }
         const apiRes = await api.get.user(null, nextUser.session_id)
         if (apiRes.name) {
-          const homeSocket = socket.create('', { User_id: apiRes.id })
+          socket.create('', { User_id: apiRes.id }, 'Home')
           dispatch({
             type: UT.UPDATE_USER,
-            payload : { ...nextUser, socket: homeSocket, session_id: apiRes.session_id  }
+            payload : { ...nextUser, ...apiRes }
           })
           navigate('MainStack')
           // navigate('Login')
@@ -52,6 +52,7 @@ export default function Splash({ navigation }) {
       }
     }
     init()
+
   }, [])
 
   return (
