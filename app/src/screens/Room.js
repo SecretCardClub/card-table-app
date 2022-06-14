@@ -44,10 +44,11 @@ export default function Room ({ navigation }) {
   }
 
   const goBack = (e) => {
-    socket && socket.close(100, 'Leaving Room')
-    socket.emit({
-      type: "DISCONNECT_SOCKET"
-    })
+    if(socket) {
+      socket.emit({
+        type: "DISCONNECT_SOCKET"
+      })
+    }
     navigate('Home')
   }
 

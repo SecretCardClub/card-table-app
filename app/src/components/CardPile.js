@@ -10,20 +10,6 @@ import usePan from "../hooks/usePan";
 import CardClass from '../classes/Card'
 import Pile from '../classes/Pile'
 
-  // const panReleaseCB = useCallback((evt, gesture, currentPan) => {
-  //   let dzId = helpers.isDropZone(gesture, ctx.piles, pile.id);
-  //   if (dzId) {
-  //     ctx.concatenateCards(pile.id, dzId)
-  //     // pan.flattenOffset();
-  //   } else {
-  //     ctx.updatePileDz(currentPan, pile.id);
-  //     pan.flattenOffset();
-  //   }
-  // }, [ctx.piles, pile]);
-
-
-
-
 // MARK LOOK AT ME!!! from Ian lol, just came across this, dont know much about it myself but it sounds useful
 
 //  Since this value is an instance of a class, we will wrap it in a useRef call
@@ -31,37 +17,33 @@ import Pile from '../classes/Pile'
 //  const translation = useRef(new Animated.Value(0)).current;
 //  LINK: https://eveningkid.medium.com/the-basics-of-react-native-animations-fb00a8ccc178
 
-
-
 const CardPile = ({ componentState, movables }) => {
-
   const [, dispatch] = useContext(DispatchContext);
 
-
-  const [highlighted, setHighlighted] = useState(false);
-
   const layoutHandler = (e) => {
+    const id = componentState.id;
     const layout = (e.nativeEvent.layout);
-    componentState.dz.widthPer = layout.width / window.innerWidth;
-    componentState.dz.heightPer = layout.height / window.innerHeight;
-    console.log({componentState})
-    console.log(movables)
-    const updatedMovable = movables[componentState.id].componentState = componentState;
+    const updatedDz = {
+      widthPer: layout.width / window.innerWidth,
+      heightPer: layout.height / window.innerHeight
+    }
+    let updatedComponentState = {...componentState, dz: updatedDz};
+    let updatedMovable = {...movables[id], componentState: updatedComponentState};
+    let updatedMovables = {...movables, [id]: updatedMovable};
+    dispatch({
+      type: "UPDATE_TABLE",
+      payload: updatedMovables,
+    })
   };
 
-  const touchStartHandler = () => {
-    setHighlighted(true);
-  };
-
-  const touchEndHandler = () => {
-    setHighlighted(false);
-  };
+  const touch =() => {
+    console.log(componentState)
+  }
 
   return (
       <PileView
-        onTouchStart={touchStartHandler}
-        onTouchEnd={touchEndHandler}
         onLayout={layoutHandler}
+        onTouchStart={touch}
       >
         {
           componentState.cards.length ?

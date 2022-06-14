@@ -1,5 +1,6 @@
 import Pile from "../classes/Pile";
 
+
 const helpers = {
   isDropZone: (gesture, movables, pileId) => {
     let id = false;
@@ -7,7 +8,6 @@ const helpers = {
     Object.values(movables).forEach((movable) => {
       const pile = movable
       console.log({ pile })
-
     })
   },
 

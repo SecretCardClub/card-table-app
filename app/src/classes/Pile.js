@@ -1,7 +1,7 @@
 
 
 class Pile {
-  constructor(id, dz = { top: 0, left: 0 }, cards ) {
+  constructor(id, dz = { widthPer: 0, heightPer: 0 }, cards ) {
     this.id = id ||  Math.round(Math.random() * 100000);
     this.dz = dz;
     this.cards = [];

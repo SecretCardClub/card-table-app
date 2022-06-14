@@ -100,7 +100,7 @@ export default function Sandbox({ movables }) {
         return  (
           // <Movable key={ind} state={panState} {...CB} >
           <Movable key={ind} state={panState} addAnimation={addAnimation} >
-            <Component  state={componentState} movables={movables}/>
+            <Component  componentState={componentState} movables={movables}/>
           </Movable>)
       })}
     </View>

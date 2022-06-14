@@ -87,7 +87,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
   const deEmitMove = debounce(emitMove)
 
   const panCb = useCallback((evt, gesture, selected = true) => {
-    deEmitMove(position, selected)
+    emitMove(position, selected)
   }, [socket, state.Room.table, panState, position.x, position.y])
 
 
@@ -118,7 +118,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
 
       onPanResponderMove: (evt, gesture) => {
         panResponderMove(evt, gesture);
-        moveCB(evt, gesture, pan)
+        // moveCB(evt, gesture, pan)
         panCb(evt, gesture)
       },
 
