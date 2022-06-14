@@ -16,7 +16,6 @@ export default function Movable({ state, children, moveCB, releaseCB, grantCB })
   return (
       <Animated.View
       style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], zIndex: 100 }}
-        // style={{ backgroundColor: selected, transform: [{ translateX: pan.x }, { translateY: pan.y }], zIndex: 100 }}
         {...panResponder.panHandlers}
       >
         <SelectedWrapper color={selected} >
