@@ -15,7 +15,7 @@ export default function roomReducer(roomState, action) {
 
     case RT.SET_ROOM_STATE:
       reducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
-      roomState = payload || { ...initRoom, ...roomState };
+      roomState = payload || initRoom;
       return roomState;
 
     case RT.UPDATE_ROOM_STATE:

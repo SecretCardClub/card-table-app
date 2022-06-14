@@ -6,7 +6,7 @@ const widthDiv = width / 2;
 const heightDiv = height / 2;
 
 
-const DEBOUNCE_TIME = 20 // miliseconds
+const DEBOUNCE_TIME = 15 // miliseconds
 
 const debounce = (func, time = DEBOUNCE_TIME) => {
   let currentFunc = func
@@ -22,9 +22,10 @@ const debounce = (func, time = DEBOUNCE_TIME) => {
 
 
 const calcPosition = ({ x, y, x_per, y_per }, pan) => {
-  // pan.setValue({ x, y })
+
   x = width * x_per - widthDiv
   y = height * y_per  - heightDiv
+
 
   if ( x > widthDiv ) {
     x = widthDiv
@@ -46,34 +47,33 @@ const calcPosition = ({ x, y, x_per, y_per }, pan) => {
 
 export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {}, grantCB = () => {}) {
 
-
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const { User } = state
   const { socket, table, RT } = state.Room;
-  const pan = useRef(new Animated.ValueXY()).current;
+  const pan = new Animated.ValueXY();
+
   const position = { ...panState }
   const id = position.id
 
   const moveEmitter = pan.addListener(({ x, y }) => {
     position.x = x
     position.y = y
-    // console.log({ id, x, y })
   })
 
 
   useEffect(() => {
     calcPosition(panState, pan)
-  }, [panState.x, panState.y])
+  }, [panState.x_per, panState.y_per])
 
 
-  const emitMove = (currentPan, selected = true) => {
+  const emitMove = ({ x, y }, selected = true) => {
 
-    const { x, y } = position
     const newPanState = { ...panState, x, y }
     if ( selected ) {
       newPanState.selected = User.color
     }
+
     newPanState.x_per = (x + widthDiv)  / width
     newPanState.y_per = (y + heightDiv) / height
     const movable = table[newPanState.id]
@@ -84,27 +84,22 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
     })
   }
 
-  const deEmitMove = debounce(emitMove, 15)
+  const deEmitMove = debounce(emitMove)
 
-  const panCb = useCallback((evt, gesture) => {
-    console.log({ evt, gesture })
-    emitMove(pan)
-    // deEmitMove(pan)
-  }, [socket, state.Room.table, panState, pan])
+  const panCb = useCallback((evt, gesture, selected = true) => {
+    deEmitMove(position, selected)
+  }, [socket, state.Room.table, panState, position.x, position.y])
 
 
   const panResponderMove = Animated.event(
     [
-      // {nativeEvent: {contentOffset: { x: pan.x, y: pan.y  }}},
       null,
       { dx: pan.x, dy: pan.y }
     ],
     {
       useNativeDriver: false,
-      // useNativeDriver: true,
       listener: panCb
-    }
-    );
+    });
 
 
 
@@ -113,48 +108,28 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
 
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt, gesture) => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-        emitMove(pan)
-        // deEmitMove(pan)
+
+        const x = pan.x._value
+        const y = pan.y._value;
+        pan.setOffset({ x, y });
         grantCB(evt, gesture, pan)
+        panCb(evt, gesture)
       },
 
       onPanResponderMove: (evt, gesture) => {
-        const result = panResponderMove(evt, gesture);
+        panResponderMove(evt, gesture);
         moveCB(evt, gesture, pan)
-        return result;
+        panCb(evt, gesture)
       },
 
       onPanResponderRelease: (evt, gesture) => {
         pan.flattenOffset();
         releaseCB(evt, gesture, pan)
-        // deEmitMove(pan)
-        emitMove(pan, false)
-
-        // const newRoomState = { ...state.Room }
-        // const x_per = (pan.x._value + widthDiv)  / width
-        // const y_per = (pan.y._value + heightDiv) / height
-        // const newPanState = { ...panState, x: pan.x._value, y: pan.y._value, x_per, y_per }
-        // newRoomState.table[newPanState.id].panState = newPanState;
-
-        // const newPanState = { ...panState, x, y }
-        // newPanState.x_per = (x + widthDiv)  / width
-        // newPanState.y_per = (y + heightDiv) / height
-        // const movable = table[newPanState.id]
-        // movable.panState = newPanState;
-
-        // socket.emit({
-        //   type: RT.UPDATE_TABLE,
-        //   payload: newRoomState.table,
-        //   emitAll: true,
-        // })
+        panCb(evt, gesture, false)
       },
 
     })
-  }, [moveCB, releaseCB, grantCB])
+  }, [pan, panState, moveCB, releaseCB, grantCB])
 
   return [pan, panResponder];
 }

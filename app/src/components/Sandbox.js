@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, View, Animated } from "react-native";
 import { StateContext, DispatchContext } from '../appState/index'
 
 import Pile from "../classes/Pile"
@@ -58,6 +58,29 @@ const getComponents = (movables, dispatch) => {
 export default function Sandbox({ movables }) {
   const [, dispatch] = useContext(DispatchContext);
   const components = getComponents(movables, dispatch)
+  const [animations, setAnimations] = useState([])
+
+  // useEffect(() => {
+
+  //   const runAnimations = () => {
+  //     return setTimeout(() => {
+  //       if(animations.length) {
+  //         Animated.parallel(animations).start()
+  //         setAnimations([])
+  //         return runAnimations()
+  //       }
+  //     }, 20)
+  //   }
+  //   const runningAnimations = runAnimations()
+  //   return () => {
+  //     clearTimeout(runningAnimations)
+  //   }
+  // }, [ animations ])
+
+  const addAnimation = (newAnimation) => {
+    setAnimations([...animations, newAnimation])
+  }
+
 
   return (
     <View style={styles.container}>
@@ -68,7 +91,7 @@ export default function Sandbox({ movables }) {
         const { Component, CB } = components[movable.component](movable);
         return  (
           // <Movable key={ind} state={panState} {...CB} >
-          <Movable key={ind} state={panState} >
+          <Movable key={ind} state={panState} addAnimation={addAnimation} >
             <Component  state={componentState} />
           </Movable>)
       })}
