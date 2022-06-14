@@ -30,20 +30,16 @@ const CardPile = ({ componentState, movables }) => {
     let updatedComponentState = {...componentState, dz: updatedDz};
     let updatedMovable = {...movables[id], componentState: updatedComponentState};
     let updatedMovables = {...movables, [id]: updatedMovable};
+    console.log("updatedMovables: ", updatedMovables);
     dispatch({
       type: "UPDATE_TABLE",
       payload: updatedMovables,
-    })
+    });
   };
-
-  const touch =() => {
-    console.log(componentState)
-  }
 
   return (
       <PileView
         onLayout={layoutHandler}
-        onTouchStart={touch}
       >
         {
           componentState.cards.length ?

@@ -4,8 +4,8 @@ import usePan from '../hooks/usePan'
 import styled from 'styled-components/native'
 
 
-export default function Movable({ state, children, addAnimation }) {
-  const [pan, panResponder] = usePan(state, addAnimation);
+export default function Movable({ state, children, addAnimation, releaseCB }) {
+  const [pan, panResponder] = usePan(state, addAnimation, releaseCB);
   const [selected, setSelected] = useState(state.selected)
 
 

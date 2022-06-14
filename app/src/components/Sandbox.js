@@ -1,50 +1,67 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Animated } from "react-native";
-import { StateContext, DispatchContext } from '../appState/index'
+import { StateContext, DispatchContext } from "../appState/index";
 
-import Pile from "../classes/Pile"
-import CardClass from "../classes/Card"
+import Pile from "../classes/Pile";
+import CardClass from "../classes/Card";
 import PlayerHand from "./PlayerHand";
 import CardPile from "./CardPile";
-import SandboxContext from "../context/sandboxContext"
-import usePan from '../hooks/usePan'
-import Movable from './Movable'
+import SandboxContext from "../context/sandboxContext";
+import usePan from "../hooks/usePan";
+import Movable from "./Movable";
 // import helpers from '../helpers/helpers'
-
 
 const getComponents = (movables, dispatch) => {
   return {
-
     CardPile: (movable) => {
       // const pile = movable.componentState
 
       return {
-
         Component: CardPile,
         CB: {
           releaseCB: (evt, gesture, currentPan) => {
-            // console.log("Mark's currentPan:", currentPan)
-            // console.log("evt: ", evt);
-            // console.log("gesture: ", gesture);
-            // console.log("movable: ", movable)
-            // let dzId = helpers.isDropZone(gesture, movables, movable.id);
 
+
+            const movingPileId = movable.id;
+
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const dropLocation = {
+              x: gesture.moveX / w,
+              y: gesture.moveY / h,
+            };
             let dzId = false;
 
             Object.values(movables).forEach((movable) => {
               console.log(movable);
-            })
+              if (movable.id !== movingPileId) {
+                const { widthPer, heightPer } = {
+                  ...movable.componentState.dz,
+                };
+                const { x_per, y_per } = { ...movable.panState };
+                debugger;
+                if (
+                  dropLocation.x > x_per - widthPer / 2 &&
+                  dropLocation.x < x_per + widthPer / 2 &&
+                  dropLocation.y > y_per - heightPer / 2 &&
+                  dropLocation.y < y_per + heightPer / 2
+                ) {
+                  dzId = movable.id;
+                }
+              }
+            });
             if (dzId) {
-              const matchedPile = movables[dzId].componentState
-              const updatedPile = matchedPile.concatenateCards(movables[pileId].cards);
-              let updatedMovable = { ...movable, componentState: updatedPile }
+              const matchedPile = movables[dzId].componentState;
+              const updatedPile = matchedPile.concatenateCards(
+                movables[movingPileId].cards
+              );
+              let updatedMovable = { ...movable, componentState: updatedPile };
               let updatedMovables = { ...movables, [pileId]: updatedMovable };
               delete updatedMovables[dzId];
               dispatch({
-                type:`UPDATE_TABLE`,
+                type: `UPDATE_TABLE`,
                 payload: updatedMovables,
-              })
-
+              });
             } else {
               // // const updatedPile = pile.updateDz(currentPan)
               // let updatedMovable = { ...movable, componentState: updatedPile }
@@ -54,20 +71,17 @@ const getComponents = (movables, dispatch) => {
               //   payload: updatedMovables,
               // })
             }
-          }
-        }
-      }
+          },
+        },
+      };
     },
-
-
-  }
+  };
 };
-
 
 export default function Sandbox({ movables }) {
   const [, dispatch] = useContext(DispatchContext);
-  const components = getComponents(movables, dispatch)
-  const [animations, setAnimations] = useState([])
+  const components = getComponents(movables, dispatch);
+  const [animations, setAnimations] = useState([]);
 
   // useEffect(() => {
 
@@ -87,9 +101,8 @@ export default function Sandbox({ movables }) {
   // }, [ animations ])
 
   const addAnimation = (newAnimation) => {
-    setAnimations([...animations, newAnimation])
-  }
-
+    setAnimations([...animations, newAnimation]);
+  };
 
   return (
     <View style={styles.container}>
@@ -97,14 +110,19 @@ export default function Sandbox({ movables }) {
         const { panState, componentState } = movable;
         panState.id = movable.id;
         const { Component, CB } = components[movable.component](movable);
-        return  (
-          // <Movable key={ind} state={panState} {...CB} >
-          <Movable key={ind} state={panState} addAnimation={addAnimation} >
-            <Component  componentState={componentState} movables={movables}/>
-          </Movable>)
+        return (
+          <Movable
+            key={ind}
+            state={panState}
+            addAnimation={addAnimation}
+            {...CB}
+          >
+            <Component componentState={componentState} movables={movables} />
+          </Movable>
+        );
       })}
     </View>
-);
+  );
 }
 
 const styles = StyleSheet.create({
