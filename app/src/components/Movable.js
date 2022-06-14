@@ -4,8 +4,8 @@ import usePan from '../hooks/usePan'
 import styled from 'styled-components/native'
 
 
-export default function Movable({ state, children, moveCB, releaseCB, grantCB }) {
-  const [pan, panResponder] = usePan(state, moveCB, releaseCB, grantCB );
+export default function Movable({ state, children, addAnimation }) {
+  const [pan, panResponder] = usePan(state, addAnimation);
   const [selected, setSelected] = useState(state.selected)
 
 
@@ -15,6 +15,7 @@ export default function Movable({ state, children, moveCB, releaseCB, grantCB })
 
   return (
       <Animated.View
+      ref={pan}
       style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], zIndex: 100 }}
         {...panResponder.panHandlers}
       >

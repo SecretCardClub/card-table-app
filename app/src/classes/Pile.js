@@ -6,17 +6,6 @@ class Pile {
     this.dz = dz;
     this.cards = [];
   }
-  isInDropZone(gesture) {
-    if (
-      gesture.moveY > this.dz.top &&
-      gesture.moveY < this.dz.top  + this.dz.height &&
-      gesture.moveX > this.dz.left  &&
-      gesture.moveX < this.dz.left + this.dz.x + this.dz.width
-    ) {
-      return this.id;
-    }
-    return false;
-  }
 
   addCard(card) {
     this.cards.push(card);

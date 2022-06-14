@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, View, Animated } from "react-native";
 import { StateContext, DispatchContext } from '../appState/index'
 
 import Pile from "../classes/Pile"
@@ -67,6 +67,29 @@ const getComponents = (movables, dispatch) => {
 export default function Sandbox({ movables }) {
   const [, dispatch] = useContext(DispatchContext);
   const components = getComponents(movables, dispatch)
+  const [animations, setAnimations] = useState([])
+
+  // useEffect(() => {
+
+  //   const runAnimations = () => {
+  //     return setTimeout(() => {
+  //       if(animations.length) {
+  //         Animated.parallel(animations).start()
+  //         setAnimations([])
+  //         return runAnimations()
+  //       }
+  //     }, 20)
+  //   }
+  //   const runningAnimations = runAnimations()
+  //   return () => {
+  //     clearTimeout(runningAnimations)
+  //   }
+  // }, [ animations ])
+
+  const addAnimation = (newAnimation) => {
+    setAnimations([...animations, newAnimation])
+  }
+
 
   return (
     <View style={styles.container}>
@@ -75,8 +98,9 @@ export default function Sandbox({ movables }) {
         panState.id = movable.id;
         const { Component, CB } = components[movable.component](movable);
         return  (
-          <Movable key={ind} state={panState} releaseCB={CB.releaseCB} >
-            <Component  componentState={componentState} movables={movables}/>
+          // <Movable key={ind} state={panState} {...CB} >
+          <Movable key={ind} state={panState} addAnimation={addAnimation} >
+            <Component  state={componentState} movables={movables}/>
           </Movable>)
       })}
     </View>
@@ -91,37 +115,3 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
 });
-
-
-  // const ctx = useContext(SandboxContext);
-
-  // const piles = Object.values(ctx.piles);
-
-  // useEffect(() => {
-  //   //this is a test card
-  //   const newCard = new CardClass("Tests", "Ace");
-  //   let newPile = new Pile();
-  //   newPile = newPile.addCard(newCard);
-  //   ctx.addPile(newPile);
-
-  //   // Making a 52 card deck
-  //   const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
-  //   const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
-  //   const deck = new Pile;
-  //   for (let i = 0; i < suits.length; i++) {
-  //     for (let j = 0; j < ranks.length; j++) {
-  //       const newCard = new CardClass(suits[i], ranks[j]);
-  //       deck.addCard(newCard);
-  //     }
-  //   }
-  //   ctx.addPile(deck);
-  // }, []);
-
-      //   <View style={styles.container}>
-    //   {piles.map((pile, idx) => {
-    //     return
-    //     <CardPile pile={pile} key={idx}/>
-    //   })}
-    //   <PlayerHand text="I am a player hand" />
-    //   <StatusBar style="auto" />
-    // </View>

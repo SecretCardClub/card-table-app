@@ -149,10 +149,10 @@ const encoder = new TextEncoder('utf-8')
 
 
 
-const encodeAndSend = (socket, message) => {
-  const encoded = encoder.encode(JSON.stringify(message))
-  socket.send(encoded)
-}
+// const encodeAndSend = (socket, message) => {
+//   const encoded = encoder.encode(JSON.stringify(message))
+//   socket.send(encoded)
+// }
 
 const parseMessage = async (event) => {
   const { data } = event
@@ -168,12 +168,6 @@ const parseMessage = async (event) => {
   return JSON.parse(msg)
 }
 
-
-// export const WS_URL = `ws://localhost:3030`
-// export const WS_URL = `http://eac1-2601-6c3-4001-8140-200c-c1c0-7206-eb34.ngrok.io:3030`
-// export const WS_URL = `ws://127.0.0.1:3030`
-// export const WS_URL = `ws://localhost:3030`
-// export const WS_URL = `ws://eac1-2601-6c3-4001-8140-200c-c1c0-7206-eb34.ngrok.io`
 
 const logEvents = false
 const logMessages = false
@@ -215,6 +209,7 @@ export const getSocketCreator = (dispatch) => {
     receiver.emit = encodeAndSend
 
     receiver.open = async (event) => {
+      console.log(`WS CONNECTED @ ${URL}`)
        if (logEvents) {
         console.log(`OPEN at SOCKET `, event)
         console.log(`SOCKET url = ${URL}`)
@@ -234,12 +229,12 @@ export const getSocketCreator = (dispatch) => {
     }
 
     receiver.close = async (event) => {
-      console.log(`CLOSE at SOCKET `, event)
-      console.log(`SOCKET url = ${URL}`)
-      if (logEvents) {
-        console.log(`CLOSE at SOCKET `, event)
-        console.log(`SOCKET url = ${URL}`)
-      }
+      // console.log(`CLOSE at SOCKET `, event)
+      console.log(`CLOSE at SOCKET: ${URL}`)
+      // if (logEvents) {
+      //   console.log(`CLOSE at SOCKET `, event)
+      //   console.log(`SOCKET url = ${URL}`)
+      // }
       if ( TYPE === 'Room' ) {
         dispatch({
           type: TYPES.UPDATE_ROOM_STATE,
@@ -264,9 +259,9 @@ export const getSocketCreator = (dispatch) => {
     }
 
     receiver.error = async (err) => {
-      console.log(`ERROR at SOCKET `, err)
+      // console.log(`ERROR at SOCKET `, err)
+      console.log(`ERROR at SOCKET: ${URL}`)
       console.log(`ERROR code ${err.code}`)
-      console.log(`SOCKET url = ${URL}`)
       if ( TYPE === 'Room' ) {
         dispatch({
           type: TYPES.UPDATE_ROOM_STATE,

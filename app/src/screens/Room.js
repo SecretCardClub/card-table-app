@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import Sandbox from "../components/Sandbox";
 import styled from 'styled-components/native'
-import { P, ScreenView, UserView, Button, Input } from './components/index'
+import { P, H2, ScreenView, UserView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
@@ -26,9 +26,6 @@ export default function Room ({ navigation }) {
     console.log(`${SCREEN} RENDERS = ${renders}`)
   }
 
-  useEffect(() => {
-    console.log(`ROOM state.socket `, { socket })
-  }, [socket])
 
 
   const sendChat = (e) => {
@@ -48,12 +45,13 @@ export default function Room ({ navigation }) {
 
   const goBack = (e) => {
     socket && socket.close(100, 'Leaving Room')
+    socket.emit({
+      type: "DISCONNECT_SOCKET"
+    })
     navigate('Home')
   }
 
-  // const closeRoom = (e) => {
-  //   socket.emit(`close_room`)
-  // }
+
 
   const addPile = (e) => {
     const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
@@ -83,8 +81,12 @@ export default function Room ({ navigation }) {
     })
   }
 
-  return (
+  return Room.socket ?
+  (
     <SandboxContextProvider>
+      <Header>
+        <H2>{Room.name}</H2>
+      </Header>
       <UserList>
         {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
       </UserList>
@@ -96,6 +98,17 @@ export default function Room ({ navigation }) {
         <P>Back</P>
       </Button>
     </SandboxContextProvider>
+  )
+  :
+  (
+    <SandboxContextProvider>
+      <Header>
+        <H2>Connecting...</H2>
+      </Header>
+      <Button onPress={goBack} >
+          <P>Back</P>
+      </Button>
+  </SandboxContextProvider>
   );
 };
 
@@ -105,11 +118,13 @@ const ChatList = styled.View`
   height: auto;
   display: flex;
 `
-const Footer = styled.View`
+const Header = styled.View`
   width: 100%;
-  height: 50px;
+  height: auto;
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `
 
 const UserList = styled.View`
