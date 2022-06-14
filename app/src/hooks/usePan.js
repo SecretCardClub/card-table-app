@@ -78,6 +78,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
     newPanState.y_per = (y + heightDiv) / height
     const movable = table[newPanState.id]
     movable.panState = newPanState;
+    // console.log(`EMITTING `, newPanState)
     socket.emit({
       type: RT.UPDATE_MOVABLE,
       payload: movable,
@@ -87,7 +88,8 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
   const deEmitMove = debounce(emitMove)
 
   const panCb = useCallback((evt, gesture, selected = true) => {
-    deEmitMove(position, selected)
+    // deEmitMove(position, selected)
+    emitMove(position, selected)
   }, [socket, state.Room.table, panState, position.x, position.y])
 
 
@@ -118,7 +120,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
 
       onPanResponderMove: (evt, gesture) => {
         panResponderMove(evt, gesture);
-        moveCB(evt, gesture, pan)
+        // moveCB(evt, gesture, pan)
         panCb(evt, gesture)
       },
 
