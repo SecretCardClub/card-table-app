@@ -9,22 +9,31 @@ import CardPile from "./CardPile";
 import SandboxContext from "../context/sandboxContext"
 import usePan from '../hooks/usePan'
 import Movable from './Movable'
-import helpers from '../helpers/helpers'
+// import helpers from '../helpers/helpers'
 
 
 const getComponents = (movables, dispatch) => {
   return {
 
     CardPile: (movable) => {
-      const pile = movable.componentState
+      // const pile = movable.componentState
 
       return {
 
         Component: CardPile,
         CB: {
           releaseCB: (evt, gesture, currentPan) => {
-            const pileId = pile.id
-            let dzId = helpers.isDropZone(gesture, movables, pile.id);
+            // console.log("Mark's currentPan:", currentPan)
+            // console.log("evt: ", evt);
+            // console.log("gesture: ", gesture);
+            // console.log("movable: ", movable)
+            // let dzId = helpers.isDropZone(gesture, movables, movable.id);
+
+            let dzId = false;
+
+            Object.values(movables).forEach((movable) => {
+              console.log(movable);
+            })
             if (dzId) {
               const matchedPile = movables[dzId].componentState
               const updatedPile = matchedPile.concatenateCards(movables[pileId].cards);
@@ -37,13 +46,13 @@ const getComponents = (movables, dispatch) => {
               })
 
             } else {
-              const updatedPile = pile.updateDz(currentPan)
-              let updatedMovable = { ...movable, componentState: updatedPile }
-              let updatedMovables = {...movables, [pileId]: updatedMovable};
-              dispatch({
-                type:`UPDATE_TABLE`,
-                payload: updatedMovables,
-              })
+              // // const updatedPile = pile.updateDz(currentPan)
+              // let updatedMovable = { ...movable, componentState: updatedPile }
+              // let updatedMovables = {...movables, [pileId]: updatedMovable};
+              // dispatch({
+              //   type:`UPDATE_TABLE`,
+              //   payload: updatedMovables,
+              // })
             }
           }
         }
@@ -66,8 +75,8 @@ export default function Sandbox({ movables }) {
         panState.id = movable.id;
         const { Component, CB } = components[movable.component](movable);
         return  (
-          <Movable key={ind} state={panState} >
-            <Component  state={componentState} />
+          <Movable key={ind} state={panState} releaseCB={CB.releaseCB} >
+            <Component  componentState={componentState} movables={movables}/>
           </Movable>)
       })}
     </View>

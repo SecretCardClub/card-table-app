@@ -33,7 +33,7 @@ import Pile from '../classes/Pile'
 
 
 
-const CardPile = ({ state }) => {
+const CardPile = ({ componentState, movables }) => {
 
   const [, dispatch] = useContext(DispatchContext);
 
@@ -41,8 +41,12 @@ const CardPile = ({ state }) => {
   const [highlighted, setHighlighted] = useState(false);
 
   const layoutHandler = (e) => {
-    console.log(state)
-    console.log(e.nativeEvent.layout, state.id);
+    const layout = (e.nativeEvent.layout);
+    componentState.dz.widthPer = layout.width / window.innerWidth;
+    componentState.dz.heightPer = layout.height / window.innerHeight;
+    console.log({componentState})
+    console.log(movables)
+    const updatedMovable = movables[componentState.id].componentState = componentState;
   };
 
   const touchStartHandler = () => {
@@ -60,12 +64,12 @@ const CardPile = ({ state }) => {
         onLayout={layoutHandler}
       >
         {
-          state.cards.length ?
+          componentState.cards.length ?
           (
             <>
-              <Text>{state.cards[0].rank}</Text>
-              <Text>{state.cards[0].suit}</Text>
-              <Text>{state.cards.length}</Text>
+              <Text>{componentState.cards[0].rank}</Text>
+              <Text>{componentState.cards[0].suit}</Text>
+              <Text>{componentState.cards.length}</Text>
             </>
           )
           :
