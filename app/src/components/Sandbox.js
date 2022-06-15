@@ -11,7 +11,8 @@ import usePan from "../hooks/usePan";
 import Movable from "./Movable";
 // import helpers from '../helpers/helpers'
 
-const getComponents = (movables, dispatch) => {
+const getComponents = (movables, dispatch, socket) => {
+  const {RT} = socket;
   return {
     CardPile: (movable) => {
       // const pile = movable.componentState
@@ -20,51 +21,62 @@ const getComponents = (movables, dispatch) => {
         Component: CardPile,
         CB: {
           releaseCB: (evt, gesture, currentPan) => {
+            // debugger;
             const movingPileId = movable.id;
-            // const w = window.innerWidth;
-            // const h = window.innerWidth;
             const dropLocation = {
               x: gesture.moveX / window.innerWidth,
               y: gesture.moveY / window.innerWidth,
             };
-            // console.log(dropLocation);
             let dzId = false;
 
-            Object.values(movables).forEach((movable) => {
-              if (movable.id !== movingPileId) {
-                const { widthPer, heightPer } = {
-                  ...movable.componentState.dz,
-                };
-                const { x_per, y_per } = { ...movable.panState };
-                const dzSlopCoefficient = 1.5;
-                if (
-                  dropLocation.x > x_per - widthPer / dzSlopCoefficient &&
-                  dropLocation.x < x_per + widthPer / dzSlopCoefficient &&
-                  dropLocation.y > y_per - heightPer / dzSlopCoefficient &&
-                  dropLocation.y < y_per + heightPer / dzSlopCoefficient
-                ) {
-                  dzId = movable.id;
+            Object.values(movables).forEach((currentMovable) => {
+              if (!dzId) {
+                console.log("offscreen movables: ", movables);
+                if (currentMovable.id !== movingPileId) {
+                  const { widthPer, heightPer } = {
+                    ...currentMovable.componentState.dz,
+                  };
+                  const { x_per, y_per } = { ...currentMovable.panState };
+                  const dzSlopCoefficient = 0.25;
+                  if (
+                    dropLocation.x > x_per - widthPer / dzSlopCoefficient &&
+                    dropLocation.x < x_per + widthPer / dzSlopCoefficient &&
+                    dropLocation.y > y_per - heightPer / dzSlopCoefficient &&
+                    dropLocation.y < y_per + heightPer / dzSlopCoefficient
+                  ) {
+                    dzId = currentMovable.id;
+                  }
                 }
               }
             });
             if (dzId) {
-              console.log("MATCHED DROPLOCATION TO DROPZONE");
-              const matchedPileCards = movables[dzId].componentState.cards;
-              const addedCards = movables[movingPileId].componentState.cards;
-              const updatedCards = [...addedCards, ...matchedPile.cards];
+              console.log(
+                "MATCHED DROPLOCATION: ",
+                movingPileId,
+                "TO DROPZONE: ",
+                dzId
+              );
+              console.log("before change: ", movables);
+              const dzPileCards = [...movables[dzId].componentState.cards];
+              const movingCards = [
+                ...movables[movingPileId].componentState.cards,
+              ];
+              const updatedCards = [...movingCards, ...dzPileCards];
               let updatedComponentState = {
                 ...movables[dzId].componentState,
                 cards: updatedCards,
               };
               let updatedMovable = {
-                ...movable,
+                ...movables[dzId],
                 componentState: updatedComponentState,
               };
-              let updatedMovables = { ...movables, [pileId]: updatedMovable };
+              let updatedMovables = { ...movables, [dzId]: updatedMovable };
               delete updatedMovables[movingPileId];
-              dispatch({
-                type: `UPDATE_TABLE`,
+              console.log("updatedMovables", updatedMovables);
+              socket.emit({
+                type: RT.UPDATE_TABLE,
                 payload: updatedMovables,
+                emitAll: true,
               });
             }
           },
@@ -74,9 +86,9 @@ const getComponents = (movables, dispatch) => {
   };
 };
 
-export default function Sandbox({ movables }) {
+export default function Sandbox({ movables, socket }) {
   const [, dispatch] = useContext(DispatchContext);
-  const components = getComponents(movables, dispatch);
+  const components = getComponents(movables, dispatch, socket);
   const [animations, setAnimations] = useState([]);
 
   // useEffect(() => {

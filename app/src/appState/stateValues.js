@@ -215,12 +215,14 @@ export const getSocketCreator = (dispatch) => {
         console.log(`SOCKET url = ${URL}`)
       }
       if ( TYPE === 'Room' ) {
+        receiver.RT = ROOM_TYPES;
         dispatch({
           type: TYPES.UPDATE_ROOM_STATE,
           payload: { socket: receiver },
         })
       }
       else {
+        receiver.HT = HOME_TYPES;
         dispatch({
           type: TYPES.UPDATE_HOME_STATE,
           payload: { socket: receiver },
