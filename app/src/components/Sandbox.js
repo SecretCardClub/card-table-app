@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Animated } from "react-native";
 import { StateContext, DispatchContext } from '../appState/index'
 
+
 import Pile from "../classes/Pile"
 import CardClass from "../classes/Card"
 import PlayerHand from "./PlayerHand";
@@ -109,35 +110,4 @@ const styles = StyleSheet.create({
 });
 
 
-  // const ctx = useContext(SandboxContext);
 
-  // const piles = Object.values(ctx.piles);
-
-  // useEffect(() => {
-  //   //this is a test card
-  //   const newCard = new CardClass("Tests", "Ace");
-  //   let newPile = new Pile();
-  //   newPile = newPile.addCard(newCard);
-  //   ctx.addPile(newPile);
-
-  //   // Making a 52 card deck
-  //   const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
-  //   const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
-  //   const deck = new Pile;
-  //   for (let i = 0; i < suits.length; i++) {
-  //     for (let j = 0; j < ranks.length; j++) {
-  //       const newCard = new CardClass(suits[i], ranks[j]);
-  //       deck.addCard(newCard);
-  //     }
-  //   }
-  //   ctx.addPile(deck);
-  // }, []);
-
-      //   <View style={styles.container}>
-    //   {piles.map((pile, idx) => {
-    //     return
-    //     <CardPile pile={pile} key={idx}/>
-    //   })}
-    //   <PlayerHand text="I am a player hand" />
-    //   <StatusBar style="auto" />
-    // </View>
