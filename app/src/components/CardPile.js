@@ -53,6 +53,7 @@ const CardPile = ({ state }) => {
   };
 
   const touchStartHandler = () => {
+
     setHighlighted(true);
   };
 
@@ -101,6 +102,7 @@ const PileView = styled.View`
 
 
 const styles = StyleSheet.create({
+
 
   card: {
     position: "relative",

@@ -24,6 +24,7 @@ export default function SignUp({ navigation }) {
   }
 
 
+
   const signUp = (e) => {
 
     api.post.user({ user_name: userName })

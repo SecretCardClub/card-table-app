@@ -24,4 +24,3 @@ const AppContextProvider = ({ children, passedState }) => {
 
 export default AppContextProvider;
 
-

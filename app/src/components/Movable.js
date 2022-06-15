@@ -33,3 +33,4 @@ const SelectedWrapper = styled.View`
   padding: 3px;
   background-color:${(({ color }) => color ? color : `rgba(0,0,0,0)` )}
 `
+

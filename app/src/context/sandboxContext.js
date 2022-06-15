@@ -45,7 +45,6 @@ export const SandboxContextProvider = (props) => {
       delete updatedPiles[pileId];
       setPiles(updatedPiles);
 
-
     }
   };
 

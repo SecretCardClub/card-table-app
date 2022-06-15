@@ -35,3 +35,4 @@ const UserContainer = styled.TouchableOpacity`
 const UserText = styled(Text)`
   color: white;
 `
+
