@@ -119,7 +119,6 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       onPanResponderMove: (evt, gesture) => {
         panResponderMove(evt, gesture);
         // moveCB(evt, gesture, pan)
-        panCb(evt, gesture)
       },
 
       onPanResponderRelease: (evt, gesture) => {

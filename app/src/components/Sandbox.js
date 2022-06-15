@@ -9,19 +9,15 @@ import CardPile from "./CardPile";
 import SandboxContext from "../context/sandboxContext";
 import usePan from "../hooks/usePan";
 import Movable from "./Movable";
-// import helpers from '../helpers/helpers'
 
 const getComponents = (movables, dispatch, socket) => {
-  const {RT} = socket;
+  const { RT } = socket;
   return {
     CardPile: (movable) => {
-      // const pile = movable.componentState
-
       return {
         Component: CardPile,
         CB: {
           releaseCB: (evt, gesture, currentPan) => {
-            // debugger;
             const movingPileId = movable.id;
             const dropLocation = {
               x: gesture.moveX / window.innerWidth,
@@ -30,33 +26,23 @@ const getComponents = (movables, dispatch, socket) => {
             let dzId = false;
 
             Object.values(movables).forEach((currentMovable) => {
-              if (!dzId) {
-                console.log("offscreen movables: ", movables);
-                if (currentMovable.id !== movingPileId) {
-                  const { widthPer, heightPer } = {
-                    ...currentMovable.componentState.dz,
-                  };
-                  const { x_per, y_per } = { ...currentMovable.panState };
-                  const dzSlopCoefficient = 0.25;
-                  if (
-                    dropLocation.x > x_per - widthPer / dzSlopCoefficient &&
-                    dropLocation.x < x_per + widthPer / dzSlopCoefficient &&
-                    dropLocation.y > y_per - heightPer / dzSlopCoefficient &&
-                    dropLocation.y < y_per + heightPer / dzSlopCoefficient
-                  ) {
-                    dzId = currentMovable.id;
-                  }
+              if (!dzId && currentMovable.id !== movingPileId) {
+                const { widthPer, heightPer } = {
+                  ...currentMovable.componentState.dz,
+                };
+                const { x_per, y_per } = { ...currentMovable.panState };
+                const dzSlopCoefficient = 1.75;
+                if (
+                  dropLocation.x > x_per - widthPer / dzSlopCoefficient &&
+                  dropLocation.x < x_per + widthPer / dzSlopCoefficient &&
+                  dropLocation.y > y_per - heightPer / dzSlopCoefficient &&
+                  dropLocation.y < y_per + heightPer / dzSlopCoefficient
+                ) {
+                  dzId = currentMovable.id;
                 }
               }
             });
             if (dzId) {
-              console.log(
-                "MATCHED DROPLOCATION: ",
-                movingPileId,
-                "TO DROPZONE: ",
-                dzId
-              );
-              console.log("before change: ", movables);
               const dzPileCards = [...movables[dzId].componentState.cards];
               const movingCards = [
                 ...movables[movingPileId].componentState.cards,
@@ -72,7 +58,6 @@ const getComponents = (movables, dispatch, socket) => {
               };
               let updatedMovables = { ...movables, [dzId]: updatedMovable };
               delete updatedMovables[movingPileId];
-              console.log("updatedMovables", updatedMovables);
               socket.emit({
                 type: RT.UPDATE_TABLE,
                 payload: updatedMovables,
@@ -90,23 +75,6 @@ export default function Sandbox({ movables, socket }) {
   const [, dispatch] = useContext(DispatchContext);
   const components = getComponents(movables, dispatch, socket);
   const [animations, setAnimations] = useState([]);
-
-  // useEffect(() => {
-
-  //   const runAnimations = () => {
-  //     return setTimeout(() => {
-  //       if(animations.length) {
-  //         Animated.parallel(animations).start()
-  //         setAnimations([])
-  //         return runAnimations()
-  //       }
-  //     }, 20)
-  //   }
-  //   const runningAnimations = runAnimations()
-  //   return () => {
-  //     clearTimeout(runningAnimations)
-  //   }
-  // }, [ animations ])
 
   const addAnimation = (newAnimation) => {
     setAnimations([...animations, newAnimation]);
