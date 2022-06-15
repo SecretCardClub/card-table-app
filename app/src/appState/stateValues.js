@@ -197,6 +197,7 @@ export const getSocketCreator = (dispatch) => {
 
 
     const encodeAndSend = (message) => {
+      // console.log(`EMMITED `, { message })
       logMessages && console.log(`EMMITED `, { message, receiver })
       if (receiver.readyState === 1) {
         const encoded = encoder.encode(JSON.stringify(message))

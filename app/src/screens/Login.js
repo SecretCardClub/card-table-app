@@ -24,6 +24,7 @@ export default function Login({ navigation }) {
     console.log(`${SCREEN} RENDERS = ${renders}`)
   }
 
+
   const nav = (screen) => {
     return () => {
       navigate(screen)

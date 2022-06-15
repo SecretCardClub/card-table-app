@@ -1,9 +1,11 @@
-import React, { useMemo, useRef, useContext, useEffect, useCallback } from "react";
+import React, { useMemo, useRef, useContext, useEffect, useCallback, useState } from "react";
 import { PanResponder, Animated, Dimensions } from "react-native";
 import { StateContext, DispatchContext } from '../appState/index'
 const { height, width } = Dimensions.get('window');
 const widthDiv = width / 2;
 const heightDiv = height / 2;
+
+
 
 
 const DEBOUNCE_TIME = 15 // miliseconds
@@ -21,10 +23,10 @@ const debounce = (func, time = DEBOUNCE_TIME) => {
 }
 
 
-const calcPosition = ({ x, y, x_per, y_per }, pan) => {
+const calcPosition = ({ x_per, y_per }) => {
 
-  x = width * x_per - widthDiv
-  y = height * y_per  - heightDiv
+  let x = width * x_per - widthDiv
+  let y = height * y_per  - heightDiv
 
 
   if ( x > widthDiv ) {
@@ -40,40 +42,27 @@ const calcPosition = ({ x, y, x_per, y_per }, pan) => {
   if ( (0 - heightDiv) > y ) {
     y = (0 - heightDiv)
   }
-  pan.setValue({ x, y })
-
+  return { x, y }
 }
 
+let renders = 0;
 
 export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {}, grantCB = () => {}) {
+  // renders++
+  // console.log(`Pan ${panState.id} has rendered ${renders} times.`)
 
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const { User } = state
   const { socket, table, RT } = state.Room;
-  const pan = new Animated.ValueXY();
-
+  const pan = useRef(new Animated.ValueXY(calcPosition(panState))).current;
   const position = { ...panState }
-  const id = position.id
 
-  const moveEmitter = pan.addListener(({ x, y }) => {
-    position.x = x
-    position.y = y
-  })
-
-
-  useEffect(() => {
-    calcPosition(panState, pan)
-  }, [panState.x_per, panState.y_per])
-
-
-  const emitMove = ({ x, y }, selected = true) => {
-
+  const emitMove = useCallback(({ x, y }, selected = true) => {
     const newPanState = { ...panState, x, y }
     if ( selected ) {
       newPanState.selected = User.color
     }
-
     newPanState.x_per = (x + widthDiv)  / width
     newPanState.y_per = (y + heightDiv) / height
     const movable = table[newPanState.id]
@@ -82,13 +71,31 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       type: RT.UPDATE_MOVABLE,
       payload: movable,
     })
-  }
 
-  const deEmitMove = debounce(emitMove)
+  }, [socket, table, User])
+
+
+  const panMoveListener = pan.addListener((newPosition) => {
+    position.x = newPosition.x
+    position.y = newPosition.y
+  })
+
+
+  useEffect(() => {
+
+    pan.setValue(calcPosition(panState))
+
+  }, [panState.x_per, panState.y_per])
+
+
+
+
+  // const deEmitMove = debounce(emitMove)
 
   const panCb = useCallback((evt, gesture, selected = true) => {
+    // deEmitMove(position, selected)
     emitMove(position, selected)
-  }, [socket, state.Room.table, panState, position.x, position.y])
+  }, [panState, position])
 
 
   const panResponderMove = Animated.event(
@@ -98,7 +105,6 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
     ],
     {
       useNativeDriver: false,
-      listener: panCb
     });
 
 
@@ -108,11 +114,11 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
 
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt, gesture) => {
-
-        const x = pan.x._value
-        const y = pan.y._value;
-        pan.setOffset({ x, y });
-        grantCB(evt, gesture, pan)
+        pan.setOffset({
+          x: pan.x._value,
+          y: pan.y._value,
+        });
+        // grantCB(evt, gesture, pan)
         panCb(evt, gesture)
       },
 
@@ -127,7 +133,8 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       },
 
     })
-  }, [pan, panState, moveCB, releaseCB, grantCB])
+  }, [pan, position, moveCB, releaseCB, grantCB])
+
 
   return [pan, panResponder];
 }

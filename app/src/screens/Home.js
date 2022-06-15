@@ -55,6 +55,7 @@ export default function Home({ navigation }) {
   }
 
 
+
   return (
     <ScreenView>
       <H1> Home </H1>
@@ -68,6 +69,7 @@ export default function Home({ navigation }) {
         <DashView>
         <P>Rooms</P>
           {Home.Rooms.map((room, ind) => {
+
             return (
               <Button onPress={(e) => openRoom(room)}  key={ind} >
                 <P>{room.name}</P>
