@@ -20,56 +20,52 @@ const getComponents = (movables, dispatch) => {
         Component: CardPile,
         CB: {
           releaseCB: (evt, gesture, currentPan) => {
-
-
             const movingPileId = movable.id;
-
-            const w = window.innerWidth;
-            const h = window.innerHeight;
+            // const w = window.innerWidth;
+            // const h = window.innerWidth;
             const dropLocation = {
-              x: gesture.moveX / w,
-              y: gesture.moveY / h,
+              x: gesture.moveX / window.innerWidth,
+              y: gesture.moveY / window.innerWidth,
             };
+            // console.log(dropLocation);
             let dzId = false;
 
             Object.values(movables).forEach((movable) => {
-              console.log(movable);
               if (movable.id !== movingPileId) {
                 const { widthPer, heightPer } = {
                   ...movable.componentState.dz,
                 };
                 const { x_per, y_per } = { ...movable.panState };
-                debugger;
+                const dzSlopCoefficient = 1.5;
                 if (
-                  dropLocation.x > x_per - widthPer / 2 &&
-                  dropLocation.x < x_per + widthPer / 2 &&
-                  dropLocation.y > y_per - heightPer / 2 &&
-                  dropLocation.y < y_per + heightPer / 2
+                  dropLocation.x > x_per - widthPer / dzSlopCoefficient &&
+                  dropLocation.x < x_per + widthPer / dzSlopCoefficient &&
+                  dropLocation.y > y_per - heightPer / dzSlopCoefficient &&
+                  dropLocation.y < y_per + heightPer / dzSlopCoefficient
                 ) {
                   dzId = movable.id;
                 }
               }
             });
             if (dzId) {
-              const matchedPile = movables[dzId].componentState;
-              const updatedPile = matchedPile.concatenateCards(
-                movables[movingPileId].cards
-              );
-              let updatedMovable = { ...movable, componentState: updatedPile };
+              console.log("MATCHED DROPLOCATION TO DROPZONE");
+              const matchedPileCards = movables[dzId].componentState.cards;
+              const addedCards = movables[movingPileId].componentState.cards;
+              const updatedCards = [...addedCards, ...matchedPile.cards];
+              let updatedComponentState = {
+                ...movables[dzId].componentState,
+                cards: updatedCards,
+              };
+              let updatedMovable = {
+                ...movable,
+                componentState: updatedComponentState,
+              };
               let updatedMovables = { ...movables, [pileId]: updatedMovable };
-              delete updatedMovables[dzId];
+              delete updatedMovables[movingPileId];
               dispatch({
                 type: `UPDATE_TABLE`,
                 payload: updatedMovables,
               });
-            } else {
-              // // const updatedPile = pile.updateDz(currentPan)
-              // let updatedMovable = { ...movable, componentState: updatedPile }
-              // let updatedMovables = {...movables, [pileId]: updatedMovable};
-              // dispatch({
-              //   type:`UPDATE_TABLE`,
-              //   payload: updatedMovables,
-              // })
             }
           },
         },

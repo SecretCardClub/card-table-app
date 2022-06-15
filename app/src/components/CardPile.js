@@ -30,7 +30,7 @@ const CardPile = ({ componentState, movables }) => {
     let updatedComponentState = {...componentState, dz: updatedDz};
     let updatedMovable = {...movables[id], componentState: updatedComponentState};
     let updatedMovables = {...movables, [id]: updatedMovable};
-    console.log("updatedMovables: ", updatedMovables);
+    // let updatedMovables = {...movables, movables[id].componentState.dz: updatedDz}
     dispatch({
       type: "UPDATE_TABLE",
       payload: updatedMovables,
