@@ -3,15 +3,16 @@ import styled from 'styled-components/native'
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, PanResponder, Animated } from "react-native";
 
-import { StateContext, DispatchContext } from '../appState/index'
+// import { StateContext, DispatchContext } from '../appState/index'
 import Card from "../classes/Card";
 import usePan from "../hooks/usePan";
 import CardClass from '../classes/Card'
 import Pile from '../classes/Pile'
 
 
-const CardPile = ({ componentState, movables }) => {
-  const [, dispatch] = useContext(DispatchContext);
+const CardPile = ({ componentState, movables, socket }) => {
+  // const [, dispatch] = useContext(DispatchContext);
+  const { RT } = socket;
 
   const layoutHandler = (e) => {
     const id = componentState.id;
@@ -24,9 +25,10 @@ const CardPile = ({ componentState, movables }) => {
     let updatedMovable = {...movables[id], componentState: updatedComponentState};
     let updatedMovables = {...movables, [id]: updatedMovable};
 
-    dispatch({
-      type: "UPDATE_TABLE",
+    socket.emit({
+      type: RT.UPDATE_TABLE,
       payload: updatedMovables,
+      emitAll: true,
     });
   };
 

@@ -2,8 +2,9 @@ import React, { useMemo, useRef, useContext, useEffect, useCallback, useState } 
 import { PanResponder, Animated, Dimensions } from "react-native";
 import { StateContext, DispatchContext } from '../appState/index'
 const { height, width } = Dimensions.get('window');
+
 const widthDiv = width / 2;
-const heightDiv = height / 2;
+const heightDiv = height/ 2;
 
 
 
@@ -25,8 +26,10 @@ const debounce = (func, time = DEBOUNCE_TIME) => {
 
 const calcPosition = ({ x_per, y_per }) => {
 
+
+
   let x = width * x_per - widthDiv
-  let y = height * y_per  - heightDiv
+  let y = height * y_per - heightDiv
 
 
   if ( x > widthDiv ) {
@@ -58,6 +61,7 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
   const pan = useRef(new Animated.ValueXY(calcPosition(panState))).current;
   const position = { ...panState }
 
+
   const emitMove = useCallback(({ x, y }, selected = true) => {
     const newPanState = { ...panState, x, y }
     if ( selected ) {
@@ -67,17 +71,24 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
     newPanState.y_per = (y + heightDiv) / height
     const movable = table[newPanState.id]
     movable.panState = newPanState;
+
     socket.emit({
       type: RT.UPDATE_MOVABLE,
       payload: movable,
+      // emitAll: true,
     })
 
   }, [socket, table, User])
 
 
   const panMoveListener = pan.addListener((newPosition) => {
-    position.x = newPosition.x
-    position.y = newPosition.y
+    const {x, y} = newPosition;
+
+    position.x = x + widthDiv;
+    position.y = y + heightDiv;
+
+    position.x_per = (x + widthDiv)  / width;
+    position.y_per = (y + heightDiv) / height;
   })
 
 
@@ -128,12 +139,13 @@ export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {
       },
 
       onPanResponderRelease: (evt, gesture) => {
-        releaseCB(evt, gesture, pan)
+        releaseCB(evt, gesture, pan, position)
         panCb(evt, gesture, false)
+        pan.flattenOffset();
       },
 
     })
-  }, [pan, position, moveCB, releaseCB, grantCB])
+  }, [pan, position.x, position.y, moveCB, releaseCB, grantCB])
 
 
   return [pan, panResponder];

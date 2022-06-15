@@ -84,32 +84,34 @@ export default function Room ({ navigation }) {
 
   return Room.socket ?
   (
-    <SandboxContextProvider>
-      <Header>
-        <H2>{Room.name}</H2>
+    <ScreenView width={window.innerWidth} height={window.innerHeight}>
+      <Header >
+        <H2 >{Room.name}</H2>
       </Header>
       <UserList>
         {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
       </UserList>
       <Sandbox movables={Room.table} socket={socket}/>
+      <Footer>
       <Button onPress={addPile} >
         <P>Add Pile</P>
       </Button>
       <Button onPress={goBack} >
         <P>Back</P>
       </Button>
-    </SandboxContextProvider>
+      </Footer>
+    </ScreenView>
   )
   :
   (
-    <SandboxContextProvider>
+    <ScreenView>
       <Header>
         <H2>Connecting...</H2>
       </Header>
       <Button onPress={goBack} >
           <P>Back</P>
       </Button>
-  </SandboxContextProvider>
+  </ScreenView>
   );
 };
 
@@ -121,7 +123,16 @@ const ChatList = styled.View`
 `
 const Header = styled.View`
   width: 100%;
-  height: auto;
+  height: 10%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Footer = styled.View`
+  width: 100%;
+  height: 10%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -130,7 +141,7 @@ const Header = styled.View`
 
 const UserList = styled.View`
   width: 100%;
-  height: auto;
+  height: 10%;
   display: flex;
   flex-direction: row;
   align-items: center;

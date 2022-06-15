@@ -13,10 +13,10 @@ export default function Movable({ state, children, addAnimation, releaseCB }) {
     setSelected(state.selected)
   }, [state.selected])
 
+  const newAnimated = new Animated.Value(0)
   return (
       <Animated.View
-      ref={pan}
-      style={{ transform: [{ translateX: pan.x }, { translateY: pan.y }], zIndex: 100 }}
+      style={{ transform: [{ translateX: pan.x || newAnimated }, { translateY: pan.y || newAnimated}], zIndex: 100 }}
         {...panResponder.panHandlers}
       >
         <SelectedWrapper color={selected} >

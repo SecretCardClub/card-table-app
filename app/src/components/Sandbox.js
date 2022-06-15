@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Animated } from "react-native";
+import { StyleSheet, View, Animated, Dimensions } from "react-native";
 import { StateContext, DispatchContext } from "../appState/index";
+import styled from "styled-components/native";
 
 import Pile from "../classes/Pile";
 import CardClass from "../classes/Card";
@@ -12,35 +13,51 @@ import Movable from "./Movable";
 
 const getComponents = (movables, dispatch, socket) => {
   const { RT } = socket;
+
+
   return {
     CardPile: (movable) => {
       return {
         Component: CardPile,
         CB: {
-          releaseCB: (evt, gesture, currentPan) => {
+          releaseCB: (evt, gesture, currentPan, position) => {
+            // console.log(movables)
             const movingPileId = movable.id;
-            const dropLocation = {
-              x: gesture.moveX / window.innerWidth,
-              y: gesture.moveY / window.innerWidth,
+            const { height, width } = Dimensions.get('screen')
+
+            const gestureDropLocation = {
+              x: gesture.moveX / width,
+              y: gesture.moveY / height,
             };
+
+            // const gestureDropLocation = {
+            //   x: currentPan.x._value / window.innerWidth,
+            //   y: currentPan.y._value / height,
+            // };
+
+            // console.log("gestureDropLocation: ", gestureDropLocation)
+            console.log("gestrue moveY", gesture.moveY, gesture.moveY / height )
+            console.log("position: ", position.y, position.y_per)
             let dzId = false;
 
             Object.values(movables).forEach((currentMovable) => {
+              // console.log("x_per: ", currentMovable.panState.x_per, "y_per: ", currentMovable.panState.y_per)
               if (!dzId && currentMovable.id !== movingPileId) {
                 const { widthPer, heightPer } = {
                   ...currentMovable.componentState.dz,
                 };
                 const { x_per, y_per } = { ...currentMovable.panState };
-                const dzSlopCoefficient = 1.75;
+                const dzSlopCoefficient = 2;
                 if (
-                  dropLocation.x > x_per - widthPer / dzSlopCoefficient &&
-                  dropLocation.x < x_per + widthPer / dzSlopCoefficient &&
-                  dropLocation.y > y_per - heightPer / dzSlopCoefficient &&
-                  dropLocation.y < y_per + heightPer / dzSlopCoefficient
+                  gestureDropLocation.x > x_per - widthPer / dzSlopCoefficient &&
+                  gestureDropLocation.x < x_per + widthPer / dzSlopCoefficient &&
+                  gestureDropLocation.y > y_per - heightPer / dzSlopCoefficient &&
+                  gestureDropLocation.y < y_per + heightPer / dzSlopCoefficient
                 ) {
                   dzId = currentMovable.id;
                 }
               }
+
             });
             if (dzId) {
               const dzPileCards = [...movables[dzId].componentState.cards];
@@ -81,7 +98,7 @@ export default function Sandbox({ movables, socket }) {
   };
 
   return (
-    <View style={styles.container}>
+    <Container >
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;
@@ -93,11 +110,11 @@ export default function Sandbox({ movables, socket }) {
             addAnimation={addAnimation}
             {...CB}
           >
-            <Component componentState={componentState} movables={movables} />
+            <Component componentState={componentState} movables={movables} socket={socket} />
           </Movable>
         );
       })}
-    </View>
+    </Container>
   );
 }
 
@@ -109,3 +126,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
 });
+
+const Container = styled.View`
+  width: 100%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+`;
