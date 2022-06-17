@@ -91,7 +91,9 @@ export default function Room ({ navigation }) {
       <UserList>
         {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
       </UserList>
-      <Sandbox movables={Room.table} socket={socket}/>
+      <SandboxContextProvider>
+        <Sandbox movables={Room.table} socket={socket}/>
+      </SandboxContextProvider>
       <Footer>
       <Button onPress={addPile} >
         <P>Add Pile</P>

@@ -4,16 +4,16 @@ import { StateContext, DispatchContext } from "../appState/index";
 import styled from "styled-components/native";
 
 import Pile from "../classes/Pile";
+import PileMenu from "./PileMenu"
 import CardClass from "../classes/Card";
 import PlayerHand from "./PlayerHand";
 import CardPile from "./CardPile";
-import SandboxContext from "../context/sandboxContext";
 import usePan from "../hooks/usePan";
 import Movable from "./Movable";
 
 const getComponents = (movables, dispatch, socket) => {
-  const { RT } = socket;
 
+  const { RT } = socket;
 
   return {
     CardPile: (movable) => {
@@ -30,14 +30,9 @@ const getComponents = (movables, dispatch, socket) => {
               y: gesture.moveY / height,
             };
 
-            // const gestureDropLocation = {
-            //   x: currentPan.x._value / window.innerWidth,
-            //   y: currentPan.y._value / height,
-            // };
-
             // console.log("gestureDropLocation: ", gestureDropLocation)
-            console.log("gestrue moveY", gesture.moveY, gesture.moveY / height )
-            console.log("position: ", position.y, position.y_per)
+            // console.log("gestrue moveY", gesture.moveY, gesture.moveY / height )
+            // console.log("position: ", position.y, position.y_per)
             let dzId = false;
 
             Object.values(movables).forEach((currentMovable) => {
@@ -88,10 +83,11 @@ const getComponents = (movables, dispatch, socket) => {
   };
 };
 
-export default function Sandbox({ movables, socket }) {
+export default function Sandbox ({ movables, socket }) {
   const [, dispatch] = useContext(DispatchContext);
-  const components = getComponents(movables, dispatch, socket);
   const [animations, setAnimations] = useState([]);
+
+  const components = getComponents(movables, dispatch, socket);
 
   const addAnimation = (newAnimation) => {
     setAnimations([...animations, newAnimation]);
@@ -99,6 +95,7 @@ export default function Sandbox({ movables, socket }) {
 
   return (
     <Container >
+
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;
