@@ -5,6 +5,7 @@ import { Text, View, Pressable, TouchableOpacity } from "react-native";
 import SandboxContext from "../context/sandboxContext";
 
 const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
+  const { id, cards } = componentState;
   // const ctx = useContext(SandboxContext);
 
   const shuffle = (cards) => {
@@ -18,7 +19,6 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
   };
 
   const shufflePileHandler = () => {
-    const { id, cards } = componentState;
     let shuffledCards = shuffle(shuffle(shuffle([...cards])));
     let updatedComponentState = { ...componentState, cards: shuffledCards };
     let updatedMovable = {
@@ -35,6 +35,16 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
     setShowMenu(false);
   };
 
+  const deletePileHandler = () => {
+    let updatedMovables = { ...movables };
+    delete updatedMovables[componentState.id];
+    socket.emit({
+      type: socket.RT.UPDATE_TABLE,
+      payload: updatedMovables,
+      emitAll: true,
+    });
+  };
+
   const onCloseHandler = () => {
     setShowMenu(false);
   };
@@ -42,10 +52,15 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
   return (
     <MenuContainer>
       <MenuView>
-        <Text>Menu Stuff</Text>
-        <TouchableOpacity onPress={shufflePileHandler}>
-          <Text>Shuffle Cards</Text>
+        <Text>HelloMenu</Text>
+        <TouchableOpacity onPress={deletePileHandler}>
+          <Text>Delete Pile</Text>
         </TouchableOpacity>
+        {cards.length > 1 && (
+          <TouchableOpacity onPress={shufflePileHandler}>
+            <Text>Shuffle Cards</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={onCloseHandler}>
           <Text>Close</Text>
         </TouchableOpacity>
@@ -62,8 +77,8 @@ const MenuContainer = styled.View`
   width: 150px;
   height: 140px;
   position: relative;
+  z-index: 25;
   border-radius: 5px;
-
 `;
 
 const MenuView = styled.View`

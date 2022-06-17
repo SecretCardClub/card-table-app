@@ -4,21 +4,23 @@ import Pile from "../classes/Pile"
 import Card from "../classes/Card"
 
 const SandboxContext = React.createContext({
-  // showPileMenu: false,
-  // setShowPileMenu: () => {},
-  currentPile: {},
+  showPileMenu: false,
+  setShowPileMenu: () => {},
+  currentPile: null,
   setCurrentPile: () => {},
 });
 
 export const SandboxContextProvider = (props) => {
-  // const [showPileMenu, setShowPileMenu] = useState(false);
-  const [currentPile, setCurrentPile] = useState({id: null});
+  const [showPileMenu, setShowPileMenu] = useState(false);
+  const [currentPile, setCurrentPile] = useState(null);
 
 
 
   return (
     <SandboxContext.Provider
       value={{
+        showPileMenu,
+        setShowPileMenu,
         currentPile,
         setCurrentPile,
       }}

@@ -7,7 +7,7 @@ import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu"
 import CardClass from "../classes/Card";
 import PlayerHand from "./PlayerHand";
-import CardPile from "./CardPile";
+import CardPile, { displayMenu } from "./CardPile";
 import usePan from "../hooks/usePan";
 import Movable from "./Movable";
 
@@ -83,9 +83,11 @@ const getComponents = (movables, dispatch, socket) => {
   };
 };
 
+
 export default function Sandbox ({ movables, socket }) {
   const [, dispatch] = useContext(DispatchContext);
   const [animations, setAnimations] = useState([]);
+  const [showBackground, setShowBackground] = useState(false);
 
   const components = getComponents(movables, dispatch, socket);
 
@@ -93,9 +95,10 @@ export default function Sandbox ({ movables, socket }) {
     setAnimations([...animations, newAnimation]);
   };
 
+
   return (
     <Container >
-
+      {/* {showBackground && <MenuBackground />} */}
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;

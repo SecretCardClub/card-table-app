@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components/native";
-import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -16,6 +15,7 @@ import usePan from "../hooks/usePan";
 import CardClass from "../classes/Card";
 import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu";
+import MenuBackground from "./MenuBackground";
 import SandboxContext from "../context/sandboxContext";
 
 const CardPile = ({ componentState, movables, socket }) => {
@@ -52,6 +52,10 @@ const CardPile = ({ componentState, movables, socket }) => {
     setHighlighted(false);
   };
 
+  const newFunc = () => {
+    console.log("hello");
+  };
+
   const onPressHandler = () => {
     const id = componentState.id;
     if (componentState.cards.length > 1) {
@@ -59,29 +63,37 @@ const CardPile = ({ componentState, movables, socket }) => {
       const takenCard = updatedCards.shift();
       console.log("updatedCards: ", updatedCards);
       let updatedComponentState = { ...componentState, cards: updatedCards };
-      console.log("updatedCompState: ", updatedComponentState)
+      console.log("updatedCompState: ", updatedComponentState);
       let updatedMovable = {
         ...movables[id],
         componentState: updatedComponentState,
       };
-      console.log("updatedMovable: ", updatedMovable)
+      console.log("updatedMovable: ", updatedMovable);
       let updatedMovables = { ...movables, [id]: updatedMovable };
 
-      const newPile = new Pile();
-      newPile.addCard(takenCard);
-
-      const newMovable = {
-        id: newPile.id,
-        component: "CardPile",
-        panState: {
-          x: 0,
-          y: 0,
-          x_per: 0.5,
-          y_per: 0.5,
-        },
-        componentState: newPile,
-      };
-      updatedMovables = { ...updatedMovables, [newMovable.id]: newMovable };
+      if (ctx.currentPile) {
+        let currentMovable = {...movables[ctx.currentPile.id]}
+        let currentCards = [takenCard, ...currentMovable.componentState.cards];
+        let currentComponentState = {...currentMovable.componentState, cards: currentCards};
+        currentMovable = {...currentMovable, componentState: currentComponentState}
+        updatedMovables = {...updatedMovables, [currentMovable.id]: currentMovable}
+      } else {
+        const newPile = new Pile();
+        newPile.addCard(takenCard);
+        const newMovable = {
+          id: newPile.id,
+          component: "CardPile",
+          panState: {
+            x: 0,
+            y: 0,
+            x_per: 0.5,
+            y_per: 0.5,
+          },
+          componentState: newPile,
+        };
+        updatedMovables = { ...updatedMovables, [newMovable.id]: newMovable };
+        ctx.setCurrentPile(newMovable);
+      }
       console.log("updatedMovables: ", updatedMovables);
       socket.emit &&
         socket.emit({
@@ -89,28 +101,26 @@ const CardPile = ({ componentState, movables, socket }) => {
           payload: updatedMovables,
           emitAll: true,
         });
-      // update deck with one fewer
-      //make new pile with one more
-      // keep track of if new pile is unmoved
-      //extra clicks are auto delivered to new pile
-      // somehow make visual
     }
   };
 
   const onLongPressHandler = () => {
-    ctx.setCurrentPile(componentState);
+    // ctx.setCurrentPile(componentState);
     setShowMenu(true);
   };
 
   return (
     <>
+      {/* {showMenu && <MenuBackground setShowMenu={setShowMenu} />} */}
       {showMenu ? (
-        <PileMenu
-          setShowMenu={setShowMenu}
-          movables={movables}
-          componentState={componentState}
-          socket={socket}
-        />
+        <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
+          <PileMenu
+            setShowMenu={setShowMenu}
+            movables={movables}
+            componentState={componentState}
+            socket={socket}
+          />
+        </PileView>
       ) : (
         <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
           <Pressable
@@ -138,7 +148,7 @@ export default CardPile;
 
 const PileView = styled.View`
   width: 100px;
-  height: auto;
+  height: 140px;
   display: flex;
   position: relative;
   z-index: 10;
@@ -147,29 +157,6 @@ const PileView = styled.View`
   padding-right: 25px;
   border-radius: 5px;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   background-color: ${({ highlighted }) => (highlighted ? "pink" : "grey")};
 `;
-
-// const styles = StyleSheet.create({
-//   card: {
-//     position: "relative",
-//     zIndex: 10,
-//     flex: 1,
-//     height: 50,
-//     width: 50,
-//     padding: 10,
-//     paddingLeft: 25,
-//     paddingRight: 25,
-//     margin: 15,
-//     backgroundColor: "grey",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     borderRadius: 5,
-//   },
-//   highlighted: {
-//     borderColor: "black",
-//     borderSize: "5",
-//     backgroundColor: "pink",
-//   },
-// });
