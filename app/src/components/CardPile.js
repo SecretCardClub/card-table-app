@@ -38,7 +38,6 @@ const CardPile = ({ componentState, movables, socket }) => {
     };
     let updatedMovables = { ...movables, [id]: updatedMovable };
 
-
     socket.emit({
       type: socket.RT.UPDATE_TABLE,
       payload: updatedMovables,
@@ -54,16 +53,48 @@ const CardPile = ({ componentState, movables, socket }) => {
   };
 
   const onPressHandler = () => {
-    console.log(componentState.cards[0]);
-    let updatedCards = [...componentState.cards]
-    let takenCard = updatedCards.shift();
-    console.log({updatedCards})
-    console.log(takenCard);
-    // update deck with one fewer
-    //make new pile with one more
-    // keep track of if new pile is unmoved
-    //extra clicks are auto delivered to new pile
-    // somehow make visual
+    const id = componentState.id;
+    if (componentState.cards.length > 1) {
+      let updatedCards = [...componentState.cards];
+      const takenCard = updatedCards.shift();
+      console.log("updatedCards: ", updatedCards);
+      let updatedComponentState = { ...componentState, cards: updatedCards };
+      console.log("updatedCompState: ", updatedComponentState)
+      let updatedMovable = {
+        ...movables[id],
+        componentState: updatedComponentState,
+      };
+      console.log("updatedMovable: ", updatedMovable)
+      let updatedMovables = { ...movables, [id]: updatedMovable };
+
+      const newPile = new Pile();
+      newPile.addCard(takenCard);
+
+      const newMovable = {
+        id: newPile.id,
+        component: "CardPile",
+        panState: {
+          x: 0,
+          y: 0,
+          x_per: 0.5,
+          y_per: 0.5,
+        },
+        componentState: newPile,
+      };
+      updatedMovables = { ...updatedMovables, [newMovable.id]: newMovable };
+      console.log("updatedMovables: ", updatedMovables);
+      socket.emit &&
+        socket.emit({
+          type: socket.RT.UPDATE_TABLE,
+          payload: updatedMovables,
+          emitAll: true,
+        });
+      // update deck with one fewer
+      //make new pile with one more
+      // keep track of if new pile is unmoved
+      //extra clicks are auto delivered to new pile
+      // somehow make visual
+    }
   };
 
   const onLongPressHandler = () => {

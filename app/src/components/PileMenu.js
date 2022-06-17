@@ -25,10 +25,11 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
       ...movables[id],
       componentState: updatedComponentState,
     };
-    let updatedMovables = { ...movables, [id]: updatedMovable };
+    // let updatedMovables = { ...movables, [id]: updatedMovable };
+    console.log("shuffle updatedMovable: ", updatedMovable);
     socket.emit({
-      type: socket.RT.UPDATE_TABLE,
-      payload: updatedMovables,
+      type: socket.RT.UPDATE_MOVABLE,
+      payload: updatedMovable,
       emitAll: true,
     });
     setShowMenu(false);
