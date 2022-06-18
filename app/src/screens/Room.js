@@ -5,6 +5,7 @@ import { P, H2, ScreenView, UserView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
+import Card from "../classes/Card"
 
 const SCREEN = `Room screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
@@ -54,7 +55,15 @@ export default function Room ({ navigation }) {
 
 
   const addPile = (e) => {
-    const newPile = new Pile()
+    const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
+    const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
+    const newPile = new Pile();
+    for (let i = 0; i < suits.length; i++) {
+      for (let j = 0; j < ranks.length; j++) {
+        const newCard = new Card(suits[i], ranks[j]);
+        newPile.addCard(newCard);
+      }
+    }
     const newMovable = {
       id: newPile.id,
       component: "CardPile",
@@ -66,7 +75,7 @@ export default function Room ({ navigation }) {
       },
       componentState: newPile,
     }
-    socket.emit({
+    socket.emit && socket.emit({
       type: RT.UPDATE_MOVABLE,
       payload: newMovable,
       emitAll: true,
@@ -75,32 +84,36 @@ export default function Room ({ navigation }) {
 
   return Room.socket ?
   (
-    <SandboxContextProvider>
-      <Header>
-        <H2>{Room.name}</H2>
+    <ScreenView width={window.innerWidth} height={window.innerHeight}>
+      <Header >
+        <H2 >{Room.name}</H2>
       </Header>
       <UserList>
         {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
       </UserList>
-      <Sandbox movables={Room.table} />
+      <SandboxContextProvider>
+        <Sandbox movables={Room.table} socket={socket}/>
+      </SandboxContextProvider>
+      <Footer>
       <Button onPress={addPile} >
         <P>Add Pile</P>
       </Button>
       <Button onPress={goBack} >
         <P>Back</P>
       </Button>
-    </SandboxContextProvider>
+      </Footer>
+    </ScreenView>
   )
   :
   (
-    <SandboxContextProvider>
+    <ScreenView>
       <Header>
         <H2>Connecting...</H2>
       </Header>
       <Button onPress={goBack} >
           <P>Back</P>
       </Button>
-  </SandboxContextProvider>
+  </ScreenView>
   );
 };
 
@@ -112,7 +125,16 @@ const ChatList = styled.View`
 `
 const Header = styled.View`
   width: 100%;
-  height: auto;
+  height: 10%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Footer = styled.View`
+  width: 100%;
+  height: 10%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -121,7 +143,7 @@ const Header = styled.View`
 
 const UserList = styled.View`
   width: 100%;
-  height: auto;
+  height: 10%;
   display: flex;
   flex-direction: row;
   align-items: center;

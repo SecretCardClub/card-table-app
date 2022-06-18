@@ -1,21 +1,10 @@
 
 
 class Pile {
-  constructor(id, dz = { top: 0, left: 0 }, cards ) {
+  constructor(id, dz = { widthPer: 0, heightPer: 0 }, cards ) {
     this.id = id ||  Math.round(Math.random() * 100000);
     this.dz = dz;
     this.cards = [];
-  }
-  isInDropZone(gesture) {
-    if (
-      gesture.moveY > this.dz.top &&
-      gesture.moveY < this.dz.top  + this.dz.height &&
-      gesture.moveX > this.dz.left  &&
-      gesture.moveX < this.dz.left + this.dz.x + this.dz.width
-    ) {
-      return this.id;
-    }
-    return false;
   }
 
   addCard(card) {

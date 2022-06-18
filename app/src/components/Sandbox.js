@@ -1,67 +1,97 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Animated } from "react-native";
-import { StateContext, DispatchContext } from '../appState/index'
+import { StyleSheet, View, Animated, Dimensions } from "react-native";
+import { StateContext, DispatchContext } from "../appState/index";
+import styled from "styled-components/native";
 
-
-import Pile from "../classes/Pile"
-import CardClass from "../classes/Card"
+import Pile from "../classes/Pile";
+import PileMenu from "./PileMenu"
+import CardClass from "../classes/Card";
 import PlayerHand from "./PlayerHand";
-import CardPile from "./CardPile";
-import SandboxContext from "../context/sandboxContext"
-import usePan from '../hooks/usePan'
-import Movable from './Movable'
-import helpers from '../helpers/helpers'
+import CardPile, { displayMenu } from "./CardPile";
+import usePan from "../hooks/usePan";
+import Movable from "./Movable";
 
+const getComponents = (movables, dispatch, socket) => {
 
-const getComponents = (movables, dispatch) => {
+  const { RT } = socket;
+
   return {
-
     CardPile: (movable) => {
-      const pile = movable.componentState
-
       return {
-
         Component: CardPile,
         CB: {
-          releaseCB: (evt, gesture, currentPan) => {
-            const pileId = pile.id
-            let dzId = helpers.isDropZone(gesture, movables, pile.id);
+          releaseCB: (evt, gesture, currentPan, position) => {
+            // console.log(movables)
+            const movingPileId = movable.id;
+            const { height, width } = Dimensions.get('screen')
+
+            const gestureDropLocation = {
+              x: gesture.moveX / width,
+              y: gesture.moveY / height,
+            };
+
+            // console.log("gestureDropLocation: ", gestureDropLocation)
+            // console.log("gestrue moveY", gesture.moveY, gesture.moveY / height )
+            // console.log("position: ", position.y, position.y_per)
+            let dzId = false;
+
+            Object.values(movables).forEach((currentMovable) => {
+              // console.log("x_per: ", currentMovable.panState.x_per, "y_per: ", currentMovable.panState.y_per)
+              if (!dzId && currentMovable.id !== movingPileId) {
+                const { widthPer, heightPer } = {
+                  ...currentMovable.componentState.dz,
+                };
+                const { x_per, y_per } = { ...currentMovable.panState };
+                const dzSlopCoefficient = 2;
+                if (
+                  gestureDropLocation.x > x_per - widthPer / dzSlopCoefficient &&
+                  gestureDropLocation.x < x_per + widthPer / dzSlopCoefficient &&
+                  gestureDropLocation.y > y_per - heightPer / dzSlopCoefficient &&
+                  gestureDropLocation.y < y_per + heightPer / dzSlopCoefficient
+                ) {
+                  dzId = currentMovable.id;
+                }
+              }
+
+            });
             if (dzId) {
-              const matchedPile = movables[dzId].componentState
-              const updatedPile = matchedPile.concatenateCards(movables[pileId].cards);
-              let updatedMovable = { ...movable, componentState: updatedPile }
-              let updatedMovables = { ...movables, [pileId]: updatedMovable };
-              delete updatedMovables[dzId];
-              dispatch({
-                type:`UPDATE_TABLE`,
+              const dzPileCards = [...movables[dzId].componentState.cards];
+              const movingCards = [
+                ...movables[movingPileId].componentState.cards,
+              ];
+              const updatedCards = [...movingCards, ...dzPileCards];
+              let updatedComponentState = {
+                ...movables[dzId].componentState,
+                cards: updatedCards,
+              };
+              let updatedMovable = {
+                ...movables[dzId],
+                componentState: updatedComponentState,
+              };
+              let updatedMovables = { ...movables, [dzId]: updatedMovable };
+              delete updatedMovables[movingPileId];
+              socket.emit({
+                type: RT.UPDATE_TABLE,
                 payload: updatedMovables,
-              })
-
-            } else {
-              const updatedPile = pile.updateDz(currentPan)
-              let updatedMovable = { ...movable, componentState: updatedPile }
-              let updatedMovables = {...movables, [pileId]: updatedMovable};
-              dispatch({
-                type:`UPDATE_TABLE`,
-                payload: updatedMovables,
-              })
+                emitAll: true,
+              });
             }
-          }
-        }
-      }
+          },
+        },
+      };
     },
-
-
-  }
+  };
 };
 
 const ANIMATION_INTERVAL = 50;
 
-export default function Sandbox({ movables }) {
+export default function Sandbox ({ movables, socket }) {
   const [, dispatch] = useContext(DispatchContext);
-  const components = getComponents(movables, dispatch)
   const [animationQueue, setAnimationQueue] = useState({})
   const [animating, setAnimating] = useState(false)
+  const [showBackground, setShowBackground] = useState(false);
+
+  const components = getComponents(movables, dispatch, socket);
 
   useEffect(() => {
 
@@ -100,20 +130,25 @@ export default function Sandbox({ movables }) {
 
 
   return (
-    <View style={styles.container}>
+    <Container >
+      {/* {showBackground && <MenuBackground />} */}
       {Object.values(movables).map((movable, ind) => {
-        // console.log("movable", movable)
         const { panState, componentState } = movable;
         panState.id = movable.id;
         const { Component, CB } = components[movable.component](movable);
-        return  (
-          // <Movable key={ind} state={panState} {...CB} >
-          <Movable key={ind} state={panState} addAnimation={addAnimation} >
-            <Component  state={componentState} />
-          </Movable>)
+        return (
+          <Movable
+            key={ind}
+            state={panState}
+            addAnimation={addAnimation}
+            {...CB}
+          >
+            <Component componentState={componentState} movables={movables} socket={socket} />
+          </Movable>
+        );
       })}
-    </View>
-);
+    </Container>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -126,5 +161,9 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
+const Container = styled.View`
+  width: 100%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+`;
