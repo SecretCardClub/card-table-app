@@ -1,14 +1,14 @@
-import React, { useMemo, useRef, useContext, useEffect, useCallback, useState } from "react";
-import { PanResponder, Animated, Dimensions } from "react-native";
-import { StateContext, DispatchContext } from '../appState/index'
-const { height, width } = Dimensions.get('window');
-const widthDiv = width / 2;
-const heightDiv = height / 2;
+import React, { useRef, useContext, useEffect, useCallback, useState } from "react";
+import { Animated, Easing, Platform } from "react-native";
+import { StateContext } from '../appState/index'
 
+import { Dims } from '../appState/stateValues'
 
+const OS = Platform.OS;
+const useNative = OS === 'web' ? false : true;
+console.log({ useNative })
 
-
-const DEBOUNCE_TIME = 15 // miliseconds
+const DEBOUNCE_TIME = 20 // miliseconds
 
 const debounce = (func, time = DEBOUNCE_TIME) => {
   let currentFunc = func
@@ -23,122 +23,209 @@ const debounce = (func, time = DEBOUNCE_TIME) => {
 }
 
 
-const calcPosition = ({ x_per, y_per }) => {
-
-  let x = width * x_per - widthDiv
-  let y = height * y_per  - heightDiv
-
-
-  if ( x > widthDiv ) {
-    x = widthDiv
-  }
-  if ( (0 - widthDiv) > x ) {
-    x = (0 - widthDiv)
-  }
-
-  if ( y > heightDiv ) {
-    y = heightDiv
-  }
-  if ( (0 - heightDiv) > y ) {
-    y = (0 - heightDiv)
-  }
-  return { x, y }
-}
 
 let renders = 0;
 
-export default function usePan(panState,  moveCB = () => {}, releaseCB = () => {}, grantCB = () => {}) {
+const ANIMATION_INTERVAL = 50;
+
+
+export default function usePan(panState, addAnimation) {
   // renders++
   // console.log(`Pan ${panState.id} has rendered ${renders} times.`)
 
-  const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const { User } = state
   const { socket, table, RT } = state.Room;
-  const pan = useRef(new Animated.ValueXY(calcPosition(panState))).current;
-  const position = { ...panState }
-
-  const emitMove = useCallback(({ x, y }, selected = true) => {
-    const newPanState = { ...panState, x, y }
-    if ( selected ) {
-      newPanState.selected = User.color
-    }
-    newPanState.x_per = (x + widthDiv)  / width
-    newPanState.y_per = (y + heightDiv) / height
-    const movable = table[newPanState.id]
-    movable.panState = newPanState;
-    socket.emit({
-      type: RT.UPDATE_MOVABLE,
-      payload: movable,
-    })
-
-  }, [socket, table, User])
-
-
-  const panMoveListener = pan.addListener((newPosition) => {
-    position.x = newPosition.x
-    position.y = newPosition.y
-  })
-
+  const pan = useRef(new Animated.ValueXY(Dims.calcPosition(panState))).current;
+  const [startTime, setStartTime] = useState(Date.now())
 
   useEffect(() => {
 
-    pan.setValue(calcPosition(panState))
+    const { emitted } = panState
+    const timeStamp = emitted ? emitted : 1;
+    const animationConfig = {
+      toValue: Dims.calcPosition(panState),
+      timeStamp,
+      useNativeDriver: useNative,
+      isInteraction: false,
+      easing: Easing.linear,
+      id: panState.id,
+      pan,
+    }
+
+    addAnimation(animationConfig)
 
   }, [panState.x_per, panState.y_per])
 
 
 
 
-  // const deEmitMove = debounce(emitMove)
 
-  const panCb = useCallback((evt, gesture, selected = true) => {
-    // deEmitMove(position, selected)
-    emitMove(position, selected)
-  }, [panState, position])
+  const emitMove = useCallback(debounce((evt, selected = false) => {
+    evt = evt.nativeEvent
+    const { x, y } = { x: evt.pageX, y: evt.pageY }
+    const newPanState = { ...panState }
+    if ( selected ) {
+      newPanState.selected = User.color
+    }
 
-
-  const panResponderMove = Animated.event(
-    [
-      null,
-      { dx: pan.x, dy: pan.y }
-    ],
-    {
-      useNativeDriver: false,
-    });
-
-
-
-  const panResponder = useMemo(() => {
-    return PanResponder.create({
-
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (evt, gesture) => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-        // grantCB(evt, gesture, pan)
-        panCb(evt, gesture)
-      },
-
-      onPanResponderMove: (evt, gesture) => {
-        panResponderMove(evt, gesture);
-        // moveCB(evt, gesture, pan)
-        panCb(evt, gesture)
-      },
-
-      onPanResponderRelease: (evt, gesture) => {
-        pan.flattenOffset();
-        // releaseCB(evt, gesture, pan)
-        panCb(evt, gesture, false)
-      },
-
+    newPanState.emitted = Date.now()
+    delete newPanState.x
+    delete newPanState.y
+    newPanState.x_per = x / Dims.width
+    newPanState.y_per = y / Dims.height
+    const movable = table[newPanState.id]
+    movable.panState = newPanState;
+    // console.log(newPanState)
+    socket.emit({
+      type: RT.UPDATE_MOVABLE,
+      payload: movable,
+      // emitAll: true,
+      dispatch: true,
     })
-  }, [pan, position, moveCB, releaseCB, grantCB])
+  }), [socket, table, User])
 
 
-  return [pan, panResponder];
+  // const emitMove = useCallback((evt, selected = false) => {
+  //   evt = evt.nativeEvent
+  //   const { x, y } = { x: evt.pageX, y: evt.pageY }
+  //   const newPanState = { ...panState }
+  //   if ( selected ) {
+  //     newPanState.selected = User.color
+  //   }
+
+  //   newPanState.emitted = Date.now()
+  //   delete newPanState.x
+  //   delete newPanState.y
+  //   newPanState.x_per = x / Dims.width
+  //   newPanState.y_per = y / Dims.height
+  //   const movable = table[newPanState.id]
+  //   movable.panState = newPanState;
+  //   // console.log(newPanState)
+  //   socket.emit({
+  //     type: RT.UPDATE_MOVABLE,
+  //     payload: movable,
+  //     // emitAll: true,
+  //     dispatch: true,
+  //   })
+  // }, [socket, table, User])
+
+
+  const panCb = useCallback((evt, selected = false) => {
+    emitMove(evt, selected)
+  }, [panState])
+
+  const grantCB = (CB = () => {}) => {
+    return (evt) => {
+      evt.nativeEvent.start = Date.now()
+      panCb(evt, true)
+      CB(evt)
+    }
+  }
+
+  const moveCB = (CB = () => {}) => {
+    return (evt) => {
+      evt.nativeEvent.now = Date.now()
+      panCb(evt, true)
+      CB(evt)
+    }
+  }
+
+  const releaseCB = (CB = () => {}) => {
+    return (evt) => {
+      // evt.nativeEvent.end = Date.now()
+      pan.flattenOffset();
+      panCb(evt)
+      CB(evt)
+    }
+  }
+
+
+  return [pan, grantCB, moveCB, releaseCB];
 }
 
 
+
+
+
+
+  // const [animating, setAnimating] = useState(false)
+  // const [position, setPosition] = useState()
+  // const panData = { ...panState  }
+  // pan.addListener((currentPan) => {
+  //   panData.x = currentPan.x
+  //   panData.y = currentPan.y
+  // })
+
+
+  // useEffect(() => {
+
+
+  //   const animation = Animated.timing(pan, {
+  //     toValue: Dims.calcPosition(panState),
+  //     duration,
+  //     useNativeDriver: true,
+  //     isInteraction: false,
+  //     easing: Easing.linear
+  //   }).start(() => {
+  //     setAnimating(false)
+  //   })
+  //   addAnimation(animation)
+
+  //   // const newPosition = Dims.calcPosition(panState)
+  //   // const { start, now, end } = panState;
+  //   // let duration;
+
+  //   // // const duration = panState.emitted ? Date.now() - panState.emitted: 5;
+
+  //   // if(!animating) {
+  //   //   setAnimating(true)
+  //   //   Animated.timing(pan, {
+  //   //     toValue: newPosition,
+  //   //     duration,
+  //   //     useNativeDriver: true,
+  //   //     isInteraction: false,
+  //   //     easing: Easing.linear
+  //   //   }).start(() => {
+  //   //     setAnimating(false)
+  //   //   })
+  //   // }
+  //   // else {
+  //   //   setTimeout(() => {
+  //   //     setPosition(newPosition)
+  //   //   }, duration)
+  //   // }
+  // }, [position])
+  // const emitMove = useCallback(
+  //   debounce((evt, selected = false) => {
+  //     evt = evt.nativeEvent
+  //     const { x, y } = { x: evt.pageX, y: evt.pageY }
+  //     const newPanState = { ...panState }
+  //     if ( selected ) {
+  //       newPanState.selected = User.color
+  //     }
+      // const { start, now, end } = evt;
+      // if(start) {
+      //   newPanState.start = start
+      // }
+      // if(now) {
+      //   newPanState.now = now
+      // }
+      // if(end) {
+      //   newPanState.end = end
+      // }
+
+  //     delete newPanState.x
+  //     delete newPanState.y
+  //     newPanState.x_per = x / Dims.width
+  //     newPanState.y_per = y / Dims.height
+  //     const movable = table[newPanState.id]
+  //     movable.panState = newPanState;
+  //     // console.log('EMITTING movable state ', newPanState)
+  //     socket.emit({
+  //       type: RT.UPDATE_MOVABLE,
+  //       payload: movable,
+  //       // emitAll: true,
+  //       dispatch: true,
+  //     })
+  //   }), [socket, table, User])

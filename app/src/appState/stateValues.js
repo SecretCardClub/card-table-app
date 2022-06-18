@@ -1,5 +1,78 @@
 import 'fastestsmallesttextencoderdecoder'
 import { WS_URL } from '../../.config'
+import { Dimensions, Platform } from "react-native";
+
+console.log({ Platform })
+
+export const Device = {
+  OS: Platform.OS
+}
+
+export const Dims = Dimensions.get('screen');
+
+Dimensions.addEventListener('change', (dimObject) => {
+  const { screen } = dimObject
+  console.log(`Dim change event `, screen, Dims)
+  Dims.height = screen.height
+  Dims.width = screen.width
+  Dims.scale = screen.scale
+})
+const { height, width, scale } = Dims
+
+Dims.pixelHeight = height * scale;
+Dims.pixelWidth = width * scale;
+
+Dims.percentToPixels =  (percent, dimension = 'width', integer = true) => {
+  const maxPixelsForDim = dimension === 'width' ? Dims.pixelWidth : Dims.pixelHeight = height * scale;
+  if(integer) {
+    return Math.round(maxPixelsForDim * percent)
+  }
+  return maxPixelsForDim * percent
+}
+
+Dims.heightPercentToPixels = (percent, integer = true) => {
+  return Dims.percentToPixels(percent, 'height', integer)
+}
+Dims.widthPercentToPixels = (percent, integer = true) => {
+  return Dims.percentToPixels(percent, 'width', integer)
+}
+
+Dims.calcPosition = (x_per, y_per) => {
+  if(!y_per) {
+    y_per = x_per.y_per
+    x_per = x_per.x_per
+  }
+    // let x = width * x_per - widthDiv - 50;
+  // let y = height * y_per  - heightDiv - 35;
+  const widthDiv = Dims.width / 2;
+  const heightDivisor = Platform.OS === 'ios' ? 1 : 2;
+  const heightDiv = Dims.height / heightDivisor;
+
+  let x = Dims.width * x_per - widthDiv ;
+  let y = Dims.height * y_per  - heightDiv;
+
+  // let x = Dims.width * x_per;
+  // let y = Dims.height * y_per;
+
+  if ( x > widthDiv ) {
+    x = widthDiv
+  }
+  if ( (0 - widthDiv) > x ) {
+    x = (0 - widthDiv)
+  }
+
+  if ( y > heightDiv ) {
+    y = heightDiv
+  }
+  if ( (0 - heightDiv) > y ) {
+    y = (0 - heightDiv)
+  }
+  // console.log({ x_per, y_per, x, y })
+
+  return { x, y }
+}
+
+
 
 // action types for the room reducer (RT === 'Room types)
 export const ROOM_TYPES = Object.freeze({
@@ -149,10 +222,6 @@ const encoder = new TextEncoder('utf-8')
 
 
 
-// const encodeAndSend = (socket, message) => {
-//   const encoded = encoder.encode(JSON.stringify(message))
-//   socket.send(encoded)
-// }
 
 const parseMessage = async (event) => {
   const { data } = event
@@ -182,7 +251,7 @@ export const getSocketCreator = (dispatch) => {
     endpoint = endpoint[0] === '/' ? endpoint : endpoint.length ? '/' + endpoint : '';
     const { User_id } = query;
     const URL = `${WS_URL}${endpoint}?User_id=${User_id}`
-    console.log(`ATTEMPTING ws connection of TYPE: ${TYPE} @ ${URL}`)
+    logEvents && console.log(`ATTEMPTING ws connection of TYPE: ${TYPE} @ ${URL}`)
     let receiver = new WebSocket(URL)
     // let receiver, sender;
     // if (split) {
@@ -197,7 +266,10 @@ export const getSocketCreator = (dispatch) => {
 
 
     const encodeAndSend = (message) => {
-      // console.log(`EMMITED `, { message })
+
+      if(message.dispatch) {
+        dispatch(message)
+      }
       logMessages && console.log(`EMMITED `, { message, receiver })
       if (receiver.readyState === 1) {
         const encoded = encoder.encode(JSON.stringify(message))
@@ -210,10 +282,8 @@ export const getSocketCreator = (dispatch) => {
     receiver.emit = encodeAndSend
 
     receiver.open = async (event) => {
-      console.log(`WS CONNECTED @ ${URL}`)
-       if (logEvents) {
-        console.log(`OPEN at SOCKET `, event)
-        console.log(`SOCKET url = ${URL}`)
+      if (logEvents) {
+         console.log(`WS CONNECTED @ ${URL}`)
       }
       if ( TYPE === 'Room' ) {
         dispatch({
@@ -230,12 +300,9 @@ export const getSocketCreator = (dispatch) => {
     }
 
     receiver.close = async (event) => {
-      // console.log(`CLOSE at SOCKET `, event)
-      console.log(`CLOSE at SOCKET: ${URL}`)
-      // if (logEvents) {
-      //   console.log(`CLOSE at SOCKET `, event)
-      //   console.log(`SOCKET url = ${URL}`)
-      // }
+      if (logEvents) {
+        console.log(`CLOSE at SOCKET: ${URL}`)
+      }
       if ( TYPE === 'Room' ) {
         dispatch({
           type: TYPES.UPDATE_ROOM_STATE,
@@ -261,7 +328,7 @@ export const getSocketCreator = (dispatch) => {
 
     receiver.error = async (err) => {
       // console.log(`ERROR at SOCKET `, err)
-      console.log(`ERROR at SOCKET: ${URL}`)
+      console.log(`ERROR @ SOCKET: ${URL}`)
       console.log(`ERROR code ${err.code}`)
       if ( TYPE === 'Room' ) {
         dispatch({

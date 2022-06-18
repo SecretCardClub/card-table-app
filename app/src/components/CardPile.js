@@ -87,7 +87,7 @@ export default CardPile;
 
 const PileView = styled.View`
   width: 100px;
-  height: auto;
+  height: 70px;
   display: flex;
   position: relative;
   z-index: 10;

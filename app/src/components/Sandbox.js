@@ -55,31 +55,47 @@ const getComponents = (movables, dispatch) => {
   }
 };
 
+const ANIMATION_INTERVAL = 50;
 
 export default function Sandbox({ movables }) {
   const [, dispatch] = useContext(DispatchContext);
   const components = getComponents(movables, dispatch)
-  const [animations, setAnimations] = useState([])
+  const [animationQueue, setAnimationQueue] = useState({})
+  const [animating, setAnimating] = useState(false)
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   const runAnimations = () => {
-  //     return setTimeout(() => {
-  //       if(animations.length) {
-  //         Animated.parallel(animations).start()
-  //         setAnimations([])
-  //         return runAnimations()
-  //       }
-  //     }, 20)
-  //   }
-  //   const runningAnimations = runAnimations()
-  //   return () => {
-  //     clearTimeout(runningAnimations)
-  //   }
-  // }, [ animations ])
+    const animationArray = [ ...Object.values(animationQueue) ]
+    // const animatedTime = Date.now() - animating
+    if(animationArray.length && !animating ) {
+      // setAnimating(true)
+      // console.log('\nNew AnimationQueue')
+      Animated.parallel(animationArray.map((config) => {
+        // console.log(animationArray)
+        // config.duration = config.duration > 100 ? 100 : config.duration
+        // console.log(config.duration)
+        // config.duration = 25;
+        return Animated.timing(config.pan, config)
+      })).start(() => {
+        // setAnimating(false)
+      })
+      setAnimationQueue({})
+    }
+
+  }, [animationQueue])
+
 
   const addAnimation = (newAnimation) => {
-    setAnimations([...animations, newAnimation])
+    const { id, timeStamp } = newAnimation
+    const queued = animationQueue[id];
+    if(queued) {
+      queued.duration += timeStamp - queued.timeStamp ;
+    }
+    else{
+      newAnimation.duration = Date.now() - timeStamp
+      setAnimationQueue({ ...animationQueue,  [id]: newAnimation})
+    }
+    // console.log(queued, newAnimation)
   }
 
 
@@ -106,6 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "space-evenly",
+    position: 'relative',
   },
 });
 
