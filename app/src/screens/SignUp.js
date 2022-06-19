@@ -63,9 +63,7 @@ export default function SignUp({ navigation }) {
           value={userName}
           onChangeText={setUserName}
         />
-        <Button onPress={signUp} >
-          <P>Make new User</P>
-        </Button>
+        <Button onPress={signUp} title="Make new User" />
     </ScreenView>
   )
 }

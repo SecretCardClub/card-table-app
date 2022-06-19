@@ -75,15 +75,9 @@ export default function Login({ navigation }) {
         </InputView>
 
         <ButtonView>
-          <Button onPress={login} >
-            <Text>Login</Text>
-          </Button>
-          <Button onPress={nav('SignUp')} >
-            <Text>Sign up</Text>
-          </Button>
-          <Button onPress={nav('MainStack')} >
-            <Text>Go to main</Text>
-          </Button>
+          <Button onPress={login} title="Login" />
+          <Button onPress={nav('SignUp')} title="Sign up" />
+          <Button onPress={nav('MainStack')} title="Go to main" />
         </ButtonView>
 
       </ScreenView>
