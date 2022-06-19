@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import Sandbox from "../components/Sandbox";
 import styled from 'styled-components/native'
-import { P, H2, ScreenView, UserView, Button, Input } from './components/index'
+import { P, H3, ScreenView, UserView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
@@ -17,15 +17,19 @@ export default function Room ({ navigation }) {
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [chatText, setChatText] = useState('')
-  const { User, Room } = state
-  const { Users, chat, socket, RT, dev } = Room;
-  if (dev.state) {
-    console.log(`${SCREEN} STATE: `, { Room, User })
-  }
-  if (dev.renders) {
-    console.log(`${SCREEN} RENDERS = ${renders}`)
-  }
+  const { User, Room, dev } = state
+  const { logs } = dev
+  const { Users, chat, socket, RT } = Room;
 
+
+  useEffect(() => {
+    if (logs.states.Room || logs.states.all) {
+      console.log(`${SCREEN} STATE: `, { Room, User })
+    }
+    if (logs.renders.Room || logs.renders.all) {
+      console.log(`${SCREEN} RENDERS = ${renders}`)
+    }
+  }, [logs.states.Room, logs.renders.Room, logs.renders.all, logs.states.all, Room])
 
 
   const sendChat = (e) => {
@@ -46,10 +50,16 @@ export default function Room ({ navigation }) {
   const goBack = (e) => {
     if(socket) {
       socket.emit({
-        type: "DISCONNECT_SOCKET"
+        type: RT.CLIENT_DISCONNECT_SOCKET
       })
     }
     navigate('Home')
+  }
+
+  const nav = (screenName) => {
+    return (e) => {
+      navigate(screenName)
+    }
   }
 
 
@@ -84,35 +94,32 @@ export default function Room ({ navigation }) {
 
   return Room.socket ?
   (
-    <ScreenView width={window.innerWidth} height={window.innerHeight}>
-      <Header >
-        <H2 >{Room.name}</H2>
-      </Header>
-      <UserList>
-        {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
-      </UserList>
+    <ScreenView nav={nav} >
+
       <SandboxContextProvider>
         <Sandbox movables={Room.table} socket={socket}/>
       </SandboxContextProvider>
+
+      <Header >
+        <H3 >{Room.name}</H3>
+        <UserList>
+          {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
+        </UserList>
+      </Header>
+
       <Footer>
-      <Button onPress={addPile} >
-        <P>Add Pile</P>
-      </Button>
-      <Button onPress={goBack} >
-        <P>Back</P>
-      </Button>
+        <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
+        <Button onPress={goBack} title="Back" width='50%' height='100%' />
       </Footer>
     </ScreenView>
   )
   :
   (
-    <ScreenView>
+    <ScreenView nav={nav} >
       <Header>
-        <H2>Connecting...</H2>
+        <H3>Connecting...</H3>
       </Header>
-      <Button onPress={goBack} >
-          <P>Back</P>
-      </Button>
+      <Button onPress={goBack} title="Back" />
   </ScreenView>
   );
 };
@@ -127,10 +134,19 @@ const Header = styled.View`
   width: 100%;
   height: 10%;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background-color: rgb(230, 230, 230);
 `;
+
+const Table = styled.View`
+  width: 100%;
+  height: 80%;
+  display: flex;
+  position: relative;
+  background-color: rgb(210, 210, 210);
+`
 
 const Footer = styled.View`
   width: 100%;
@@ -139,11 +155,12 @@ const Footer = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  background-color: rgb(240, 240, 240);
 `
 
 const UserList = styled.View`
   width: 100%;
-  height: 10%;
+  height: auto;
   display: flex;
   flex-direction: row;
   align-items: center;

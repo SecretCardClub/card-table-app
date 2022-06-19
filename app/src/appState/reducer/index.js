@@ -1,7 +1,8 @@
 
-import userReducer from './user'
-import homeReducer from './home'
-import roomReducer from './room'
+import UserReducer from './UserReducer'
+import HomeReducer from './HomeReducer'
+import RoomReducer from './RoomReducer'
+import devReducer from './devReducer'
 
 
 export default function reducer(state, action) {
@@ -11,13 +12,15 @@ export default function reducer(state, action) {
     return state
   }
 
-  const User = userReducer(state.User, action)
-  const Home = homeReducer(state.Home, action)
-  const Room = roomReducer(state.Room, action)
+  const dev = devReducer(state.dev, action)
+  const { reducers } = dev.logs;
+  const User = UserReducer(state.User, action, reducers.all || reducers.User)
+  const Home = HomeReducer(state.Home, action, reducers.all || reducers.Home)
+  const Room = RoomReducer(state.Room, action, reducers.all || reducers.Room)
+  const nextState = { ...state, User, Home, Room, dev }
 
-  const nextState = { ...state, User, Home, Room }
-  if(state.dev.logs.reducers.next) {
-    console.log(`Reducer NEXT STATE `, nextState)
+  if(reducers.next) {
+    console.log(`Reducer NEXT STATE for ACTION TYPE: ${action.type} `, nextState)
   }
   return nextState
 }

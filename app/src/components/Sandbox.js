@@ -20,15 +20,19 @@ const getComponents = (movables, dispatch, socket) => {
       return {
         Component: CardPile,
         CB: {
-          releaseCB: (evt, gesture, currentPan, position) => {
+          releaseCB: (evt, currentPan, position) => {
             // console.log(movables)
+            evt = evt.nativeEvent
             const movingPileId = movable.id;
             const { height, width } = Dimensions.get('screen')
-
             const gestureDropLocation = {
-              x: gesture.moveX / width,
-              y: gesture.moveY / height,
+              x: evt.pageX / width,
+              y: evt.pageY / height,
             };
+            // const gestureDropLocation = {
+            //   x: gesture.moveX / width,
+            //   y: gesture.moveY / height,
+            // };
 
             // console.log("gestureDropLocation: ", gestureDropLocation)
             // console.log("gestrue moveY", gesture.moveY, gesture.moveY / height )
@@ -98,16 +102,9 @@ export default function Sandbox ({ movables, socket }) {
     const animationArray = [ ...Object.values(animationQueue) ]
     // const animatedTime = Date.now() - animating
     if(animationArray.length && !animating ) {
-      // setAnimating(true)
-      // console.log('\nNew AnimationQueue')
       Animated.parallel(animationArray.map((config) => {
-        // console.log(animationArray)
-        // config.duration = config.duration > 100 ? 100 : config.duration
-        // console.log(config.duration)
-        // config.duration = 25;
         return Animated.timing(config.pan, config)
       })).start(() => {
-        // setAnimating(false)
       })
       setAnimationQueue({})
     }
@@ -131,7 +128,6 @@ export default function Sandbox ({ movables, socket }) {
 
   return (
     <Container >
-      {/* {showBackground && <MenuBackground />} */}
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;
@@ -151,19 +147,11 @@ export default function Sandbox ({ movables, socket }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    position: 'relative',
-  },
-});
 
 const Container = styled.View`
-  width: 100%;
-  height: 70%;
+  flex: 1;
   display: flex;
-  align-items: center;
+  position: relative;
+  /* align-items: center; */
+  background-color: rgb(210, 210, 210);
 `;

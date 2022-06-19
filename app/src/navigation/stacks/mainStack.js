@@ -11,7 +11,7 @@ export default function MainStack() {
   return (
     <Stack.Navigator
     initialRouteName="Home"
-    screenOptions={stackOptions}
+    screenOptions={{ ...stackOptions, gestureEnabled: false }}
     >
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Room" component={Room} />

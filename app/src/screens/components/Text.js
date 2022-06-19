@@ -4,7 +4,7 @@ import { BORDER_RADIUS } from './constants'
 export const Text = styled.Text`
   font-size: 20px;
   font-weight: 500;
-  color: rgb(25, 25, 25);
+  color: ${(({ textColor, color }) => textColor || color || 'rgb(25, 25, 25)')};
 `;
 
 export const H1 = styled(Text)`

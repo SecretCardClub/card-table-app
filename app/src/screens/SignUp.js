@@ -14,15 +14,18 @@ export default function SignUp({ navigation }) {
   const [state] = useContext(StateContext);
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
-  const { User, SignUp } = state;
-  const { dev } = SignUp
-  if (dev.state) {
-    console.log(`${SCREEN} STATE: `, { SignUp, User, userName, password })
-  }
-  if (dev.renders) {
-    console.log(`${SCREEN} RENDERS = ${renders}`)
-  }
+  const { User, SignUp, dev } = state;
+  const { logs } = dev
 
+
+  useEffect(() => {
+    if (logs.states.SignUp || logs.states.all) {
+      console.log(`${SCREEN} STATE: `, { User, SignUp, userName, password })
+    }
+    if (logs.renders.SignUp || logs.renders.all) {
+      console.log(`${SCREEN} RENDERS = ${renders}`)
+    }
+  }, [logs.states.SignUp, logs.renders.SignUp, logs.renders.all, logs.states.all, User])
 
 
   const signUp = (e) => {
@@ -44,8 +47,16 @@ export default function SignUp({ navigation }) {
     .catch(err => console.log(`${ERROR_MSG} post error: `, err))
   }
 
+
+  const nav = (screenName) => {
+    return (e) => {
+      navigate(screenName)
+    }
+  }
+
+
   return (
-    <ScreenView>
+    <ScreenView nav={nav} >
         <H1> Hello </H1>
         <P>Please enter a user name </P>
         <Input

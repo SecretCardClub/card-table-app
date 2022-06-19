@@ -1,12 +1,10 @@
 import React, { useRef, useContext, useEffect, useCallback, useState } from "react";
 import { Animated, Easing, Platform } from "react-native";
 import { StateContext } from '../appState/index'
+import DEVICE from '../appState/Device'
 
-import { Dims } from '../appState/stateValues'
-
-const OS = Platform.OS;
+const { OS, Dims } = DEVICE;
 const useNative = OS === 'web' ? false : true;
-console.log({ useNative })
 
 const DEBOUNCE_TIME = 20 // miliseconds
 
@@ -26,7 +24,6 @@ const debounce = (func, time = DEBOUNCE_TIME) => {
 
 let renders = 0;
 
-const ANIMATION_INTERVAL = 50;
 
 
 export default function usePan(panState, addAnimation) {
@@ -43,8 +40,11 @@ export default function usePan(panState, addAnimation) {
 
     const { emitted } = panState
     const timeStamp = emitted ? emitted : 1;
+    const toValue = Dims.calcPosition(panState)
+    // const { x_per, y_per } = panState
+    // console.log('calced ', { x_per, y_per }, toValue)
     const animationConfig = {
-      toValue: Dims.calcPosition(panState),
+      toValue,
       timeStamp,
       useNativeDriver: useNative,
       isInteraction: false,
@@ -60,8 +60,7 @@ export default function usePan(panState, addAnimation) {
 
 
 
-
-  const emitMove = useCallback(debounce((evt, selected = false) => {
+  const emitMove = useCallback((evt, selected = false) => {
     evt = evt.nativeEvent
     const { x, y } = { x: evt.pageX, y: evt.pageY }
     const newPanState = { ...panState }
@@ -74,6 +73,8 @@ export default function usePan(panState, addAnimation) {
     delete newPanState.y
     newPanState.x_per = x / Dims.width
     newPanState.y_per = y / Dims.height
+    // const emitted = { x_per: newPanState.x_per, y_per: newPanState.x_per }
+    // console.log('emitted ', emitted, { x, y })
     const movable = table[newPanState.id]
     movable.panState = newPanState;
     // console.log(newPanState)
@@ -83,36 +84,18 @@ export default function usePan(panState, addAnimation) {
       // emitAll: true,
       dispatch: true,
     })
-  }), [socket, table, User])
+  }, [socket, table, User])
+
+  const deEmitMove = useCallback(debounce(emitMove), [socket, table, User])
 
 
-  // const emitMove = useCallback((evt, selected = false) => {
-  //   evt = evt.nativeEvent
-  //   const { x, y } = { x: evt.pageX, y: evt.pageY }
-  //   const newPanState = { ...panState }
-  //   if ( selected ) {
-  //     newPanState.selected = User.color
-  //   }
-
-  //   newPanState.emitted = Date.now()
-  //   delete newPanState.x
-  //   delete newPanState.y
-  //   newPanState.x_per = x / Dims.width
-  //   newPanState.y_per = y / Dims.height
-  //   const movable = table[newPanState.id]
-  //   movable.panState = newPanState;
-  //   // console.log(newPanState)
-  //   socket.emit({
-  //     type: RT.UPDATE_MOVABLE,
-  //     payload: movable,
-  //     // emitAll: true,
-  //     dispatch: true,
-  //   })
-  // }, [socket, table, User])
-
-
-  const panCb = useCallback((evt, selected = false) => {
-    emitMove(evt, selected)
+  const panCb = useCallback((evt, selected = false, debounce = true) => {
+    if(debounce) {
+      deEmitMove(evt, selected)
+    }
+    else {
+      emitMove(evt, selected)
+    }
   }, [panState])
 
   const grantCB = (CB = () => {}) => {
@@ -133,9 +116,9 @@ export default function usePan(panState, addAnimation) {
 
   const releaseCB = (CB = () => {}) => {
     return (evt) => {
-      // evt.nativeEvent.end = Date.now()
+      evt.nativeEvent.end = Date.now()
       pan.flattenOffset();
-      panCb(evt)
+      panCb(evt, false, false)
       CB(evt)
     }
   }

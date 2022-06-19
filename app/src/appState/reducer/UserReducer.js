@@ -13,31 +13,29 @@ const storeData = async (value, key = 'User') => {
 
 
 
-const { dev, UT } = initUser;
-const { reducer } = dev.logs
+const { UT } = initUser;
 const REDUCER_MSG = `User Reducer`
 
-export default function userReducer(user, action) {
+export default function userReducer(user, action, logReducer = false) {
   if (user) {
-    user.dev = dev
     user.UT = UT
   }
   const { type, payload } = action
   switch (type) {
 
     case UT.SET_USER:
-      reducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
+      logReducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
       user = payload || user;
       storeData(user)
       return user;
 
     case UT.CLEAR_USER:
-      reducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
+      logReducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
       user = initUser;
       return user;
 
     case UT.UPDATE_USER:
-      reducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
+      logReducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
       user = { ...user, ...payload };
       storeData(user)
       return user;

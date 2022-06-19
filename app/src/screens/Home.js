@@ -3,6 +3,7 @@ import styled from 'styled-components/native'
 import { P, H1, ScreenView, Button, Input, Text, UserView } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import api from '../api/index'
+import { SideDrawer } from './components/SideDrawer'
 
 const SCREEN = `Home screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
@@ -14,15 +15,19 @@ export default function Home({ navigation }) {
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [newRoomname, setNewRoomname] = useState('')
-  const { User, Home, Room, socket } = state
-  const { HT, dev } = Home
+  const { User, Home, Room, socket, dev } = state
+  const { logs } = dev
+  const { HT } = Home
   const { RT } = Room
-  if (dev.state) {
-    console.log(`${SCREEN} STATE: `, { Home, User, newRoomname })
-  }
-  if (dev.renders) {
-    console.log(`${SCREEN} RENDERS = ${renders}`)
-  }
+
+  useEffect(() => {
+    if (logs.states.Home || logs.states.all) {
+      console.log(`${SCREEN} STATE: `, { Home, User, newRoomname })
+    }
+    if (logs.renders.Home || logs.renders.all) {
+      console.log(`${SCREEN} RENDERS = ${renders}`)
+    }
+  }, [logs.states.Home, logs.renders.Home, logs.renders.all, logs.states.all, Home])
 
 
   const nav = (screenName) => {
@@ -49,15 +54,11 @@ export default function Home({ navigation }) {
     }).catch(err => console.log(err.message))
   }
 
-  const testConnection = () => {
-    socket.create(newRoomname, { User_id: User.id }, 'Room')
-    // navigate('Room')
-  }
 
 
 
   return (
-    <ScreenView>
+    <ScreenView navigation={navigation} nav={nav} >
       <H1> Home </H1>
       <DashBoard>
         <DashView>
@@ -69,22 +70,30 @@ export default function Home({ navigation }) {
         <DashView>
         <P>Rooms</P>
           {Home.Rooms.map((room, ind) => {
-
             return (
-              <Button onPress={(e) => openRoom(room)}  key={ind} >
-                <P>{room.name}</P>
-              </Button>
+              <Button
+                onPress={(e) => openRoom(room)}
+                key={ind}
+                title={room.name}
+              />
             )
           })}
         </DashView>
       </DashBoard>
       <Input value={newRoomname} onChangeText={setNewRoomname} />
-      <Button onPress={createRoom} >
-        <Text>Create room</Text>
-      </Button>
-      <Button onPress={testConnection} >
-        <Text>Test Url</Text>
-      </Button>
+      <Button
+        onPress={createRoom}
+        title="Create room"
+        height='5%'
+        width='50%'
+      />
+      <Button
+        onPress={nav('Dev')}
+        title="Dev Options"
+        height='5%'
+        width='50%'
+      />
+
     </ScreenView>
   )
 }

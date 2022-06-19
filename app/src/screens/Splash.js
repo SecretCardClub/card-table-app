@@ -14,15 +14,10 @@ export default function Splash({ navigation }) {
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [ state ] = useContext(StateContext);
-  const { User, Home, Splash, socket } = state;
-  const { dev } = Splash
+  const { User, Home, Splash, socket, dev } = state;
   const { UT } = User
-  if (dev.state) {
-    console.log(`${SCREEN} STATE: `, { Splash, User, socket })
-  }
-  if (dev.renders) {
-    console.log(`${SCREEN} RENDERS = ${renders}`)
-  }
+  const { logs } = dev
+
 
   useEffect(() => {
 
@@ -55,8 +50,16 @@ export default function Splash({ navigation }) {
 
   }, [])
 
+
+  const nav = (screenName) => {
+    return (e) => {
+      navigate(screenName)
+    }
+  }
+
+
   return (
-    <ScreenView>
+    <ScreenView nav={nav} >
         <H1> Hello </H1>
     </ScreenView>
   )

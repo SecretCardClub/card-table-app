@@ -15,15 +15,19 @@ export default function Login({ navigation }) {
   const [state] = useContext(StateContext);
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
-  const { User } = state
-  const { UT, dev } = User;
-  if (dev.state) {
-    console.log(`${SCREEN} STATE: `, { User, userName, password })
-  }
-  if (dev.renders) {
-    console.log(`${SCREEN} RENDERS = ${renders}`)
-  }
+  const { User, dev } = state
+  const { UT } = User;
+  const { logs } = dev
 
+
+  useEffect(() => {
+    if (logs.states.Login || logs.states.all) {
+      console.log(`${SCREEN} STATE: `, { User, userName, password })
+    }
+    if (logs.renders.Login || logs.renders.all) {
+      console.log(`${SCREEN} RENDERS = ${renders}`)
+    }
+  }, [logs.states.Login, logs.renders.Login, logs.renders.all, logs.states.all, User])
 
   const nav = (screen) => {
     return () => {
@@ -51,7 +55,7 @@ export default function Login({ navigation }) {
   }
 
   return (
-      <ScreenView>
+      <ScreenView  nav={nav} >
         <HeaderView>
           <H1> Hello </H1>
           <P>Please login</P>

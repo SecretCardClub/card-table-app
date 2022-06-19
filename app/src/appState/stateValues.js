@@ -1,76 +1,5 @@
 import 'fastestsmallesttextencoderdecoder'
 import { WS_URL } from '../../.config'
-import { Dimensions, Platform } from "react-native";
-
-console.log({ Platform })
-
-export const Device = {
-  OS: Platform.OS
-}
-
-export const Dims = Dimensions.get('screen');
-
-Dimensions.addEventListener('change', (dimObject) => {
-  const { screen } = dimObject
-  console.log(`Dim change event `, screen, Dims)
-  Dims.height = screen.height
-  Dims.width = screen.width
-  Dims.scale = screen.scale
-})
-const { height, width, scale } = Dims
-
-Dims.pixelHeight = height * scale;
-Dims.pixelWidth = width * scale;
-
-Dims.percentToPixels =  (percent, dimension = 'width', integer = true) => {
-  const maxPixelsForDim = dimension === 'width' ? Dims.pixelWidth : Dims.pixelHeight = height * scale;
-  if(integer) {
-    return Math.round(maxPixelsForDim * percent)
-  }
-  return maxPixelsForDim * percent
-}
-
-Dims.heightPercentToPixels = (percent, integer = true) => {
-  return Dims.percentToPixels(percent, 'height', integer)
-}
-Dims.widthPercentToPixels = (percent, integer = true) => {
-  return Dims.percentToPixels(percent, 'width', integer)
-}
-
-Dims.calcPosition = (x_per, y_per) => {
-  if(!y_per) {
-    y_per = x_per.y_per
-    x_per = x_per.x_per
-  }
-    // let x = width * x_per - widthDiv - 50;
-  // let y = height * y_per  - heightDiv - 35;
-  const widthDiv = Dims.width / 2;
-  const heightDivisor = Platform.OS === 'ios' ? 1 : 2;
-  const heightDiv = Dims.height / heightDivisor;
-
-  let x = Dims.width * x_per - widthDiv ;
-  let y = Dims.height * y_per  - heightDiv;
-
-  // let x = Dims.width * x_per;
-  // let y = Dims.height * y_per;
-
-  if ( x > widthDiv ) {
-    x = widthDiv
-  }
-  if ( (0 - widthDiv) > x ) {
-    x = (0 - widthDiv)
-  }
-
-  if ( y > heightDiv ) {
-    y = heightDiv
-  }
-  if ( (0 - heightDiv) > y ) {
-    y = (0 - heightDiv)
-  }
-  // console.log({ x_per, y_per, x, y })
-
-  return { x, y }
-}
 
 
 
@@ -80,7 +9,9 @@ export const ROOM_TYPES = Object.freeze({
   UPDATE_ROOM_STATE: "UPDATE_ROOM_STATE",
   UPDATE_TABLE: "UPDATE_TABLE",
   UPDATE_MOVABLE: "UPDATE_MOVABLE",
+  UPDATE_MOVABLES: "UPDATE_MOVABLES",
   ADD_CHAT: "ADD_CHAT",
+  CLIENT_DISCONNECT_SOCKET: "CLIENT_DISCONNECT_SOCKET",
 })
 
 // action types for the user reducer (UT === 'user types)
@@ -127,22 +58,18 @@ export const logRenders = {
 }
 
 export const logs = {
+  reducers: logReducers,
   states: logState,
   renders: logRenders,
-  reducers: logReducers,
 }
 
+export const initDev = { logs }
 
 
 export const initUser =  {
   name: null,
   Rooms: [],
   UT: USER_TYPES,
-  dev: {
-    logs: {
-      reducer: logs.reducers.all ? true : logs.reducers.User,
-    },
-  },
 }
 
 
@@ -151,13 +78,6 @@ export const initHome = {
   Users: [],
   Rooms: [],
   HT: HOME_TYPES,
-  dev: {
-    logs: {
-      state: logs.states.all ? true : logs.states.Home,
-      render: logs.renders.all ? true : logs.renders.Home,
-      reducer: logs.reducers.all ? true : logs.reducers.Home,
-    },
-  },
 }
 
 export const initRoom = {
@@ -167,45 +87,15 @@ export const initRoom = {
   chat: [],
   table: {},
   RT: ROOM_TYPES,
-  dev: {
-    logs: {
-      state: logs.states.all ? true : logs.states.Room,
-      render: logs.renders.all ? true : logs.renders.Room,
-      reducer: logs.reducers.all ? true : logs.reducers.Room,
-    }
-  },
 }
 
-export const initSplash = {
-  dev: {
-    logs: {
-      state: logs.states.all ? true : logs.states.Splash,
-      render: logs.renders.all ? true : logs.renders.Splash,
-    },
-  },
-}
-
-export const initLogin = {
-  dev: {
-    logs: {
-      state: logs.states.all ? true : logs.states.Login,
-      render: logs.renders.all ? true : logs.renders.Login,
-    },
-  },
-}
-
-export const initSignUp = {
-  dev: {
-    logs: {
-      state: logs.states.all ? true : logs.states.SignUp,
-      render: logs.renders.all ? true : logs.renders.SignUp,
-    },
-  },
-}
+export const initSplash = {}
+export const initLogin = {}
+export const initSignUp = {}
 
 export const initAppState = {
   socket: { create: null },
-  dev:  { logs },
+  dev:  initDev,
   User: initUser,
   Home: initHome,
   Room: initRoom,
@@ -307,8 +197,8 @@ export const getSocketCreator = (dispatch) => {
       }
       if ( TYPE === 'Room' ) {
         dispatch({
-          type: TYPES.UPDATE_ROOM_STATE,
-          payload: { socket: null },
+          type: TYPES.SET_ROOM_STATE,
+          payload: null,
         })
       }
       else {
@@ -334,8 +224,8 @@ export const getSocketCreator = (dispatch) => {
       console.log(`ERROR code ${err.code}`)
       if ( TYPE === 'Room' ) {
         dispatch({
-          type: TYPES.UPDATE_ROOM_STATE,
-          payload: { socket: null },
+          type: TYPES.SET_ROOM_STATE,
+          payload: null,
         })
       }
       else {
