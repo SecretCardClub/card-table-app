@@ -33,7 +33,7 @@ export default function Splash({ navigation }) {
             type: UT.UPDATE_USER,
             payload : { ...nextUser, ...apiRes }
           })
-          navigate('MainStack')
+          navigate('Home')
           // navigate('Login')
         }
         else {
@@ -59,7 +59,7 @@ export default function Splash({ navigation }) {
 
 
   return (
-    <ScreenView nav={nav} >
+    <ScreenView >
         <H1> Hello </H1>
     </ScreenView>
   )

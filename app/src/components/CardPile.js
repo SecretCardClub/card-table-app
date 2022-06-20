@@ -61,14 +61,14 @@ const CardPile = ({ componentState, movables, socket }) => {
     if (componentState.cards.length > 1) {
       let updatedCards = [...componentState.cards];
       const takenCard = updatedCards.shift();
-      console.log("updatedCards: ", updatedCards);
+      // console.log("updatedCards: ", updatedCards);
       let updatedComponentState = { ...componentState, cards: updatedCards };
-      console.log("updatedCompState: ", updatedComponentState);
+      // console.log("updatedCompState: ", updatedComponentState);
       let updatedMovable = {
         ...movables[id],
         componentState: updatedComponentState,
       };
-      console.log("updatedMovable: ", updatedMovable);
+      // console.log("updatedMovable: ", updatedMovable);
       let updatedMovables = { ...movables, [id]: updatedMovable };
 
       if (ctx.currentPile) {
@@ -94,7 +94,7 @@ const CardPile = ({ componentState, movables, socket }) => {
         updatedMovables = { ...updatedMovables, [newMovable.id]: newMovable };
         ctx.setCurrentPile(newMovable);
       }
-      console.log("updatedMovables: ", updatedMovables);
+      // console.log("updatedMovables: ", updatedMovables);
       socket.emit &&
         socket.emit({
           type: socket.RT.UPDATE_TABLE,

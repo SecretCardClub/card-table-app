@@ -45,7 +45,7 @@ export default function Login({ navigation }) {
           type: UT.UPDATE_USER,
           payload : { ...User, ...res  }
         })
-        navigate('MainStack')
+        navigate('Home')
       }
       else {
         console.log( `${ERROR_MSG} NO USER FOUND`, res)
@@ -55,7 +55,7 @@ export default function Login({ navigation }) {
   }
 
   return (
-      <ScreenView  nav={nav} >
+      <ScreenView >
         <HeaderView>
           <H1> Hello </H1>
           <P>Please login</P>

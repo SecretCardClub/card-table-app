@@ -57,7 +57,7 @@ export default function Room ({ navigation }) {
   }
 
   const nav = (screenName) => {
-    return (e) => {
+    return (evt) => {
       navigate(screenName)
     }
   }
@@ -88,13 +88,13 @@ export default function Room ({ navigation }) {
     socket.emit && socket.emit({
       type: RT.UPDATE_MOVABLE,
       payload: newMovable,
-      emitAll: true,
+      dispatch: true,
     })
   }
 
   return Room.socket ?
   (
-    <ScreenView nav={nav} >
+    <ScreenView >
 
       <SandboxContextProvider>
         <Sandbox movables={Room.table} socket={socket}/>
@@ -115,7 +115,7 @@ export default function Room ({ navigation }) {
   )
   :
   (
-    <ScreenView nav={nav} >
+    <ScreenView >
       <Header>
         <H3>Connecting...</H3>
       </Header>
