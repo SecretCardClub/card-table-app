@@ -17,6 +17,7 @@ import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu";
 import MenuBackground from "./MenuBackground";
 import SandboxContext from "../context/sandboxContext";
+import helpers from "./helpers";
 
 const CardPile = ({ componentState, movables, socket }) => {
   // const [, dispatch] = useContext(DispatchContext);
@@ -31,18 +32,28 @@ const CardPile = ({ componentState, movables, socket }) => {
       widthPer: layout.width / window.innerWidth,
       heightPer: layout.height / window.innerHeight,
     };
-    let updatedComponentState = { ...componentState, dz: updatedDz };
-    let updatedMovable = {
-      ...movables[id],
-      componentState: updatedComponentState,
+    const options = {
+      id,
+      type: "dz",
+      updatedState: updatedDz,
+      componentState,
+      movables,
+      socket,
+      dispatch: true,
     };
-    let updatedMovables = { ...movables, [id]: updatedMovable };
+    helpers.updateComponentState(options);
+    // let updatedComponentState = { ...componentState, dz: updatedDz };
+    // let updatedMovable = {
+    //   ...movables[id],
+    //   componentState: updatedComponentState,
+    // };
+    // let updatedMovables = { ...movables, [id]: updatedMovable };
 
-    socket.emit({
-      type: socket.RT.UPDATE_TABLE,
-      payload: updatedMovables,
-      emitAll: true,
-    });
+    // socket.emit({
+    //   type: socket.RT.UPDATE_TABLE,
+    //   payload: updatedMovables,
+    //   emitAll: true,
+    // });
   };
   const onPressInHandler = () => {
     setHighlighted(true);
@@ -57,64 +68,64 @@ const CardPile = ({ componentState, movables, socket }) => {
   };
 
   const onPressHandler = () => {
-    const id = componentState.id;
+    let id = componentState.id;
     if (componentState.cards.length > 1) {
       let updatedCards = [...componentState.cards];
       const takenCard = updatedCards.shift();
-      // console.log("updatedCards: ", updatedCards);
-      let updatedComponentState = { ...componentState, cards: updatedCards };
-      // console.log("updatedCompState: ", updatedComponentState);
-      let updatedMovable = {
-        ...movables[id],
-        componentState: updatedComponentState,
+      let options = {
+        id,
+        type: "cards",
+        updatedState: updatedCards,
+        componentState,
+        movables,
+        socket,
+        returnValue: true,
       };
-      // console.log("updatedMovable: ", updatedMovable);
-      let updatedMovables = { ...movables, [id]: updatedMovable };
-
+      let updatedMovables = helpers.updateComponentState(options);
       if (ctx.currentPile) {
-        let currentMovable = {...movables[ctx.currentPile.id]}
-        let currentCards = [takenCard, ...currentMovable.componentState.cards];
-        let currentComponentState = {...currentMovable.componentState, cards: currentCards};
-        currentMovable = {...currentMovable, componentState: currentComponentState}
-        updatedMovables = {...updatedMovables, [currentMovable.id]: currentMovable}
-        ctx.setCurrentPile(currentMovable);
+        id = ctx.currentPile.id;
+        updatedCards = [takenCard, ...updatedMovables[id].componentState.cards];
+
+        const options = {
+          id,
+          type: "cards",
+          updatedState: updatedCards,
+          componentState: updatedMovables[id].componentState,
+          movables: updatedMovables,
+          socket,
+          dispatch: true,
+          returnValue: true,
+        };
+        updatedMovables = helpers.updateComponentState(options);
+        ctx.setCurrentPile(updatedMovables[id]);
       } else {
         const newPile = new Pile();
         newPile.addCard(takenCard);
         const newMovable = {
           id: newPile.id,
           component: "CardPile",
-          panState: {
-            x: 0,
-            y: 0,
-            x_per: 0.5,
-            y_per: 0.5,
-          },
+          panState: { x: 0, y: 0, x_per: 0.5, y_per: 0.5 },
           componentState: newPile,
         };
         updatedMovables = { ...updatedMovables, [newMovable.id]: newMovable };
         ctx.setCurrentPile(newMovable);
-      }
-      // console.log("updatedMovables: ", updatedMovables);
-      socket.emit &&
         socket.emit({
           type: socket.RT.UPDATE_TABLE,
           payload: updatedMovables,
           emitAll: true,
         });
+      }
     }
   };
 
-  const onLongPressHandler = () => {
-    // ctx.setCurrentPile(componentState);
-    setShowMenu(true);
+  const flipHandler = () => {
+    let cards = [...componentState.cards];
   };
 
   return (
     <>
-      {/* {showMenu && <MenuBackground setShowMenu={setShowMenu} />} */}
       {showMenu ? (
-        <PileView onLayout={establishViewDimensions} highlighted={highlighted} >
+        <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
           <PileMenu
             setShowMenu={setShowMenu}
             movables={movables}
@@ -128,12 +139,16 @@ const CardPile = ({ componentState, movables, socket }) => {
             onPressIn={onPressInHandler}
             onPressOut={onPressOutHandler}
             onPress={onPressHandler}
-            onLongPress={onLongPressHandler}
+            onLongPress={() => {setShowMenu(true)}}
           >
             {componentState.cards.length ? (
               <>
-                <Text>{componentState.cards[0].rank}</Text>
-                <Text>{componentState.cards[0].suit}</Text>
+                {componentState.cards[0].faceUp && (
+                  <Text>{componentState.cards[0].rank}</Text>
+                )}
+                {componentState.cards[0].faceUp && (
+                  <Text>{componentState.cards[0].suit}</Text>
+                )}
                 <Text>{componentState.cards.length}</Text>
                 {ctx.showPileMenu && <Text>Hello</Text>}
               </>
@@ -161,3 +176,17 @@ const PileView = styled.View`
   justify-content: space-around;
   background-color: ${({ highlighted }) => (highlighted ? "pink" : "grey")};
 `;
+
+// let currentMovable = {...movables[ctx.currentPile.id]}
+// let currentCards = [takenCard, ...currentMovable.componentState.cards];
+// let currentComponentState = {...currentMovable.componentState, cards: currentCards};
+// currentMovable = {...currentMovable, componentState: currentComponentState}
+// updatedMovables = {...updatedMovables, [currentMovable.id]: currentMovable}
+// ctx.setCurrentPile(currentMovable);
+
+// let updatedComponentState = { ...componentState, cards: updatedCards };
+// let updatedMovable = {
+//   ...movables[id],
+//   componentState: updatedComponentState,
+// };
+// let updatedMovables = { ...movables, [id]: updatedMovable };

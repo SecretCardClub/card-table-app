@@ -49,10 +49,16 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
     setShowMenu(false);
   };
 
+  const logHandler = () => {
+    console.log("Pile: ", componentState);
+  };
+
   return (
     <MenuContainer>
       <MenuView>
-        <Text>HelloMenu</Text>
+        <TouchableOpacity onPress={logHandler}>
+        <Text>Log Pile</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={deletePileHandler}>
           <Text>Delete Pile</Text>
         </TouchableOpacity>

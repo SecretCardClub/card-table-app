@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Animated, Dimensions } from "react-native";
+import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
 import { StateContext, DispatchContext } from "../appState/index";
 import styled from "styled-components/native";
 
@@ -7,9 +7,10 @@ import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu"
 import CardClass from "../classes/Card";
 import PlayerHand from "./PlayerHand";
-import CardPile, { displayMenu } from "./CardPile";
+import CardPile from "./CardPile";
 import usePan from "../hooks/usePan";
 import Movable from "./Movable";
+import SandboxContext from "../context/sandboxContext";
 
 const getComponents = (movables, dispatch, socket) => {
 
@@ -46,7 +47,7 @@ const getComponents = (movables, dispatch, socket) => {
                   ...currentMovable.componentState.dz,
                 };
                 const { x_per, y_per } = { ...currentMovable.panState };
-                const dzSlopCoefficient = 2;
+                const dzSlopCoefficient = 1.8;
                 if (
                   gestureDropLocation.x > x_per - widthPer / dzSlopCoefficient &&
                   gestureDropLocation.x < x_per + widthPer / dzSlopCoefficient &&
@@ -94,6 +95,7 @@ export default function Sandbox ({ movables, socket }) {
   const [animationQueue, setAnimationQueue] = useState({})
   const [animating, setAnimating] = useState(false)
   const [showBackground, setShowBackground] = useState(false);
+  const ctx = useContext(SandboxContext);
 
   const components = getComponents(movables, dispatch, socket);
 
