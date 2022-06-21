@@ -11,82 +11,71 @@ import CardPile from "./CardPile";
 import usePan from "../hooks/usePan";
 import Movable from "./Movable";
 import SandboxContext from "../context/sandboxContext";
+import helpers from "./helpers"
 
-const getComponents = (movables, dispatch, socket) => {
+// const getComponents = (movables, dispatch, socket) => {
 
-  const { RT } = socket;
+//   return {
+//     CardPile: (movable) => {
+//       return {
+//         Component: CardPile,
+//         CB: {
+//           releaseCB: (evt, currentPan, position) => {
+//             evt = evt.nativeEvent
+//             const movingPileId = movable.id;
+//             const { height, width } = Dimensions.get('screen');
+//             const gestureDropLocation = {
+//               x: evt.pageX / width,
+//               y: evt.pageY / height,
+//             };
+//             let dzId = false;
 
-  return {
-    CardPile: (movable) => {
-      return {
-        Component: CardPile,
-        CB: {
-          releaseCB: (evt, currentPan, position) => {
-            // console.log(movables)
-            evt = evt.nativeEvent
-            const movingPileId = movable.id;
-            const { height, width } = Dimensions.get('screen')
-            const gestureDropLocation = {
-              x: evt.pageX / width,
-              y: evt.pageY / height,
-            };
-            // const gestureDropLocation = {
-            //   x: gesture.moveX / width,
-            //   y: gesture.moveY / height,
-            // };
+//             Object.values(movables).forEach((currentMovable) => {
+//               if (!dzId && currentMovable.id !== movingPileId) {
+//                 const { widthPer, heightPer } = {
+//                   ...currentMovable.componentState.dz,
+//                 };
+//                 const { x_per, y_per } = { ...currentMovable.panState };
+//                 const dzSlopCoefficient = 1.8;
+//                 if (
+//                   gestureDropLocation.x > x_per - widthPer / dzSlopCoefficient &&
+//                   gestureDropLocation.x < x_per + widthPer / dzSlopCoefficient &&
+//                   gestureDropLocation.y > y_per - heightPer / dzSlopCoefficient &&
+//                   gestureDropLocation.y < y_per + heightPer / dzSlopCoefficient
+//                 ) {
+//                   dzId = currentMovable.id;
+//                 }
+//               }
+//             });
+//             if (dzId) {
+//               const dzPileCards = [...movables[dzId].componentState.cards];
+//               const movingCards = [
+//                 ...movables[movingPileId].componentState.cards,
+//               ];
+//               const updatedCards = [...movingCards, ...dzPileCards];
+//               let updatedComponentState = {
+//                 ...movables[dzId].componentState,
+//                 cards: updatedCards,
+//               };
+//               let updatedMovable = {
+//                 ...movables[dzId],
+//                 componentState: updatedComponentState,
+//               };
+//               let updatedMovables = { ...movables, [dzId]: updatedMovable };
+//               delete updatedMovables[movingPileId];
+//               socket.emit({
+//                 type: RT.UPDATE_TABLE,
+//                 payload: updatedMovables,
+//                 emitAll: true,
+//               });
 
-            // console.log("gestureDropLocation: ", gestureDropLocation)
-            // console.log("gestrue moveY", gesture.moveY, gesture.moveY / height )
-            // console.log("position: ", position.y, position.y_per)
-            let dzId = false;
-
-            Object.values(movables).forEach((currentMovable) => {
-              // console.log("x_per: ", currentMovable.panState.x_per, "y_per: ", currentMovable.panState.y_per)
-              if (!dzId && currentMovable.id !== movingPileId) {
-                const { widthPer, heightPer } = {
-                  ...currentMovable.componentState.dz,
-                };
-                const { x_per, y_per } = { ...currentMovable.panState };
-                const dzSlopCoefficient = 1.8;
-                if (
-                  gestureDropLocation.x > x_per - widthPer / dzSlopCoefficient &&
-                  gestureDropLocation.x < x_per + widthPer / dzSlopCoefficient &&
-                  gestureDropLocation.y > y_per - heightPer / dzSlopCoefficient &&
-                  gestureDropLocation.y < y_per + heightPer / dzSlopCoefficient
-                ) {
-                  dzId = currentMovable.id;
-                }
-              }
-
-            });
-            if (dzId) {
-              const dzPileCards = [...movables[dzId].componentState.cards];
-              const movingCards = [
-                ...movables[movingPileId].componentState.cards,
-              ];
-              const updatedCards = [...movingCards, ...dzPileCards];
-              let updatedComponentState = {
-                ...movables[dzId].componentState,
-                cards: updatedCards,
-              };
-              let updatedMovable = {
-                ...movables[dzId],
-                componentState: updatedComponentState,
-              };
-              let updatedMovables = { ...movables, [dzId]: updatedMovable };
-              delete updatedMovables[movingPileId];
-              socket.emit({
-                type: RT.UPDATE_TABLE,
-                payload: updatedMovables,
-                emitAll: true,
-              });
-            }
-          },
-        },
-      };
-    },
-  };
-};
+//             }
+//           },
+//         },
+//       };
+//     },
+//   };
+// };
 
 const ANIMATION_INTERVAL = 50;
 
@@ -97,7 +86,7 @@ export default function Sandbox ({ movables, socket }) {
   const [showBackground, setShowBackground] = useState(false);
   const ctx = useContext(SandboxContext);
 
-  const components = getComponents(movables, dispatch, socket);
+  const components = helpers.getComponents(movables, dispatch, socket);
 
   useEffect(() => {
 
