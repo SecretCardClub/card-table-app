@@ -3,8 +3,15 @@ import styled from "styled-components/native";
 import { Text, View, Pressable, TouchableOpacity } from "react-native";
 
 import SandboxContext from "../context/sandboxContext";
+import helpers from "./helpers";
 
-const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
+const PileMenu = ({
+  setShowMenu,
+  flipHandler,
+  movables,
+  componentState,
+  socket,
+}) => {
   const { id, cards } = componentState;
   // const ctx = useContext(SandboxContext);
 
@@ -19,19 +26,17 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
   };
 
   const shufflePileHandler = () => {
-    let shuffledCards = shuffle(shuffle(shuffle([...cards])));
-    let updatedComponentState = { ...componentState, cards: shuffledCards };
-    let updatedMovable = {
-      ...movables[id],
-      componentState: updatedComponentState,
+    let shuffledCards = shuffle(shuffle(shuffle(shuffle(shuffle([...cards])))));
+    const options = {
+      id,
+      type: "cards",
+      updatedState: shuffledCards,
+      componentState,
+      movables,
+      socket,
+      dispatch: true,
     };
-    // let updatedMovables = { ...movables, [id]: updatedMovable };
-    console.log("shuffle updatedMovable: ", updatedMovable);
-    socket.emit({
-      type: socket.RT.UPDATE_MOVABLE,
-      payload: updatedMovable,
-      emitAll: true,
-    });
+    helpers.updateComponentState(options);
     setShowMenu(false);
   };
 
@@ -57,7 +62,7 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
     <MenuContainer>
       <MenuView>
         <TouchableOpacity onPress={logHandler}>
-        <Text>Log Pile</Text>
+          <Text>Log Pile</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={deletePileHandler}>
           <Text>Delete Pile</Text>
@@ -69,6 +74,9 @@ const PileMenu = ({ setShowMenu, movables, componentState, socket }) => {
         )}
         <TouchableOpacity onPress={onCloseHandler}>
           <Text>Close</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={flipHandler}>
+          <Text>Flip</Text>
         </TouchableOpacity>
       </MenuView>
     </MenuContainer>
@@ -99,3 +107,15 @@ const MenuView = styled.View`
   padding-right: 25px;
   font-weight: 20;
 `;
+
+// let updatedComponentState = { ...componentState, cards: shuffledCards };
+// let updatedMovable = {
+//   ...movables[id],
+//   componentState: updatedComponentState,
+// };
+// // let updatedMovables = { ...movables, [id]: updatedMovable };
+// socket.emit({
+//   type: socket.RT.UPDATE_MOVABLE,
+//   payload: updatedMovable,
+//   emitAll: true,
+// });

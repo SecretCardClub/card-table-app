@@ -42,18 +42,6 @@ const CardPile = ({ componentState, movables, socket }) => {
       dispatch: true,
     };
     helpers.updateComponentState(options);
-    // let updatedComponentState = { ...componentState, dz: updatedDz };
-    // let updatedMovable = {
-    //   ...movables[id],
-    //   componentState: updatedComponentState,
-    // };
-    // let updatedMovables = { ...movables, [id]: updatedMovable };
-
-    // socket.emit({
-    //   type: socket.RT.UPDATE_TABLE,
-    //   payload: updatedMovables,
-    //   emitAll: true,
-    // });
   };
   const onPressInHandler = () => {
     setHighlighted(true);
@@ -120,6 +108,17 @@ const CardPile = ({ componentState, movables, socket }) => {
 
   const flipHandler = () => {
     let cards = [...componentState.cards];
+    cards = cards.map(card => card.flip())
+    const options = {
+      id: componentState.id,
+      type: "cards",
+      updatedState: cards,
+      componentState,
+      movables,
+      socket,
+      dispatch: true
+    };
+    helpers.updateComponentState(options);
   };
 
   return (
@@ -190,3 +189,16 @@ const PileView = styled.View`
 //   componentState: updatedComponentState,
 // };
 // let updatedMovables = { ...movables, [id]: updatedMovable };
+
+    // let updatedComponentState = { ...componentState, dz: updatedDz };
+    // let updatedMovable = {
+    //   ...movables[id],
+    //   componentState: updatedComponentState,
+    // };
+    // let updatedMovables = { ...movables, [id]: updatedMovable };
+
+    // socket.emit({
+    //   type: socket.RT.UPDATE_TABLE,
+    //   payload: updatedMovables,
+    //   emitAll: true,
+    // });

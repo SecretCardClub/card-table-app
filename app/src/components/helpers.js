@@ -1,6 +1,7 @@
 const helpers = {
 
-  updateComponentState: ({id, type, updatedState, componentState, movables, socket, dispatch, returnValue}) => {
+  updateComponentState: (options) => {
+    const {id, type, updatedState, componentState, movables, socket, dispatch, returnValue} = options;
     let updatedComponentState = {...componentState, [type]: updatedState}
     let updatedMovable = {...movables[id], componentState: updatedComponentState};
     let updatedMovables = {...movables, [id]: updatedMovable};
