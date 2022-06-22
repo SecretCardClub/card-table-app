@@ -9,3 +9,5 @@ export default function Navigation() {
     </NavigationContainer>
   );
 }
+// yarn remove @react-navigation/native-stack  && yarn add @react-navigation/native
+

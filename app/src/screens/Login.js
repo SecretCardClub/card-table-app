@@ -5,14 +5,29 @@ import { StateContext, DispatchContext } from '../appState/index'
 import styled from 'styled-components/native'
 import { Text } from "react-native";
 
+const SCREEN = `Login screen`
+const ERROR_MSG = `${SCREEN} ERROR ->`
+let renders = 0;
 export default function Login({ navigation }) {
+  renders++;
   const { navigate } = navigation
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
-  const { user } = state
-  console.log({ user })
+  const { User, dev } = state
+  const { UT } = User;
+  const { logs } = dev
+
+
+  useEffect(() => {
+    if (logs.states.Login || logs.states.all) {
+      console.log(`${SCREEN} STATE: `, { User, userName, password })
+    }
+    if (logs.renders.Login || logs.renders.all) {
+      console.log(`${SCREEN} RENDERS = ${renders}`)
+    }
+  }, [logs.states.Login, logs.renders.Login, logs.renders.all, logs.states.all, User])
 
   const nav = (screen) => {
     return () => {
@@ -22,27 +37,25 @@ export default function Login({ navigation }) {
 
 
   const login = (e) => {
-    console.log(`Attempting log in for user name `, userName)
     api.get.user(userName)
     .then(res => {
-      console.log('GET ', { res })
       if ( res.name ) {
         setUserName('')
         dispatch({
-          type: `UPDATE_USER`,
-          payload : { ...user, ...res  }
+          type: UT.UPDATE_USER,
+          payload : { ...User, ...res  }
         })
-        navigate('MainStack')
+        navigate('Home')
       }
       else {
-        console.log( 'NO USER FOUND', res)
+        console.log( `${ERROR_MSG} NO USER FOUND`, res)
       }
     })
-    .catch(err => console.log('login err',  JSON.stringify(err)))
+    .catch(err => console.log(`${ERROR_MSG} login err`,  err))
   }
 
   return (
-      <ScreenView>
+      <ScreenView >
         <HeaderView>
           <H1> Hello </H1>
           <P>Please login</P>
@@ -62,15 +75,9 @@ export default function Login({ navigation }) {
         </InputView>
 
         <ButtonView>
-          <Button onPress={login} >
-            <Text>Login</Text>
-          </Button>
-          <Button onPress={nav('SignUp')} >
-            <Text>Sign up</Text>
-          </Button>
-          <Button onPress={nav('MainStack')} >
-            <Text>Go to main</Text>
-          </Button>
+          <Button onPress={login} title="Login" />
+          <Button onPress={nav('SignUp')} title="Sign up" />
+          <Button onPress={nav('MainStack')} title="Go to main" />
         </ButtonView>
 
       </ScreenView>

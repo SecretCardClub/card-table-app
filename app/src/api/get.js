@@ -58,7 +58,7 @@ const getUser = (user_name, session_id) => {
   if (session_id) {
     query.session_id = session_id
   }
-  console.log('get user query ', query)
+  // console.log('get user query ', query)
   return get('/users', query)
 }
 

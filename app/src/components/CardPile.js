@@ -1,106 +1,162 @@
-import React, { useState, useEffect, useRef, useContext, useMemo } from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, PanResponder, Animated } from "react-native";
+import React, { useState, useContext } from "react";
+import styled from "styled-components/native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  PanResponder,
+  Animated,
+  Pressable,
+} from "react-native";
 
-import SandboxContext from "../context/sandboxContext";
-import helpers from "../helpers/helpers";
+// import { StateContext, DispatchContext } from '../appState/index'
 import Card from "../classes/Card";
+import usePan from "../hooks/usePan";
+import CardClass from "../classes/Card";
+import Pile from "../classes/Pile";
+import PileMenu from "./PileMenu";
+import MenuBackground from "./MenuBackground";
+import SandboxContext from "../context/sandboxContext";
 
-const CardPile = ({pile}) => {
+const CardPile = ({ componentState, movables, socket }) => {
+  // const [, dispatch] = useContext(DispatchContext);
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
-  const pan = useRef(new Animated.ValueXY()).current;
-  const [text, setText] = useState("Card");
+  const [showMenu, setShowMenu] = useState(false);
 
-  useEffect(() => {
-      setText(
-        `${pile.cards[0].rank} ${pile.cards[0].suit}`
-      );
-  }, [pile]);
+  const establishViewDimensions = (e) => {
+    const id = componentState.id;
+    const layout = e.nativeEvent.layout;
+    const updatedDz = {
+      widthPer: layout.width / window.innerWidth,
+      heightPer: layout.height / window.innerHeight,
+    };
+    let updatedComponentState = { ...componentState, dz: updatedDz };
+    let updatedMovable = {
+      ...movables[id],
+      componentState: updatedComponentState,
+    };
+    let updatedMovables = { ...movables, [id]: updatedMovable };
 
-  let panResponder = useMemo(() => {
-    return PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gesture) => true,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-      },
-      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (evt, gesture) => {
-        let dzId = helpers.isDropZone(gesture, ctx.piles, pile.id);
-        if (dzId) {
-          ctx.concatenateCards(pile.id, dzId)
-          // pan.flattenOffset();
-        } else {
-          ctx.updatePileDz(pan, pile.id);
-          pan.flattenOffset();
-        }
-      },
+    socket.emit({
+      type: socket.RT.UPDATE_TABLE,
+      payload: updatedMovables,
+      emitAll: true,
     });
-  }, [ctx.piles]);
-
-  const layoutHandler = (e) => {
-    ctx.initalizeDz(e.nativeEvent.layout, pile.id);
   };
-
-  const touchStartHandler = () => {
-
+  const onPressInHandler = () => {
     setHighlighted(true);
   };
 
-  const touchEndHandler = () => {
+  const onPressOutHandler = () => {
     setHighlighted(false);
   };
 
+  const newFunc = () => {
+    console.log("hello");
+  };
+
+  const onPressHandler = () => {
+    const id = componentState.id;
+    if (componentState.cards.length > 1) {
+      let updatedCards = [...componentState.cards];
+      const takenCard = updatedCards.shift();
+      // console.log("updatedCards: ", updatedCards);
+      let updatedComponentState = { ...componentState, cards: updatedCards };
+      // console.log("updatedCompState: ", updatedComponentState);
+      let updatedMovable = {
+        ...movables[id],
+        componentState: updatedComponentState,
+      };
+      // console.log("updatedMovable: ", updatedMovable);
+      let updatedMovables = { ...movables, [id]: updatedMovable };
+
+      if (ctx.currentPile) {
+        let currentMovable = {...movables[ctx.currentPile.id]}
+        let currentCards = [takenCard, ...currentMovable.componentState.cards];
+        let currentComponentState = {...currentMovable.componentState, cards: currentCards};
+        currentMovable = {...currentMovable, componentState: currentComponentState}
+        updatedMovables = {...updatedMovables, [currentMovable.id]: currentMovable}
+      } else {
+        const newPile = new Pile();
+        newPile.addCard(takenCard);
+        const newMovable = {
+          id: newPile.id,
+          component: "CardPile",
+          panState: {
+            x: 0,
+            y: 0,
+            x_per: 0.5,
+            y_per: 0.5,
+          },
+          componentState: newPile,
+        };
+        updatedMovables = { ...updatedMovables, [newMovable.id]: newMovable };
+        ctx.setCurrentPile(newMovable);
+      }
+      // console.log("updatedMovables: ", updatedMovables);
+      socket.emit &&
+        socket.emit({
+          type: socket.RT.UPDATE_TABLE,
+          payload: updatedMovables,
+          emitAll: true,
+        });
+    }
+  };
+
+  const onLongPressHandler = () => {
+    // ctx.setCurrentPile(componentState);
+    setShowMenu(true);
+  };
+
   return (
-    <Animated.View
-    style={[{transform: [{ translateX: pan.x }, { translateY: pan.y }]}, styles.animatedView]}
-      {...panResponder.panHandlers}
-    >
-      <View
-        style={[styles.card, highlighted && styles.highlighted]}
-        onTouchStart={touchStartHandler}
-        onTouchEnd={touchEndHandler}
-        onLayout={layoutHandler}
-      >
-        <Text>{pile.cards[0].rank}</Text>
-        <Text>{pile.cards[0].suit}</Text>
-        <Text>{pile.cards.length}</Text>
-      </View>
-    </Animated.View>
+    <>
+      {/* {showMenu && <MenuBackground setShowMenu={setShowMenu} />} */}
+      {showMenu ? (
+        <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
+          <PileMenu
+            setShowMenu={setShowMenu}
+            movables={movables}
+            componentState={componentState}
+            socket={socket}
+          />
+        </PileView>
+      ) : (
+        <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
+          <Pressable
+            onPressIn={onPressInHandler}
+            onPressOut={onPressOutHandler}
+            onPress={onPressHandler}
+            onLongPress={onLongPressHandler}
+          >
+            {componentState.cards.length ? (
+              <>
+                <Text>{componentState.cards[0].rank}</Text>
+                <Text>{componentState.cards[0].suit}</Text>
+                <Text>{componentState.cards.length}</Text>
+                {ctx.showPileMenu && <Text>Hello</Text>}
+              </>
+            ) : null}
+          </Pressable>
+        </PileView>
+      )}
+    </>
   );
 };
 
 export default CardPile;
 
-const styles = StyleSheet.create({
-  animatedView: {
-    width: "10%",
-    zIndex: 100,
-  },
-  card: {
-    position: "relative",
-    zIndex: 10,
-    flex: 1,
-    height: "auto",
-    padding: 10,
-    paddingLeft: 25,
-    paddingRight: 25,
-    margin: 15,
-    backgroundColor: "green",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 5,
-  },
-  highlighted: {
-    borderColor: "black",
-    borderSize: "5",
-    backgroundColor: "pink",
-  },
-});
+const PileView = styled.View`
+  width: 100px;
+  height: 140px;
+  display: flex;
+  position: relative;
+  z-index: 10;
+  padding: 10px;
+  padding-left: 25px;
+  padding-right: 25px;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: space-around;
+  background-color: ${({ highlighted }) => (highlighted ? "pink" : "grey")};
+`;

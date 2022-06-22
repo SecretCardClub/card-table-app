@@ -1,103 +1,50 @@
 import React, { useEffect, useContext, useState } from 'react';
 import styled from 'styled-components/native'
-import { P, H1, ScreenView, Button, Input, Text } from './components/index'
+import { P, H1, ScreenView, Button, Input, Text, UserView } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import api from '../api/index'
+import { SideDrawer } from './components/SideDrawer'
+
+const SCREEN = `Home screen`
+const ERROR_MSG = `${SCREEN} ERROR ->`
+let renders = 0;
 
 export default function Home({ navigation }) {
+  renders++
   const { navigate } = navigation;
   const [, dispatch] = useContext(DispatchContext);
   const [state] = useContext(StateContext);
   const [newRoomname, setNewRoomname] = useState('')
-  const { user, home, socket } = state
-
+  const { User, Home, Room, socket, dev } = state
+  const { logs } = dev
+  const { HT } = Home
+  const { RT } = Room
 
   useEffect(() => {
-    const homeSocket = home.socket;
-
-    if (user.id) {
-      const newHomeSocket = socket.create('', { user_id: user.id });
-      newHomeSocket.on("connect", () => {
-        dispatch({
-          type: `UPDATE_HOME`,
-          payload : { ...home, socket: newHomeSocket }
-        })
-      });
-
-      newHomeSocket.on("update_state", (newHomeState) => {
-        const nextHomeState = { ...home, ...newHomeState, socket: newHomeSocket }
-        dispatch({
-          type: `UPDATE_HOME`,
-          payload : nextHomeState
-        })
-      });
-
-      newHomeSocket.on("connect_error", () => {
-        console.log(`connect_error `)
-        newHomeSocket.connect();
-      });
-
-      newHomeSocket.on("disconnect", (err) => {
-        console.log(`Home socket disconnected `)
-        // navigate('AuthStack')
-      });
+    if (logs.states.Home || logs.states.all) {
+      console.log(`${SCREEN} STATE: `, { Home, User, newRoomname })
     }
-    else {
-      if (homeSocket) {
-        homeSocket.close()
-        dispatch({
-          type: `UPDATE_HOME`,
-          payload : { ...home, socket: null }
-        })
-      }
+    if (logs.renders.Home || logs.renders.all) {
+      console.log(`${SCREEN} RENDERS = ${renders}`)
     }
-  }, [user.id])
+  }, [logs.states.Home, logs.renders.Home, logs.renders.all, logs.states.all, Home])
+
 
   const nav = (screenName) => {
-    return (e) => {
+    return (evt) => {
       navigate(screenName)
     }
   }
 
   const openRoom = (room) => {
-
-    const newRoomSocket = socket.create(room.id, { user_id: user.id })
-    newRoomSocket.on("connect", () => {
-      dispatch({
-        type: `UPDATE_ROOM`,
-        payload : { ...state.room, socket: newRoomSocket }
-      })
-      navigate('Room')
-    });
-
-    newRoomSocket.on("update_state", (newRoomState) => {
-      const nextRoomState = { ...state.room, ...newRoomState, socket: newRoomSocket }
-      dispatch({
-        type: `UPDATE_ROOM`,
-        payload : nextRoomState
-      })
-    });
-
-    newRoomSocket.on("connect_error", (err) => {
-      console.log(`connect_error `, err)
-      // roomSocket.connect();
-    });
-
-    newRoomSocket.on("close_room", (err) => {
-      console.log(`Room closed `)
-      navigate('Home')
-    });
-
-    newRoomSocket.on("disconnect", (err) => {
-      console.log(`Room socket disconnected `)
-      // navigate('Home')
-    });
+    socket.create(room.id, { User_id: User.id }, 'Room')
+    navigate('Room')
   }
 
 
   const createRoom = () => {
 
-    api.post.room({ room_name: newRoomname, user_id: user.id })
+    api.post.room({ room_name: newRoomname, User_id: User.id })
     .then(res => {
       console.log('POST ', { res })
       if (res) {
@@ -108,31 +55,38 @@ export default function Home({ navigation }) {
   }
 
 
+
+
   return (
-    <ScreenView>
+    <ScreenView >
       <H1> Home </H1>
       <DashBoard>
         <DashView>
           <P>Users</P>
-          {home.users.map((wssUser, ind) => {
-            return <P key={ind} >{wssUser.name}</P>
+          {Home.Users.map((wssUser, ind) => {
+            return <UserView key={ind} {...wssUser} />
           })}
         </DashView>
         <DashView>
         <P>Rooms</P>
-          {home.rooms.map((room, ind) => {
+          {Home.Rooms.map((room, ind) => {
             return (
-              <Button onPress={(e) => openRoom(room)}  key={ind} >
-                <P>{room.name}</P>
-              </Button>
+              <Button
+                onPress={(e) => openRoom(room)}
+                key={ind}
+                title={room.name}
+              />
             )
           })}
         </DashView>
       </DashBoard>
       <Input value={newRoomname} onChangeText={setNewRoomname} />
-      <Button onPress={createRoom} >
-        <Text>Create room</Text>
-      </Button>
+      <Button
+        onPress={createRoom}
+        title="Create room"
+        height='5%'
+        width='50%'
+      />
     </ScreenView>
   )
 }
@@ -154,4 +108,3 @@ const DashView = styled.View`
   flex-direction: column;
   justify-content: space-evenly;
 `
-

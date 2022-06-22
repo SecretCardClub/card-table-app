@@ -4,7 +4,7 @@ import { API_URL } from '../../.config'
 
 
 const buildGetOptions = (endpoint, params = {}, data = {}) => {
-  console.log('GET params ', params)
+  // console.log('GET params ', params)
   return {
     method: 'get',
     params,
