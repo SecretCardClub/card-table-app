@@ -8,9 +8,9 @@ import { Text, P } from './Text'
 
 let ScreenViewComponent = View;
 
-if(DEVICE.OS === 'ios') {
-  ScreenViewComponent = SafeAreaView;
-}
+// if(DEVICE.OS === 'ios') {
+//   ScreenViewComponent = SafeAreaView;
+// }
 
 
 export const ScreenView = ({ children, nav, ...screenProps }) => {

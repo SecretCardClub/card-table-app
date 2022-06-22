@@ -75,4 +75,3 @@ const Container = styled.View`
   /* align-items: center; */
   background-color: rgb(210, 210, 210);
 `;
-

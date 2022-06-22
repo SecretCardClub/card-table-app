@@ -31,7 +31,7 @@ export default function Home({ navigation }) {
 
 
   const nav = (screenName) => {
-    return (e) => {
+    return (evt) => {
       navigate(screenName)
     }
   }
@@ -58,7 +58,7 @@ export default function Home({ navigation }) {
 
 
   return (
-    <ScreenView navigation={navigation} nav={nav} >
+    <ScreenView >
       <H1> Home </H1>
       <DashBoard>
         <DashView>
@@ -87,13 +87,6 @@ export default function Home({ navigation }) {
         height='5%'
         width='50%'
       />
-      <Button
-        onPress={nav('Dev')}
-        title="Dev Options"
-        height='5%'
-        width='50%'
-      />
-
     </ScreenView>
   )
 }

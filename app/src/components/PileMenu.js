@@ -1,13 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components/native";
 import { Text, View, TouchableOpacity } from "react-native";
 
-// import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
 
 const PileMenu = ({ setShowMenu, flipHandler, movables, componentState, socket }) => {
   const { id, cards } = componentState;
-  // const ctx = useContext(SandboxContext);
 
   const shuffle = (cards) => {
     let index = cards.length;
