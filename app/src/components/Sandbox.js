@@ -70,10 +70,10 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
 
   return (
     <SandboxContainer >
-
+{/*
         <UsersContainer>
           {users && users.map(user => <UserAvatar  key={user.id} user={user} />)}
-        </UsersContainer>
+        </UsersContainer> */}
 
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
