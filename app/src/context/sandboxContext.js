@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-import Pile from "../classes/Pile"
-import Card from "../classes/Card"
+// import Pile from "../classes/Pile"
+// import Card from "../classes/Card"
 
 const SandboxContext = React.createContext({
   showPileMenu: false,

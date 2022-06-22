@@ -1,21 +1,9 @@
 import React, { useState, useContext } from "react";
 import styled from "styled-components/native";
-import {
-  StyleSheet,
-  Text,
-  View,
-  PanResponder,
-  Animated,
-  Pressable,
-} from "react-native";
+import { Text, View, Pressable } from "react-native";
 
-
-import Card from "../classes/Card";
-import usePan from "../hooks/usePan";
-import CardClass from "../classes/Card";
 import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu";
-import MenuBackground from "./MenuBackground";
 import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
 
@@ -31,7 +19,7 @@ const CardPile = ({ componentState, movables, socket }) => {
         cardWidthPer: layout.width / window.innerWidth,
         cardHeightPer: layout.height / window.innerHeight,
       };
-      setCardDimensions(cardDimensions);
+      ctx.setCardDimensions(cardDimensions);
     }
   };
 
@@ -197,14 +185,13 @@ const PileView = styled.View`
 //   emitAll: true,
 // });
 
-
-    // const options = {
-    //   id,
-    //   type: "dz",
-    //   updatedState: updatedDz,
-    //   componentState,
-    //   movables,
-    //   socket,
-    //   dispatch: true,
-    // };
-    // helpers.updateComponentState(options);
+// const options = {
+//   id,
+//   type: "dz",
+//   updatedState: updatedDz,
+//   componentState,
+//   movables,
+//   socket,
+//   dispatch: true,
+// };
+// helpers.updateComponentState(options);
