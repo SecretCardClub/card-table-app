@@ -21,27 +21,44 @@ export default function Sandbox ({ movables, socket }) {
   const components = helpers.getComponents(movables, dispatch, socket, ctx.cardDimensions);
 
   useEffect(() => {
-    const animationArray = [ ...Object.values(animationQueue) ]
+
+    let nextQueue = { ...animationQueue }
+    const animationArray = Object.values(nextQueue)
     if(animationArray.length && !animating ) {
+
       Animated.parallel(animationArray.map((config) => {
-        return Animated.timing(config.pan, config)
+        const nextAnimation = Animated.timing(config.pan, config)
+        const nextConfig = nextQueue[config.id]
+        if (!nextConfig.duration) {
+          delete nextQueue[nextConfig.id]
+        }
+        else {
+          nextConfig.duration = 0;
+        }
+        return nextAnimation
       })).start(() => {
+        setAnimationQueue(nextQueue)
       })
-      setAnimationQueue({})
     }
 
-  }, [animationQueue]);
+  }, [animationQueue])
 
 
   const addAnimation = (newAnimation) => {
-    const { id, timeStamp } = newAnimation
-    const queued = animationQueue[id];
-    if(queued) {
-      queued.duration += timeStamp - queued.timeStamp ;
+    const { id, end } = newAnimation
+    let queued = animationQueue[id];
+
+    if (queued) {
+      queued.duration += end - queued.start
+      queued.start = end
+      queued.toValue = newAnimation.toValue;
     }
-    else{
-      newAnimation.duration = Date.now() - timeStamp
-      setAnimationQueue({ ...animationQueue,  [id]: newAnimation})
+    else {
+      queued = newAnimation
+      const last = Date.now() - end > 10 ? 10 :  Date.now() - end
+      queued.duration = last
+      queued.start = Date.now()
+      setAnimationQueue({ ...animationQueue,  [id]: queued })
     }
   }
 

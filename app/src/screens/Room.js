@@ -65,9 +65,9 @@ export default function Room ({ navigation }) {
 
 
   const addPile = (e) => {
-    const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
+    const suits = ['H', 'C', 'S', 'D'];
     const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
-    const newPile = new Pile();
+    const newPile = new Pile({});
     for (let i = 0; i < suits.length; i++) {
       for (let j = 0; j < ranks.length; j++) {
         const newCard = new Card(suits[i], ranks[j]);
@@ -96,7 +96,7 @@ export default function Room ({ navigation }) {
   (
     <ScreenView >
 
-      <SandboxContextProvider>
+      <SandboxContextProvider movables={Room.table} >
         <Sandbox movables={Room.table} socket={socket}/>
       </SandboxContextProvider>
 

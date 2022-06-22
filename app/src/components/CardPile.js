@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components/native";
 import { Text, View, Pressable } from "react-native";
 
@@ -8,6 +8,9 @@ import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
 
 const CardPile = ({ componentState, movables, socket }) => {
+  if(componentState.constructor !== 'Pile') {
+    componentState = new Pile(componentState)
+  }
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -22,6 +25,8 @@ const CardPile = ({ componentState, movables, socket }) => {
       ctx.setCardDimensions(cardDimensions);
     }
   };
+
+
 
   const onPressInHandler = () => {
     setHighlighted(true);
@@ -53,21 +58,21 @@ const CardPile = ({ componentState, movables, socket }) => {
       if (ctx.currentPile) {
         id = ctx.currentPile.id;
         updatedCards = [takenCard, ...updatedMovables[id].componentState.cards];
-
         const options = {
-          id,
-          type: "cards",
-          updatedState: updatedCards,
-          componentState: updatedMovables[id].componentState,
-          movables: updatedMovables,
-          socket,
-          dispatch: true,
-          returnValue: true,
-        };
-        updatedMovables = helpers.updateComponentState(options);
-        ctx.setCurrentPile(updatedMovables[id]);
+            id,
+            type: "cards",
+            updatedState: updatedCards,
+            componentState: updatedMovables[id].componentState,
+            movables: updatedMovables,
+            socket,
+            dispatch: true,
+            returnValue: true,
+          };
+          updatedMovables = helpers.updateComponentState(options);
+          ctx.setCurrentPile(updatedMovables[id]);
+
       } else {
-        const newPile = new Pile();
+        const newPile = new Pile({});
         newPile.addCard(takenCard);
         const newMovable = {
           id: newPile.id,
@@ -80,7 +85,7 @@ const CardPile = ({ componentState, movables, socket }) => {
         socket.emit({
           type: socket.RT.UPDATE_TABLE,
           payload: updatedMovables,
-          emitAll: true,
+          dispatch: true,
         });
       }
     }
@@ -88,7 +93,13 @@ const CardPile = ({ componentState, movables, socket }) => {
 
   const menuFlipHandler = () => {
     let cards = [...componentState.cards];
-    cards = cards.map((card) => card.flip());
+    let faceUp = cards[0].faceUp;
+    console.log("faceUP: ", faceUp)
+    cards = cards.map((card) => {
+      card.faceUp = !faceUp;
+      return card;
+    });
+
     const options = {
       id: componentState.id,
       type: "cards",
@@ -97,25 +108,37 @@ const CardPile = ({ componentState, movables, socket }) => {
       movables,
       socket,
       dispatch: true,
+      returnValue: true
     };
     helpers.updateComponentState(options);
+    setShowMenu(false);
   };
 
   return (
     <>
       {showMenu && !componentState.spread && (
-        <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
+        <PileView
+          onLayout={establishViewDimensions}
+          highlighted={highlighted}
+          thickness={componentState.cards.length}
+          color={componentState.color}
+        >
           <PileMenu
             setShowMenu={setShowMenu}
             movables={movables}
             componentState={componentState}
             socket={socket}
-            flipMenuHandler={menuFlipHandler}
+            menuFlipHandler={menuFlipHandler}
           />
         </PileView>
       )}
       {!showMenu && !componentState.spread && (
-        <PileView onLayout={establishViewDimensions} highlighted={highlighted}>
+        <PileView
+          onLayout={establishViewDimensions}
+          highlighted={ctx.currentPile && ctx.currentPile.id === componentState.id}
+          thickness={componentState.cards.length}
+          color={componentState.color}
+        >
           <Pressable
             onPressIn={onPressInHandler}
             onPressOut={onPressOutHandler}
@@ -125,10 +148,7 @@ const CardPile = ({ componentState, movables, socket }) => {
             {componentState.cards.length ? (
               <>
                 {componentState.cards[0].faceUp && (
-                  <Text>{componentState.cards[0].rank}</Text>
-                )}
-                {componentState.cards[0].faceUp && (
-                  <Text>{componentState.cards[0].suit}</Text>
+                <Text>{`${componentState.cards[0].rank} ${componentState.cards[0].suit}`}</Text>
                 )}
                 <Text>{componentState.cards.length}</Text>
                 {ctx.showPileMenu && <Text>Hello</Text>}
@@ -154,8 +174,16 @@ const PileView = styled.View`
   padding-right: 25px;
   border-radius: 5px;
   align-items: center;
-  justify-content: space-around;
-  background-color: ${({ highlighted }) => (highlighted ? "pink" : "grey")};
+  justify-content: space-between;
+  background-color: ${({ highlighted, color }) => (highlighted ? "pink" : color)};
+  border-bottom-width: ${({ thickness }) => (`${thickness/15}px`)};
+  border-right-width: ${({ thickness }) => (`${thickness/22}px`)};
+  border-color: black;
+
+`;
+
+const CardTextPressable = styled.Pressable`
+  align-self: flex-start;
 `;
 
 // let currentMovable = {...movables[ctx.currentPile.id]}

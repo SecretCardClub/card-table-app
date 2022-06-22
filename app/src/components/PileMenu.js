@@ -4,7 +4,7 @@ import { Text, View, TouchableOpacity } from "react-native";
 
 import helpers from "./helpers";
 
-const PileMenu = ({ setShowMenu, flipHandler, movables, componentState, socket }) => {
+const PileMenu = ({ setShowMenu, menuFlipHandler, movables, componentState, socket }) => {
   const { id, cards } = componentState;
 
   const shuffle = (cards) => {
@@ -64,7 +64,7 @@ const PileMenu = ({ setShowMenu, flipHandler, movables, componentState, socket }
             <Text>Shuffle Cards</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={flipHandler}>
+        <TouchableOpacity onPress={menuFlipHandler}>
           <Text>Flip</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onCloseHandler}>

@@ -42,12 +42,12 @@ const helpers = {
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
                   const {cardWidthPer, cardHeightPer } = cardDimensions;
-                  const dzSlopCoefficient = 1.8;
+                  const dzSlopCoefficient = 2.0;
                   if (
-                    gestureDropLocation.x > x_per -cardWidthPer / dzSlopCoefficient &&
-                    gestureDropLocation.x < x_per + cardWidthPer / dzSlopCoefficient &&
+                    gestureDropLocation.x > x_per - cardWidthPer / dzSlopCoefficient &&
+                    gestureDropLocation.x < x_per   &&
                     gestureDropLocation.y > y_per - cardHeightPer / dzSlopCoefficient &&
-                    gestureDropLocation.y < y_per + cardHeightPer / dzSlopCoefficient
+                    gestureDropLocation.y < y_per
                   ) {
                     dzId = currentMovable.id;
                   }
@@ -72,7 +72,7 @@ const helpers = {
                 socket.emit({
                   type: socket.RT.UPDATE_TABLE,
                   payload: updatedMovables,
-                  emitAll: true,
+                  dispatch: true,
                 });
 
               }

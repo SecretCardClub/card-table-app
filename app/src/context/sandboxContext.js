@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-
 const SandboxContext = React.createContext({
   showPileMenu: false,
   setShowPileMenu: () => {},
@@ -8,23 +7,30 @@ const SandboxContext = React.createContext({
   setCurrentPile: () => {},
   cardDimensions: {},
   setCardDimensions: () => {},
+  zIndexCounter: 1,
+  setZIndexCounter: () => {},
 });
 
-export const SandboxContextProvider = (props) => {
+export const SandboxContextProvider = ({ children, movables }) => {
   const [showPileMenu, setShowPileMenu] = useState(false);
   const [currentPile, setCurrentPile] = useState(null);
   const [cardDimensions, setCardDimensions] = useState(null);
 
   let timer;
   useEffect(() => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    if (currentPile && !movables[currentPile.id]) {
       setCurrentPile(null);
-    }, 2500);
-    return () => {
+    } else {
       clearTimeout(timer);
+      timer = setTimeout(() => {
+        setCurrentPile(null);
+      }, 2000);
+      return () => {
+        clearTimeout(timer);
+      };
     }
-  }, [currentPile]);
+  }, [movables]);
+
 
   return (
     <SandboxContext.Provider
@@ -37,7 +43,7 @@ export const SandboxContextProvider = (props) => {
         setCardDimensions,
       }}
     >
-      {props.children}
+      {children}
     </SandboxContext.Provider>
   );
 };

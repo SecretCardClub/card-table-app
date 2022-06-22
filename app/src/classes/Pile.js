@@ -1,11 +1,17 @@
+const randInt = (max = 255) => {
+  return Math.floor(Math.random() * max)
+}
+
+const generateColor = () => {
+  return `rgb(${randInt()}, ${randInt()}, ${randInt()})`
+}
 
 
 class Pile {
-  constructor(id, dz = { widthPer: 0, heightPer: 0 }, cards ) {
-    this.id = id ||  Math.round(Math.random() * 100000);
-    this.dz = dz;
-    this.cards = [];
-    this.color = "blue";
+  constructor({ id =  Math.round(Math.random() * 100000), cards = [], color }) {
+    this.id = id;
+    this.cards = cards;
+    this.color = color || generateColor();
     this.spread = false;
   }
   addCard(card) {

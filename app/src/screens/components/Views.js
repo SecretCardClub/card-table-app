@@ -23,7 +23,7 @@ export const ScreenView = ({ children, nav, ...screenProps }) => {
       onMoveShouldSetResponderCapture={(evt) => false}
      >
       {children}
-       <SideDrawer nav={nav} />
+       {/* <SideDrawer nav={nav} /> */}
     </ScreenContainer>
   )
 }

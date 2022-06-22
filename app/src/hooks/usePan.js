@@ -22,7 +22,6 @@ const debounce = (func, time = DEBOUNCE_TIME) => {
 }
 
 
-
 let renders = 0;
 
 
