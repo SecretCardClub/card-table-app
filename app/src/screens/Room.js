@@ -95,10 +95,11 @@ export default function Room ({ navigation }) {
   return Room.socket ?
   (
     <ScreenView >
-
-      <SandboxContextProvider movables={Room.table} >
-        <Sandbox movables={Room.table} socket={socket}/>
+      <SandboxContextProvider movables={Room.table}>
+        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
       </SandboxContextProvider>
+
+
 
       <Header >
         <H3 >{Room.name}</H3>
@@ -106,7 +107,6 @@ export default function Room ({ navigation }) {
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
       </Header>
-
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />
@@ -164,6 +164,7 @@ const UserList = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-around;
 `
 
 

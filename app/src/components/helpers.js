@@ -42,7 +42,7 @@ const helpers = {
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
                   const {cardWidthPer, cardHeightPer } = cardDimensions;
-                  const dzSlopCoefficient = 2.0;
+                  const dzSlopCoefficient = 1.5;
                   if (
                     gestureDropLocation.x > x_per - cardWidthPer / dzSlopCoefficient &&
                     gestureDropLocation.x < x_per   &&
@@ -74,7 +74,6 @@ const helpers = {
                   payload: updatedMovables,
                   dispatch: true,
                 });
-
               }
             },
           },

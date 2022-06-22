@@ -7,12 +7,14 @@ import PileMenu from "./PileMenu"
 import Movable from "./Movable";
 import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers"
+import UserAvatar from "./UserAvatar"
+// import { P, H3, ScreenView, UserView, Button, Input } from '../screens/components/index'
 
 const ANIMATION_INTERVAL = 50;
 
 
 
-export default function Sandbox ({ movables, socket }) {
+export default function Sandbox ({ movables, socket, users, roomName }) {
   const [, dispatch] = useContext(DispatchContext);
   const [animationQueue, setAnimationQueue] = useState({})
   const [animating, setAnimating] = useState(false)
@@ -62,9 +64,17 @@ export default function Sandbox ({ movables, socket }) {
     }
   }
 
+  const userLayoutHandler = (evt) => {
+    console.log(evt.nativeEvent.layout);
+  };
 
   return (
-    <Container >
+    <SandboxContainer >
+
+        <UsersContainer>
+          {users && users.map(user => <UserAvatar  key={user.id} user={user} />)}
+        </UsersContainer>
+
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;
@@ -80,15 +90,44 @@ export default function Sandbox ({ movables, socket }) {
           </Movable>
         );
       })}
-    </Container>
+    </SandboxContainer>
   );
 }
 
 
-const Container = styled.View`
+const SandboxContainer = styled.View`
+/* width: 100%; */
   flex: 1;
   display: flex;
-  position: relative;
+  /* position: absolute; */
+  z-index: 0;
   /* align-items: center; */
   background-color: rgb(210, 210, 210);
 `;
+
+const UsersContainer = styled.View`
+width: 100%
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  height: auto;
+`;
+
+const Header = styled.View`
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-evenly;
+  background-color: rgb(230, 230, 230);
+`;
+
+const UserList = styled.View`
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+`

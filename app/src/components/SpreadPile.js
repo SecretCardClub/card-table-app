@@ -17,7 +17,9 @@ import helpers from "./helpers";
 const SpreadPile = () => {
 
   return (
+    <View>
 
+    </View>
   );
 };
 

@@ -77,7 +77,7 @@ export default function usePan(panState, addAnimation) {
       payload: movable,
       dispatch: true,
     })
-  }, [socket, table, User])
+  }, [socket, table, User, table[panState.id].componentState.cards])
 
   const deEmitMove = useCallback(debounce(emitMove), [socket, table, User])
 
