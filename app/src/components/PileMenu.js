@@ -5,13 +5,7 @@ import { Text, View, Pressable, TouchableOpacity } from "react-native";
 import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
 
-const PileMenu = ({
-  setShowMenu,
-  flipHandler,
-  movables,
-  componentState,
-  socket,
-}) => {
+const PileMenu = ({ setShowMenu, flipHandler, movables, componentState, socket }) => {
   const { id, cards } = componentState;
   // const ctx = useContext(SandboxContext);
 
@@ -72,11 +66,11 @@ const PileMenu = ({
             <Text>Shuffle Cards</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={onCloseHandler}>
-          <Text>Close</Text>
-        </TouchableOpacity>
         <TouchableOpacity onPress={flipHandler}>
           <Text>Flip</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onCloseHandler}>
+          <Text>Close</Text>
         </TouchableOpacity>
       </MenuView>
     </MenuContainer>

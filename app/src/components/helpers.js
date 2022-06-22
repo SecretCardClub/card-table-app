@@ -20,7 +20,7 @@ const helpers = {
       return updatedMovables;
     }
   },
-  getComponents: (movables, dispatch, socket) => {
+  getComponents: (movables, dispatch, socket, cardDimensions) => {
 
     return {
       CardPile: (movable) => {
@@ -37,18 +37,28 @@ const helpers = {
               };
               let dzId = false;
 
+              console.log("dropLocation: ", gestureDropLocation)
               Object.values(movables).forEach((currentMovable) => {
+                if (currentMovable.id !== movingPileId) {
+                  console.log("pile x/y: ", currentMovable.panState.x_per, currentMovable.panState.y_per)
+                }
                 if (!dzId && currentMovable.id !== movingPileId) {
-                  const { widthPer, heightPer } = {
-                    ...currentMovable.componentState.dz,
-                  };
+                  // const { widthPer, heightPer } = {
+                  //   ...currentMovable.componentState.dz,
+                  // };
+                  // console.log("widthPer/heightPer", widthPer, heightPer)
                   const { x_per, y_per } = { ...currentMovable.panState };
+                  const {cardWidthPer, cardHeightPer } = cardDimensions;
                   const dzSlopCoefficient = 1.8;
                   if (
-                    gestureDropLocation.x > x_per - widthPer / dzSlopCoefficient &&
-                    gestureDropLocation.x < x_per + widthPer / dzSlopCoefficient &&
-                    gestureDropLocation.y > y_per - heightPer / dzSlopCoefficient &&
-                    gestureDropLocation.y < y_per + heightPer / dzSlopCoefficient
+                    // gestureDropLocation.x > x_per -cardWidthPer / dzSlopCoefficient &&
+                    // gestureDropLocation.x < x_per +cardWidthPer / dzSlopCoefficient &&
+                    // gestureDropLocation.y > y_per - cardHeightPer / dzSlopCoefficient &&
+                    // gestureDropLocation.y < y_per + cardHeightPer / dzSlopCoefficient
+                    gestureDropLocation.x > x_per -cardWidthPer / dzSlopCoefficient &&
+                    gestureDropLocation.x < x_per + cardWidthPer / dzSlopCoefficient &&
+                    gestureDropLocation.y > y_per - cardHeightPer / dzSlopCoefficient &&
+                    gestureDropLocation.y < y_per + cardHeightPer / dzSlopCoefficient
                   ) {
                     dzId = currentMovable.id;
                   }

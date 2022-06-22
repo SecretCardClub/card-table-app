@@ -8,11 +8,14 @@ const SandboxContext = React.createContext({
   setShowPileMenu: () => {},
   currentPile: null,
   setCurrentPile: () => {},
+  cardDimensions: {},
+  setCardDimensions: () => {},
 });
 
 export const SandboxContextProvider = (props) => {
   const [showPileMenu, setShowPileMenu] = useState(false);
   const [currentPile, setCurrentPile] = useState(null);
+  const [cardDimensions, setCardDimensions] = useState(null);
 
   let timer;
   useEffect(() => {
@@ -32,6 +35,8 @@ export const SandboxContextProvider = (props) => {
         setShowPileMenu,
         currentPile,
         setCurrentPile,
+        cardDimensions,
+        setCardDimensions,
       }}
     >
       {props.children}
