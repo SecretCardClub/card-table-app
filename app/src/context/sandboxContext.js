@@ -7,14 +7,18 @@ const SandboxContext = React.createContext({
   setCurrentPile: () => {},
   cardDimensions: {},
   setCardDimensions: () => {},
-  zIndexCounter: 1,
-  setZIndexCounter: () => {},
+  userAvatarDimensions: {},
+  setUserAvatarDimensions: () => {},
+  playerHandDimensions: {},
+  setPlayerHandDimensions: () => {},
 });
 
 export const SandboxContextProvider = ({ children, movables }) => {
   const [showPileMenu, setShowPileMenu] = useState(false);
   const [currentPile, setCurrentPile] = useState(null);
   const [cardDimensions, setCardDimensions] = useState(null);
+  const [userAvatarDimensions, setUserAvatarDimensions] = useState(null);
+  const [playerHandDimensions, setPlayerHandDimensions] = useState(null);
 
   let timer;
   useEffect(() => {
@@ -41,6 +45,10 @@ export const SandboxContextProvider = ({ children, movables }) => {
         setCurrentPile,
         cardDimensions,
         setCardDimensions,
+        userAvatarDimensions,
+        setUserAvatarDimensions,
+        playerHandDimensions,
+        setPlayerHandDimensions,
       }}
     >
       {children}

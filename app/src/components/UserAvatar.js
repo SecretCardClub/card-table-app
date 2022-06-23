@@ -2,21 +2,29 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
 import styled from "styled-components/native";
 
+import sandboxContext from "../context/sandboxContext";
 
+const UserAvatar = ({ user }) => {
+  const ctx = useContext(SandboxContext);
 
-const UserAvatar = ({user}) => {
-
-  console.log(user);
+  console.log("user: ", user);
   const establishUserDimensions = (evt) => {
-    console.log(user.name, "dimensions: ", evt.nativeEvent.layout);
+    if (!ctx.userAvatarDimensions) {
+      // console.log(user.name, "dimensions: ", evt.nativeEvent.layout);
+      const { width, height } = Dimensions.get("screen");
+      const userAvatarDimensions = {
+        avatarWidthPer: evt.nativeEvent.layout.width / width,
+        avatarHeightPer: evt.nativeEvent.layout.height / height,
+      };
+      ctx.setUserAvatarDimensions(userAvatarDimensions);
+    }
   };
-
 
   return (
     <UserContainer color={user.color} onLayout={establishUserDimensions}>
-      <Text color='white' >{user.name}</Text>
+      <Text color="white">{user.name}</Text>
     </UserContainer>
-  )
+  );
 };
 export default UserAvatar;
 
@@ -26,9 +34,9 @@ const UserContainer = styled.TouchableOpacity`
   height: auto;
   display: flex;
   padding: 10px;
-  color: 'white';
+  color: "white";
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  background-color: ${(({ color }) =>  color || 'grey')};
-`
+  background-color: ${({ color }) => color || "grey"};
+`;
