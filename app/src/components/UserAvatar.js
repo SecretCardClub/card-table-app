@@ -7,16 +7,18 @@ import sandboxContext from "../context/sandboxContext";
 const UserAvatar = ({ user }) => {
   const ctx = useContext(SandboxContext);
 
-  console.log("user: ", user);
+  // console.log("user: ", user);
   const establishUserDimensions = (evt) => {
-    if (!ctx.userAvatarDimensions) {
+    if (!ctx.userAvatarDimensions[user.id]) {
       // console.log(user.name, "dimensions: ", evt.nativeEvent.layout);
       const { width, height } = Dimensions.get("screen");
-      const userAvatarDimensions = {
+      const currentAvatarDimensions = {
         avatarWidthPer: evt.nativeEvent.layout.width / width,
         avatarHeightPer: evt.nativeEvent.layout.height / height,
       };
-      ctx.setUserAvatarDimensions(userAvatarDimensions);
+      let avatarDimension = ctx.userAvatarDimensions;
+      avatarDimensions[user.id] = currentAvatarDimensions;
+      ctx.setUserAvatarDimensions(avatarDimensions);
     }
   };
 
