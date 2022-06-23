@@ -15,6 +15,8 @@ const UserAvatar = ({ user }) => {
       const currentAvatarDimensions = {
         avatarWidthPer: evt.nativeEvent.layout.width / width,
         avatarHeightPer: evt.nativeEvent.layout.height / height,
+        x_per: evt.nativeEvent.layout.x / width,
+        y_per: evt.nativeEvent.layout.y / height,
       };
       let avatarDimension = ctx.userAvatarDimensions;
       avatarDimensions[user.id] = currentAvatarDimensions;
