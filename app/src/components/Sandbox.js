@@ -20,7 +20,7 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
   const [animating, setAnimating] = useState(false)
   const [showBackground, setShowBackground] = useState(false);
   const ctx = useContext(SandboxContext);
-  const components = helpers.getComponents(movables, dispatch, socket, ctx.cardDimensions);
+  const components = helpers.getComponents(movables, dispatch, socket, ctx.cardDimensions, ctx.userAvatarDimensions);
 
   useEffect(() => {
 

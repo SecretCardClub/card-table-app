@@ -21,7 +21,7 @@ const helpers = {
     }
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
-  getComponents: (movables, dispatch, socket, cardDimensions) => {
+  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars) => {
 
     return {
       CardPile: (movable) => {
@@ -37,7 +37,16 @@ const helpers = {
                 y: evt.pageY / height,
               };
               let dzId = false;
-
+              Object.values(userAvatars).forEach((userAvatar) => {
+                  const {x_per, y_per, avatarWidthPer, avatarHeightPer } = userAvatar;
+                  if (!dzId &&
+                      gestureDropLocation.x > x_per &&
+                      gestureDropLocation.x < x_per + avatarWidthPer &&
+                      gestureDropLocation.y > y_per &&
+                      gestureDropLocation.y < y_per + avatarHeightPer) {
+                    dzId = {id: userAvatar.id, type: "user"};
+                  }
+                });
               Object.values(movables).forEach((currentMovable) => {
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
@@ -49,11 +58,11 @@ const helpers = {
                     gestureDropLocation.y > y_per - cardHeightPer / dzSlopCoefficient &&
                     gestureDropLocation.y < y_per
                   ) {
-                    dzId = currentMovable.id;
+                    dzId = {id: currentMovable.id, type: "movable"};
                   }
                 }
               });
-              if (dzId) {
+              if (dzId && dzId.type === "moveable") {
                 const dzPileCards = [...movables[dzId].componentState.cards];
                 const movingCards = [
                   ...movables[movingPileId].componentState.cards,
@@ -74,7 +83,8 @@ const helpers = {
                   payload: updatedMovables,
                   dispatch: true,
                 });
-              }
+              } else if (dzId && dzId.type === "user") {
+                console.log("user drop zone detected");
             },
           },
         };

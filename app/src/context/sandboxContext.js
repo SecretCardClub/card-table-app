@@ -17,7 +17,7 @@ export const SandboxContextProvider = ({ children, movables }) => {
   const [showPileMenu, setShowPileMenu] = useState(false);
   const [currentPile, setCurrentPile] = useState(null);
   const [cardDimensions, setCardDimensions] = useState(null);
-  const [userAvatarDimensions, setUserAvatarDimensions] = useState(null);
+  const [userAvatarDimensions, setUserAvatarDimensions] = useState({});
   const [playerHandDimensions, setPlayerHandDimensions] = useState(null);
 
   let timer;
