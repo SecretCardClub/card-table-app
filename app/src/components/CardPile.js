@@ -198,8 +198,8 @@ const PileView = styled.View`
   border-radius: 5px;
   align-items: center;
   justify-content: space-between;
+  background-color: ${({ highlighted, color }) => (highlighted ? "pink" : color)};
   background-color: whitesmoke;
-  /* background-color: ${({ highlighted, color }) => (highlighted ? "pink" : color)}; */
   border-bottom-width: ${({ thickness }) => (`${thickness/15}px`)};
   border-right-width: ${({ thickness }) => (`${thickness/22}px`)};
   box-shadow: 1px 1px ${({ thickness }) => (thickness > 9 ? `${5 + thickness/5}px` : `${thickness / 2}px`)} #8b8c8c;
@@ -209,8 +209,9 @@ const PileView = styled.View`
 
 const StyledImage = styled.Image`
   width: ${CARD_LAYOUT.width}px;
-  height: ${CARD_LAYOUT.height}px;
+  height: ${CARD_LAYOUT.height - 2}px;
   z-index: 1000;
+  border-radius: 5px;
   `;
 
 const CardTextPressable = styled.Pressable`
