@@ -1,14 +1,27 @@
-import React from "react"
-import { Dimensions } from 'react-native';
+import React from "react";
+import { Dimensions } from "react-native";
 import CardPile from "./CardPile";
 
-const helpers = {
 
+const SLOP_COEFFICIENT = 0.75;
+const helpers = {
   updateComponentState: (options) => {
-    const {id, type, updatedState, componentState, movables, socket, dispatch, returnValue} = options;
-    let updatedComponentState = {...componentState, [type]: updatedState}
-    let updatedMovable = {...movables[id], componentState: updatedComponentState};
-    let updatedMovables = {...movables, [id]: updatedMovable};
+    const {
+      id,
+      type,
+      updatedState,
+      componentState,
+      movables,
+      socket,
+      dispatch,
+      returnValue,
+    } = options;
+    let updatedComponentState = { ...componentState, [type]: updatedState };
+    let updatedMovable = {
+      ...movables[id],
+      componentState: updatedComponentState,
+    };
+    let updatedMovables = { ...movables, [id]: updatedMovable };
     if (dispatch) {
       socket.emit({
         type: socket.RT.UPDATE_TABLE,
@@ -22,73 +35,85 @@ const helpers = {
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
   getComponents: (movables, dispatch, socket, cardDimensions, userAvatars) => {
-
+    console.log({ cardDimensions })
     return {
       CardPile: (movable) => {
         return {
           Component: CardPile,
           CB: {
             releaseCB: (evt, currentPan, position) => {
-              evt = evt.nativeEvent
+              evt = evt.nativeEvent;
+              console.log(evt)
               const movingPileId = movable.id;
-              const { height, width } = Dimensions.get('screen');
+              const { height, width } = Dimensions.get("screen");
               const gestureDropLocation = {
                 x: evt.pageX / width,
                 y: evt.pageY / height,
               };
+              console.log("gestureDropLocation: ", gestureDropLocation)
               let dzId = false;
-              Object.values(userAvatars).forEach((userAvatar) => {
-                  const {x_per, y_per, avatarWidthPer, avatarHeightPer } = userAvatar;
-                  if (!dzId &&
-                      gestureDropLocation.x > x_per &&
-                      gestureDropLocation.x < x_per + avatarWidthPer &&
-                      gestureDropLocation.y > y_per &&
-                      gestureDropLocation.y < y_per + avatarHeightPer) {
-                    dzId = {id: userAvatar.id, type: "user"};
-                  }
-                });
+              // Object.values(userAvatars).forEach((userAvatar) => {
+              //   const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
+              //     userAvatar;
+
+              //   if (
+              //     !dzId &&
+              //     gestureDropLocation.x > x_per &&
+              //     gestureDropLocation.x < x_per + avatarWidthPer &&
+              //     gestureDropLocation.y > y_per &&
+              //     gestureDropLocation.y < y_per + avatarHeightPer
+              //   ) {
+              //     console.log(userAvatar)
+              //     dzId = { id: userAvatar.id, type: "user" };
+              //   }
+              // });
               Object.values(movables).forEach((currentMovable) => {
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
-                  const {cardWidthPer, cardHeightPer } = cardDimensions;
-                  const dzSlopCoefficient = 1.5;
+                  const { cardWidthPer, cardHeightPer } = cardDimensions;
+
                   if (
-                    gestureDropLocation.x > x_per - cardWidthPer / dzSlopCoefficient &&
-                    gestureDropLocation.x < x_per   &&
-                    gestureDropLocation.y > y_per - cardHeightPer / dzSlopCoefficient &&
+                    gestureDropLocation.x >
+                      x_per - cardWidthPer / SLOP_COEFFICIENT &&
+                    gestureDropLocation.x < x_per &&
+                    gestureDropLocation.y >
+                      y_per - cardHeightPer / SLOP_COEFFICIENT &&
                     gestureDropLocation.y < y_per
                   ) {
-                    dzId = {id: currentMovable.id, type: "movable"};
+                    dzId = { id: currentMovable.id, type: "movable" };
                   }
                 }
               });
-              if (dzId && dzId.type === "moveable") {
-                const dzPileCards = [...movables[dzId].componentState.cards];
+              if (dzId && dzId.type === "movable") {
+
+                const dzPileCards = [...movables[dzId.id].componentState.cards];
                 const movingCards = [
                   ...movables[movingPileId].componentState.cards,
                 ];
                 const updatedCards = [...movingCards, ...dzPileCards];
                 let updatedComponentState = {
-                  ...movables[dzId].componentState,
+                  ...movables[dzId.id].componentState,
                   cards: updatedCards,
                 };
                 let updatedMovable = {
-                  ...movables[dzId],
+                  ...movables[dzId.id],
                   componentState: updatedComponentState,
                 };
-                let updatedMovables = { ...movables, [dzId]: updatedMovable };
+                let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
                 delete updatedMovables[movingPileId];
                 socket.emit({
                   type: socket.RT.UPDATE_TABLE,
                   payload: updatedMovables,
-                  dispatch: true,
+                  emitAll: true,
                 });
               } else if (dzId && dzId.type === "user") {
-                console.log("user drop zone detected");
-            },
-          },
+                console.log("user drop zone detected: ", dzId);
+
+              }
+            }
+          }
         };
-      },
+      }
     };
   }
 };

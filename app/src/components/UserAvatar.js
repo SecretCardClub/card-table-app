@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import sandboxContext from "../context/sandboxContext";
 
 const UserAvatar = ({ user }) => {
-  const ctx = useContext(SandboxContext);
+  const ctx = useContext(sandboxContext);
 
   // console.log("user: ", user);
   const establishUserDimensions = (evt) => {
@@ -18,7 +18,7 @@ const UserAvatar = ({ user }) => {
         x_per: evt.nativeEvent.layout.x / width,
         y_per: evt.nativeEvent.layout.y / height,
       };
-      let avatarDimension = ctx.userAvatarDimensions;
+      let avatarDimensions = ctx.userAvatarDimensions;
       avatarDimensions[user.id] = currentAvatarDimensions;
       ctx.setUserAvatarDimensions(avatarDimensions);
     }

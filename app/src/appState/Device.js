@@ -32,7 +32,7 @@ Dims.widthPercentToPixels = (percent, integer = true) => {
   return Dims.percentToPixels(percent, 'width', integer)
 }
 
-Dims.calcPosition = (x_per, y_per, offset = false) => {
+Dims.calcPosition = (x_per, y_per, offset = true) => {
   if(!y_per) {
     y_per = x_per.y_per
     x_per = x_per.x_per

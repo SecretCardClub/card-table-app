@@ -2,14 +2,21 @@ import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components/native";
 import { Text, View, Pressable } from "react-native";
 
+import Device from '../appState/Device'
 import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu";
 import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
 
+const CARD_LAYOUT = {
+  width: 100,
+  height: 140,
+}
+
+
 const CardPile = ({ componentState, movables, socket }) => {
   if(componentState.constructor !== 'Pile') {
-    componentState = new Pile(componentState)
+    componentState = new Pile(componentState);
   }
   const ctx = useContext(SandboxContext);
   const [highlighted, setHighlighted] = useState(false);
@@ -17,11 +24,24 @@ const CardPile = ({ componentState, movables, socket }) => {
 
   const establishViewDimensions = (e) => {
     if (!ctx.cardDimensions) {
-      const layout = e.nativeEvent.layout;
+
+      let layout, deviceHeight, deviceWidth;
+      if(Device.OS !== 'web') {
+        deviceHeight = Device.Dims.height
+        deviceWidth = Device.Dims.width
+        layout = CARD_LAYOUT;
+
+      }
+      else {
+        deviceHeight = window.innerHeight
+        deviceWidth = window.innerWidth
+        layout = e.nativeEvent.layout;
+      }
       const cardDimensions = {
-        cardWidthPer: layout.width / window.innerWidth,
-        cardHeightPer: layout.height / window.innerHeight,
+        cardWidthPer: layout.width / deviceWidth,
+        cardHeightPer: layout.height / deviceHeight,
       };
+
       ctx.setCardDimensions(cardDimensions);
     }
   };
@@ -72,7 +92,7 @@ const CardPile = ({ componentState, movables, socket }) => {
           ctx.setCurrentPile(updatedMovables[id]);
 
       } else {
-        const newPile = new Pile({});
+        const newPile = new Pile({color: componentState.color});
         newPile.addCard(takenCard);
         const newMovable = {
           id: newPile.id,
@@ -164,8 +184,8 @@ const CardPile = ({ componentState, movables, socket }) => {
 export default CardPile;
 
 const PileView = styled.View`
-  width: 100px;
-  height: 140px;
+  width: ${CARD_LAYOUT.width}px;
+  height: ${CARD_LAYOUT.height}px;
   display: flex;
   position: relative;
   z-index: 10;

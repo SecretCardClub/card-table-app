@@ -99,8 +99,6 @@ export default function Room ({ navigation }) {
         <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
       </SandboxContextProvider>
 
-
-
       <Header >
         <H3 >{Room.name}</H3>
         <UserList>

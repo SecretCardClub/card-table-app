@@ -102,7 +102,7 @@ const SandboxContainer = styled.View`
   /* position: absolute; */
   z-index: 0;
   /* align-items: center; */
-  background-color: rgb(210, 210, 210);
+  background-color: rgb(255, 255, 255);
 `;
 
 const UsersContainer = styled.View`
@@ -111,6 +111,7 @@ width: 100%
   flex-direction: row;
   justify-content: space-around;
   height: auto;
+
 `;
 
 const Header = styled.View`
@@ -120,7 +121,7 @@ const Header = styled.View`
   align-items: center;
   flex-direction: row;
   justify-content: space-evenly;
-  background-color: rgb(230, 230, 230);
+  background-color: rgb(255, 255, 255);
 `;
 
 const UserList = styled.View`
