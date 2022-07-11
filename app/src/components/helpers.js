@@ -35,7 +35,6 @@ const helpers = {
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
   getComponents: (movables, dispatch, socket, cardDimensions, userAvatars) => {
-    console.log({ cardDimensions })
     return {
       CardPile: (movable) => {
         return {
@@ -43,14 +42,12 @@ const helpers = {
           CB: {
             releaseCB: (evt, currentPan, position) => {
               evt = evt.nativeEvent;
-              console.log(evt)
               const movingPileId = movable.id;
               const { height, width } = Dimensions.get("screen");
               const gestureDropLocation = {
                 x: evt.pageX / width,
                 y: evt.pageY / height,
               };
-              console.log("gestureDropLocation: ", gestureDropLocation)
               let dzId = false;
               // Object.values(userAvatars).forEach((userAvatar) => {
               //   const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
