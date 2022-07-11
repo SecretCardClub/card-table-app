@@ -115,7 +115,6 @@ const CardPile = ({ componentState, movables, socket }) => {
   const menuFlipHandler = () => {
     let cards = [...componentState.cards];
     let faceUp = cards[0].faceUp;
-    console.log("faceUP: ", faceUp)
     cards = cards.map((card) => {
       card.faceUp = !faceUp;
       return card;
@@ -134,12 +133,6 @@ const CardPile = ({ componentState, movables, socket }) => {
     helpers.updateComponentState(options);
     setShowMenu(false);
   };
-
-
-  const path = `../assets/cards/${componentState.cards[0].suit}${componentState.cards[0].rank}.png`
-  console.log(path)
-  // const cardImage = require(path);
-  // const cardImage = require('../assets/cards/HA.png')
 
   return (
     <>
@@ -175,10 +168,13 @@ const CardPile = ({ componentState, movables, socket }) => {
             {componentState.cards.length ? (
               <>
                 {componentState.cards[0].faceUp && (
-                <Text>{`${componentState.cards[0].rank} ${componentState.cards[0].suit}`}</Text>
+                <StyledImage source={require(`../assets/cards/${componentState.cards[0].suit}${componentState.cards[0].rank}.png`)} />
+                )}
+                {!componentState.cards[0].faceUp && (
+                <StyledImage source={require('../assets/cards/blueBack2.png')} />
                 )}
                 <Text>{componentState.cards.length}</Text>
-                <Image source={require(`../assets/cards/${componentState.cards[0].suit}${componentState.cards[0].rank}.png`)} />
+
               </>
             ) : null}
           </Pressable>
@@ -196,18 +192,26 @@ const PileView = styled.View`
   display: flex;
   position: relative;
   z-index: 10;
-  padding: 10px;
+
   padding-left: 25px;
   padding-right: 25px;
   border-radius: 5px;
   align-items: center;
   justify-content: space-between;
-  background-color: ${({ highlighted, color }) => (highlighted ? "pink" : color)};
+  background-color: whitesmoke;
+  /* background-color: ${({ highlighted, color }) => (highlighted ? "pink" : color)}; */
   border-bottom-width: ${({ thickness }) => (`${thickness/15}px`)};
   border-right-width: ${({ thickness }) => (`${thickness/22}px`)};
+  box-shadow: 1px 1px ${({ thickness }) => (thickness > 9 ? `${5 + thickness/5}px` : `${thickness / 2}px`)} #8b8c8c;
   border-color: black;
 
 `;
+
+const StyledImage = styled.Image`
+  width: ${CARD_LAYOUT.width}px;
+  height: ${CARD_LAYOUT.height}px;
+  z-index: 1000;
+  `;
 
 const CardTextPressable = styled.Pressable`
   align-self: flex-start;
