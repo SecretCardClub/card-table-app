@@ -3,7 +3,7 @@ import { Dimensions } from "react-native";
 import CardPile from "./CardPile";
 
 
-const SLOP_COEFFICIENT = 0.75;
+const SLOP_COEFFICIENT = 1.5;
 const helpers = {
   updateComponentState: (options) => {
     const {
