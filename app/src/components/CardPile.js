@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components/native";
-import { Text, View, Pressable } from "react-native";
+import { Text, View, Pressable, Image } from "react-native";
 
 import Device from '../appState/Device'
 import Pile from "../classes/Pile";
 import PileMenu from "./PileMenu";
 import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
+import HA from "../assets/cards/HA.png";
 
 const CARD_LAYOUT = {
   width: 100,
@@ -134,9 +135,15 @@ const CardPile = ({ componentState, movables, socket }) => {
     setShowMenu(false);
   };
 
+
+  const path = `../assets/cards/${componentState.cards[0].suit}${componentState.cards[0].rank}.png`
+  console.log(path)
+  // const cardImage = require(path);
+  // const cardImage = require('../assets/cards/HA.png')
+
   return (
     <>
-      {showMenu && !componentState.spread && (
+      {showMenu && (
         <PileView
           onLayout={establishViewDimensions}
           highlighted={highlighted}
@@ -152,7 +159,7 @@ const CardPile = ({ componentState, movables, socket }) => {
           />
         </PileView>
       )}
-      {!showMenu && !componentState.spread && (
+      {!showMenu && (
         <PileView
           onLayout={establishViewDimensions}
           highlighted={ctx.currentPile && ctx.currentPile.id === componentState.id}
@@ -171,7 +178,7 @@ const CardPile = ({ componentState, movables, socket }) => {
                 <Text>{`${componentState.cards[0].rank} ${componentState.cards[0].suit}`}</Text>
                 )}
                 <Text>{componentState.cards.length}</Text>
-                {ctx.showPileMenu && <Text>Hello</Text>}
+                <Image source={require(`../assets/cards/${componentState.cards[0].suit}${componentState.cards[0].rank}.png`)} />
               </>
             ) : null}
           </Pressable>
