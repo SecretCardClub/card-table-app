@@ -49,6 +49,8 @@ const helpers = {
                 y: evt.pageY / height,
               };
               let dzId = false;
+
+
               Object.values(userAvatars).forEach((userAvatar) => {
                 const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
                   userAvatar;
@@ -107,26 +109,26 @@ const helpers = {
                 console.log("userAvatars: ", userAvatars);
                 console.log("selectedUser: ", userAvatars[dzId.id]);
 
-                const dzPileCards = [...userAvatars[dzId.id].hand.cards];
-                const movingCards = [
-                  ...movables[movingPileId].componentState.cards,
-                ];
-                const updatedCards = [...movingCards, ...dzPileCards];
-                let updatedComponentState = {
-                  ...userAvatars[dzId.id].componentState,
-                  cards: updatedCards,
-                };
-                let updatedMovable = {
-                  ...movables[dzId.id],
-                  componentState: updatedComponentState,
-                };
-                let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
-                delete updatedMovables[movingPileId];
-                socket.emit({
-                  type: socket.RT.UPDATE_TABLE,
-                  payload: updatedMovables,
-                  emitAll: true,
-                });
+                // const dzPileCards = [...userAvatars[dzId.id].hand.cards];
+                // const movingCards = [
+                //   ...movables[movingPileId].componentState.cards,
+                // ];edCards = [...movingCards, ...dzPileCards];
+                // let updatedCom
+                // const updatponentState = {
+                //   ...userAvatars[dzId.id].componentState,
+                //   cards: updatedCards,
+                // };
+                // let updatedMovable = {
+                //   ...movables[dzId.id],
+                //   componentState: updatedComponentState,
+                // };
+                // let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
+                // delete updatedMovables[movingPileId];
+                // socket.emit({
+                //   type: socket.RT.UPDATE_TABLE,
+                //   payload: updatedMovables,
+                //   emitAll: true,
+                // });
 
               }
             }

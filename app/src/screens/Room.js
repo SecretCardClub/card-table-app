@@ -99,18 +99,18 @@ export default function Room ({ navigation }) {
   (
     <ScreenView >
       <SandboxContextProvider movables={Room.table}>
-      <UsersContainer>
+      {/* <UsersContainer>
         {Users && Users.map((user) => <UserAvatar key={user.id} user={user} />)}
-      </UsersContainer>
+      </UsersContainer> */}
         <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
       </SandboxContextProvider>
 
-      <Header >
+      {/* <Header >
         <H3 >{Room.name}</H3>
         <UserList>
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
-      </Header>
+      </Header> */}
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />
@@ -136,7 +136,7 @@ const ChatList = styled.View`
 `
 const Header = styled.View`
   width: 100%;
-  height: 10%;
+  height: auto;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -154,7 +154,7 @@ const Table = styled.View`
 
 const Footer = styled.View`
   width: 100%;
-  height: 10%;
+  height: 5%;
   display: flex;
   flex-direction: row;
   align-items: center;

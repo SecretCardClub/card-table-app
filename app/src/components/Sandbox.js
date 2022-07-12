@@ -9,7 +9,8 @@ import Movable from "./Movable";
 import SandboxContext from "../context/sandboxContext";
 import helpers from "./helpers";
 import UserAvatar from "./UserAvatar";
-// import { P, H3, ScreenView, UserView, Button, Input } from '../screens/components/index'
+
+
 
 let deviceHeight, deviceWidth;
 if (Device.OS !== "web") {
@@ -84,9 +85,11 @@ export default function Sandbox({ movables, socket, users, roomName }) {
 
   return (
     <SandboxContainer>
-      {/* <UsersContainer>
-        {users && users.map((user) => <UserAvatar key={user.id} user={user} />)}
-      </UsersContainer> */}
+
+      {users && users.map((user, ind, allUsers) => {
+        const positionPercent = ((ind + 1) / (allUsers.length + 1))
+        return <UserAvatar  key={user.id} user={user} position={positionPercent} />
+      })}
 
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
@@ -107,17 +110,16 @@ export default function Sandbox({ movables, socket, users, roomName }) {
           </Movable>
         );
       })}
+
     </SandboxContainer>
   );
 }
 
 const SandboxContainer = styled.View`
-  /* width: 100%; */
+  width: 100%;
   flex: 1;
   display: flex;
   /* position: absolute; */
-  flex-direction: row;
-  flex-wrap: wrap;
   z-index: 0;
   /* align-items: center; */
   background-color: rgb(255, 255, 255);

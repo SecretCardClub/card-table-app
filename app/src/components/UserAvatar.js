@@ -2,14 +2,17 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
 import styled from "styled-components/native";
 
+import Device from '../appState/Device'
 import sandboxContext from "../context/sandboxContext";
 
-const UserAvatar = ({ user }) => {
+const SCREEN_HEIGHT_POSITION = Math.floor(Device.Dims.height * .1)
+
+const UserAvatar = ({ user, position }) => {
   const ctx = useContext(sandboxContext);
+  const SCREEN_WIDTH_POSITION = Math.floor(Device.Dims.width * position)
 
   const establishUserDimensions = (evt) => {
     if (!ctx.userAvatarDimensions[user.id]) {
-      // console.log(user.name, "dimensions: ", evt.nativeEvent.layout);
       const { width, height } = Dimensions.get("screen");
       const currentAvatarDimensions = {
         avatarWidthPer: evt.nativeEvent.layout.width / width,
@@ -30,30 +33,52 @@ const UserAvatar = ({ user }) => {
 
   return (
     <UserContainer
-      color={user.color}
-      onLayout={establishUserDimensions}
-      onLongPress={logUserInfo}
+    color={user.color}
+    onLayout={establishUserDimensions}
+    top={SCREEN_HEIGHT_POSITION}
+    left={SCREEN_WIDTH_POSITION}
     >
-      <Text color="white">{user.name[0]}</Text>
-    <CardCount>
-      <CountText>{Math.random() > .5 ? 7 : 13}</CountText>
-    </CardCount>
-    </UserContainer>
-  );
+    <Text color="white">{user.name}</Text>
+  </UserContainer>
+);
+    // <UserContainer
+    //   color={user.color}
+    //   onLayout={establishUserDimensions}
+    //   onLongPress={logUserInfo}
+    // >
+    //   <Text color="white">{user.name[0]}</Text>
+    // <CardCount>
+    //   <CountText>{Math.random() > .5 ? 7 : 13}</CountText>
+    // </CardCount>
+    // </UserContainer>
+  //);
 };
 export default UserAvatar;
 
+// const UserContainer = styled.TouchableOpacity`
+// position: relative;
+//   margin: 15px;
+//   width: 50px;
+//   height: 50px;
+//   border-radius: 50%;
+//   display: flex;
+//   padding: 10px;
+//   color: "white";
+//   background-color: ${({ color }) => color || "grey"};
+// `;
 const UserContainer = styled.TouchableOpacity`
-position: relative;
-  margin: 15px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: auto;
+  height: auto;
   display: flex;
   padding: 10px;
   color: "white";
-  /* align-items: center;
-  justify-content: center; */
+  border-radius: 50%;
+  position: absolute;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  top: ${({ top }) => `${top}px`};
+  left: ${({ left }) => `${left}px`};
   background-color: ${({ color }) => color || "grey"};
 `;
 
