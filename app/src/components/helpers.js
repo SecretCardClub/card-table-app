@@ -15,6 +15,7 @@ const helpers = {
       socket,
       dispatch,
       returnValue,
+      deletePileId,
     } = options;
     let updatedComponentState = { ...componentState, [type]: updatedState };
     let updatedMovable = {
@@ -22,6 +23,9 @@ const helpers = {
       componentState: updatedComponentState,
     };
     let updatedMovables = { ...movables, [id]: updatedMovable };
+    if (deletePileId) {
+      delete updatedMovables[deletePileId];
+    }
     if (dispatch) {
       socket.emit({
         type: socket.RT.UPDATE_TABLE,
@@ -89,44 +93,33 @@ const helpers = {
                   ...movables[movingPileId].componentState.cards,
                 ];
                 const updatedCards = [...movingCards, ...dzPileCards];
-                let updatedComponentState = {
-                  ...movables[dzId.id].componentState,
-                  cards: updatedCards,
-                };
-                let updatedMovable = {
-                  ...movables[dzId.id],
-                  componentState: updatedComponentState,
-                };
-                let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
-                delete updatedMovables[movingPileId];
-                socket.emit({
-                  type: socket.RT.UPDATE_TABLE,
-                  payload: updatedMovables,
-                  emitAll: true,
-                });
+                const options = {
+                  id: dzId.id,
+                  type: "cards",
+                  updatedState: updatedCards,
+                  componentState: movables[dzId.id].componentState,
+                  movables,
+                  socket,
+                  dispatch: true,
+                  deletePileId: movingPileId,
+                }
+                helpers.updateComponentState(options);
+
               } else if (dzId && dzId.type === "user") {
                 console.log("user drop zone detected: ", dzId);
                 console.log("userAvatars: ", userAvatars);
                 console.log("selectedUser: ", userAvatars[dzId.id]);
 
-                // const dzPileCards = [...userAvatars[dzId.id].hand.cards];
-                // const movingCards = [
-                //   ...movables[movingPileId].componentState.cards,
-                // ];edCards = [...movingCards, ...dzPileCards];
-                // let updatedCom
-                // const updatponentState = {
-                //   ...userAvatars[dzId.id].componentState,
-                //   cards: updatedCards,
-                // };
-                // let updatedMovable = {
-                //   ...movables[dzId.id],
-                //   componentState: updatedComponentState,
-                // };
-                // let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
+                const dzPileCards = [...userAvatars[dzId.id].hand.cards];
+                const movingCards = [ ...movables[movingPileId].componentState.cards];
+                const updatedCards = [...movingCards, ...dzPileCards];
+
+
+
                 // delete updatedMovables[movingPileId];
                 // socket.emit({
-                //   type: socket.RT.UPDATE_TABLE,
-                //   payload: updatedMovables,
+                //   type: socket.RT.UPDATE_ROOM,
+                //   payload: roomState,
                 //   emitAll: true,
                 // });
 

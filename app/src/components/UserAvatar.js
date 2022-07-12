@@ -35,6 +35,7 @@ const UserAvatar = ({ user, position }) => {
     <UserContainer
     color={user.color}
     onLayout={establishUserDimensions}
+    onPress={logUserInfo}
     top={SCREEN_HEIGHT_POSITION}
     left={SCREEN_WIDTH_POSITION}
     >
