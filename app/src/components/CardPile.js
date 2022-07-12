@@ -10,8 +10,8 @@ import helpers from "./helpers";
 import cardIndex from "../assets/cards/cardIndex.js";
 
 const CARD_LAYOUT = {
-  width: 100,
-  height: 140,
+  width: 90,
+  height: 126,
 };
 
 const CardPile = ({ componentState, movables, socket }) => {
@@ -61,7 +61,9 @@ const CardPile = ({ componentState, movables, socket }) => {
     let id = componentState.id;
     if (componentState.cards.length > 1) {
       let updatedCards = [...componentState.cards];
+      console.log("Before: ", updatedCards.length)
       const takenCard = updatedCards.shift();
+      console.log("After: ", updatedCards.length)
       let options = {
         id,
         type: "cards",

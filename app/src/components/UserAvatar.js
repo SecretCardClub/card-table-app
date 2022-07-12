@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import Device from '../appState/Device'
 import sandboxContext from "../context/sandboxContext";
 
-const SCREEN_HEIGHT_POSITION = Math.floor(Device.Dims.height * .1)
+const SCREEN_HEIGHT_POSITION = Math.floor(Device.Dims.height * .03)
 
 const UserAvatar = ({ user, position }) => {
   const ctx = useContext(sandboxContext);
@@ -67,8 +67,8 @@ export default UserAvatar;
 //   background-color: ${({ color }) => color || "grey"};
 // `;
 const UserContainer = styled.TouchableOpacity`
-  width: auto;
-  height: auto;
+  width: 60px;
+  height: 60px;
   display: flex;
   padding: 10px;
   color: "white";
