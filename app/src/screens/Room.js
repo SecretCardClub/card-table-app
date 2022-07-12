@@ -65,9 +65,9 @@ export default function Room ({ navigation }) {
 
 
   const addPile = (e) => {
-    const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
+    const suits = ['H', 'C', 'S', 'D'];
     const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
-    const newPile = new Pile();
+    const newPile = new Pile({});
     for (let i = 0; i < suits.length; i++) {
       for (let j = 0; j < ranks.length; j++) {
         const newCard = new Card(suits[i], ranks[j]);
@@ -95,9 +95,8 @@ export default function Room ({ navigation }) {
   return Room.socket ?
   (
     <ScreenView >
-
-      <SandboxContextProvider>
-        <Sandbox movables={Room.table} socket={socket}/>
+      <SandboxContextProvider movables={Room.table}>
+        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
       </SandboxContextProvider>
 
       <Header >
@@ -106,7 +105,6 @@ export default function Room ({ navigation }) {
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
       </Header>
-
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />
@@ -164,6 +162,7 @@ const UserList = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-around;
 `
 
 

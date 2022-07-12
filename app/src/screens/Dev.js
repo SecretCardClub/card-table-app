@@ -174,7 +174,6 @@ const LogValueContainter = styled.View`
 
 `
 
-
 const LogValueList = styled.View`
   width: 100%;
   height: auto;

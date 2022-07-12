@@ -13,6 +13,7 @@ import usePan from '../hooks/usePan'
 
 
 const Card = (props) => {
+
   const [highlighted, setHighlighted] = useState(false);
   // const [pan, panResponder] = usePan()
 

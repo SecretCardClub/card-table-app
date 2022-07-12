@@ -87,6 +87,12 @@ export default function Home({ navigation }) {
         height='5%'
         width='50%'
       />
+      <Button
+        onPress={nav('Dev')}
+        title="Dev options"
+        height='5%'
+        width='50%'
+      />
     </ScreenView>
   )
 }
