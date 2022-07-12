@@ -70,11 +70,11 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
 
   return (
     <SandboxContainer >
-{/*
+
         <UsersContainer>
           {users && users.map(user => <UserAvatar  key={user.id} user={user} />)}
-        </UsersContainer> */}
-
+        </UsersContainer>
+    <MyView>
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;
@@ -90,6 +90,7 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
           </Movable>
         );
       })}
+      </MyView>
     </SandboxContainer>
   );
 }
@@ -100,20 +101,28 @@ const SandboxContainer = styled.View`
   flex: 1;
   display: flex;
   /* position: absolute; */
+  flex-direction: row;
+  flex-wrap: wrap;
   z-index: 0;
   /* align-items: center; */
   background-color: rgb(255, 255, 255);
 `;
 
 const UsersContainer = styled.View`
-width: 100%
+  width: inherit;
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  height: auto;
+  height: 10%;
 
 `;
 
+const MyView = styled.View`
+  width: inherit;
+  height: 80%;
+  background-color: light blue;
+`;
 const Header = styled.View`
   width: 100%;
   height: 10%;
