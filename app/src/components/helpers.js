@@ -49,21 +49,20 @@ const helpers = {
                 y: evt.pageY / height,
               };
               let dzId = false;
-              // Object.values(userAvatars).forEach((userAvatar) => {
-              //   const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
-              //     userAvatar;
+              Object.values(userAvatars).forEach((userAvatar) => {
+                const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
+                  userAvatar;
 
-              //   if (
-              //     !dzId &&
-              //     gestureDropLocation.x > x_per &&
-              //     gestureDropLocation.x < x_per + avatarWidthPer &&
-              //     gestureDropLocation.y > y_per &&
-              //     gestureDropLocation.y < y_per + avatarHeightPer
-              //   ) {
-              //     console.log(userAvatar)
-              //     dzId = { id: userAvatar.id, type: "user" };
-              //   }
-              // });
+                if (
+                  !dzId &&
+                  gestureDropLocation.x > x_per &&
+                  gestureDropLocation.x < x_per + avatarWidthPer &&
+                  gestureDropLocation.y > y_per &&
+                  gestureDropLocation.y < y_per + avatarHeightPer
+                ) {
+                  dzId = { id: userAvatar.id, type: "user" };
+                }
+              });
               Object.values(movables).forEach((currentMovable) => {
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
@@ -105,6 +104,29 @@ const helpers = {
                 });
               } else if (dzId && dzId.type === "user") {
                 console.log("user drop zone detected: ", dzId);
+                console.log("userAvatars: ", userAvatars);
+                console.log("selectedUser: ", userAvatars[dzId.id]);
+
+                const dzPileCards = [...userAvatars[dzId.id].hand.cards];
+                const movingCards = [
+                  ...movables[movingPileId].componentState.cards,
+                ];
+                const updatedCards = [...movingCards, ...dzPileCards];
+                let updatedComponentState = {
+                  ...userAvatars[dzId.id].componentState,
+                  cards: updatedCards,
+                };
+                let updatedMovable = {
+                  ...movables[dzId.id],
+                  componentState: updatedComponentState,
+                };
+                let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
+                delete updatedMovables[movingPileId];
+                socket.emit({
+                  type: socket.RT.UPDATE_TABLE,
+                  payload: updatedMovables,
+                  emitAll: true,
+                });
 
               }
             }
