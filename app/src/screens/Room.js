@@ -7,6 +7,8 @@ import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
 import Card from "../classes/Card"
 
+import PlayerHand from '../components/PlayerHand'
+
 const SCREEN = `Room screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
 let renders = 0;
@@ -106,6 +108,8 @@ export default function Room ({ navigation }) {
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
       </Header>
+
+      <PlayerHand pile={Object.values(Room.table)[0] || {componentState: {cards: []}}}></PlayerHand>
 
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
