@@ -128,8 +128,9 @@ const helpers = {
                 updatedUsers[userIndex] = updatedUser;
                 console.log("updatedUsers after: ", updatedUsers)
 
-                // not sure how to access userReducer from here
                 // cant seem to update user from the Room Reducer
+                // not sure how to access userReducer from here
+                // tried a few different ways, but couldn't get it to work
 
 
               }
