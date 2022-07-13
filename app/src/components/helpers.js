@@ -38,7 +38,7 @@ const helpers = {
     }
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
-  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars) => {
+  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars, users) => {
     return {
       CardPile: (movable) => {
         return {
@@ -70,6 +70,7 @@ const helpers = {
                 }
               });
               Object.values(movables).forEach((currentMovable) => {
+                console.log(currentMovable)
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
                   const { cardWidthPer, cardHeightPer } = cardDimensions;
@@ -106,22 +107,30 @@ const helpers = {
                 helpers.updateComponentState(options);
 
               } else if (dzId && dzId.type === "user") {
-                console.log("user drop zone detected: ", dzId);
-                console.log("userAvatars: ", userAvatars);
-                console.log("selectedUser: ", userAvatars[dzId.id]);
-
-                const dzPileCards = [...userAvatars[dzId.id].hand.cards];
+                let dzUser = users.filter(user => user.id === dzId.id)[0];
+                let updatedUser = {...dzUser};
+                const userIndex = users.indexOf(dzUser);
+                const dzPileCards = [...updatedUser.hand.cards];
                 const movingCards = [ ...movables[movingPileId].componentState.cards];
                 const updatedCards = [...movingCards, ...dzPileCards];
+                updatedUser.hand.cards = updatedCards;
+                const updatedMovables = {...movables};
+                delete updatedMovables[movingPileId];
 
 
+                socket.emit({
+                  type: socket.RT.UPDATE_TABLE,
+                  payload: updatedMovables,
+                  emitAll: true,
+                });
+                const updatedUsers =  [...users];
+                console.log("updatedUsers before: ", updatedUsers)
+                updatedUsers[userIndex] = updatedUser;
+                console.log("updatedUsers after: ", updatedUsers)
 
-                // delete updatedMovables[movingPileId];
-                // socket.emit({
-                //   type: socket.RT.UPDATE_ROOM,
-                //   payload: roomState,
-                //   emitAll: true,
-                // });
+                // not sure how to access userReducer from here
+                // cant seem to update user from the Room Reducer
+
 
               }
             }

@@ -34,7 +34,8 @@ export default function Sandbox({ movables, socket, users, roomName }) {
     dispatch,
     socket,
     ctx.cardDimensions,
-    ctx.userAvatarDimensions
+    ctx.userAvatarDimensions,
+    users,
   );
 
 
