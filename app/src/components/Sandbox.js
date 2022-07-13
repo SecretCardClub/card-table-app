@@ -21,51 +21,41 @@ if (Device.OS !== "web") {
   deviceWidth = window.innerWidth;
 }
 
-<<<<<<< HEAD
-export default function Sandbox ({ movables, socket, users, roomName }) {
-=======
 const ANIMATION_INTERVAL = 50;
 
-export default function Sandbox({ movables, socket, users, roomName }) {
->>>>>>> 7ffd29b50984936812632087b85ed4f4bd2bb1ce
+export default function Sandbox({ movables, socket, users, roomName, roomUser }) {
   const [, dispatch] = useContext(DispatchContext);
   const [animationQueue, setAnimationQueue] = useState({});
   const [animating, setAnimating] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const ctx = useContext(SandboxContext);
-  const components = helpers.getComponents(
+  const [components, setComponents] = useState(helpers.getComponents(
     movables,
     dispatch,
     socket,
     ctx.cardDimensions,
-    ctx.userAvatarDimensions
-  );
+    ctx.userAvatarDimensions,
+    users,
+    roomUser,
+  ))
 
-
-<<<<<<< HEAD
-      Animated.parallel(animationArray.map((config) => {
-        const nextAnimation = Animated.timing(config.pan, config)
-        const nextConfig = nextQueue[config.id]
-        if (!nextConfig.duration) {
-          delete nextQueue[nextConfig.id]
-        }
-        else {
-          nextConfig.duration = 0;
-        }
-        return nextAnimation
-      })).start(() => {
-        setAnimationQueue(nextQueue)
-      })
-    }
-=======
->>>>>>> 7ffd29b50984936812632087b85ed4f4bd2bb1ce
+  useEffect(() => {
+    setComponents(helpers.getComponents(
+      movables,
+      dispatch,
+      socket,
+      ctx.cardDimensions,
+      ctx.userAvatarDimensions,
+      users,
+      roomUser,
+    ))
+  }, [movables, users, roomUser, ctx])
 
 
 
-<<<<<<< HEAD
-  const addAnimation = (newAnimation) => {
-    const { id, end } = newAnimation
-=======
+
+
+
   useEffect(() => {
     let nextQueue = { ...animationQueue };
     const animationArray = Object.values(nextQueue);
@@ -89,7 +79,6 @@ export default function Sandbox({ movables, socket, users, roomName }) {
 
   const addAnimation = (newAnimation) => {
     const { id, end } = newAnimation;
->>>>>>> 7ffd29b50984936812632087b85ed4f4bd2bb1ce
     let queued = animationQueue[id];
 
     if (queued) {
@@ -136,6 +125,8 @@ export default function Sandbox({ movables, socket, users, roomName }) {
           </Movable>
         );
       })}
+
+
     </SandboxContainer>
   );
 }

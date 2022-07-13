@@ -1,19 +1,25 @@
-import React, {useState, useContext} from "react";
+import React, { useState, useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import styled from 'styled-components/native';
 
 import SandboxContext from "../context/sandboxContext"
+import cardIndex from "../assets/cards/cardIndex.js";
 
 
-const PlayerHand = (props) => {
-//   const cards = props.pile.componentState.cards;
-// console.log("im props", cards)
-  const cards = [
-    { rank: '1', suit: 'hearts' },
-    { rank: '2', suit: 'hearts' },
-    { rank: '3', suit: 'hearts' },
-    { rank: '4', suit: 'hearts' },
-  ]
+const PlayerHand = ({ hand }) => {
+const [cards, setCards] = useState(hand.cards || [])
+console.log('cards', cards)
+const key = `${componentState.cards[0].suit}${componentState.cards[0].rank}`;
+const cardImage = cardIndex[key];
+
+
+
+// useEffect(() => {
+//   if (hand.cards !== cards) {
+//     setCards(hand.cards)
+//   }
+// }, [hand.cards])
+
 
 
   return (
@@ -21,9 +27,7 @@ const PlayerHand = (props) => {
       <Text>Player Hand</Text>
       {cards.map((card) => (
         <Text key={JSON.stringify(card)}>{JSON.stringify(card)}</Text>
-
       ))}
-
     </CardHandView>
   );
 };
@@ -36,22 +40,3 @@ const CardHandView = styled.View`
   flex-direction: row;
   align-items: center;
 `
-
-// const styles = StyleSheet.create({
-//   hand: {
-//     position: "absolute",
-//     bottom: 15,
-//     zIndex: 0,
-//     width: "90%",
-//     height: "20%",
-//     backgroundColor: "blue",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     padding: 15,
-//     borderRadius: 10,
-//     borderRadiusBottom: 25,
-//   },
-//   highlighted: {
-//     backgroundColor: "yellow",
-//   },
-// });
