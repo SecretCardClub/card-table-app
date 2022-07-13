@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
 import styled from "styled-components/native";
 
-import Device from '../appState/Device'
+import Device from "../appState/Device";
 import sandboxContext from "../context/sandboxContext";
 
-const SCREEN_HEIGHT_POSITION = Math.floor(Device.Dims.height * .03)
+const SCREEN_HEIGHT_POSITION = Math.floor(Device.Dims.height * 0.03);
 
 const UserAvatar = ({ user, position }) => {
   const ctx = useContext(sandboxContext);
-  const SCREEN_WIDTH_POSITION = Math.floor(Device.Dims.width * position)
+  const SCREEN_WIDTH_POSITION = Math.floor(Device.Dims.width * position);
 
   const establishUserDimensions = (evt) => {
     if (!ctx.userAvatarDimensions[user.id]) {
@@ -33,26 +33,28 @@ const UserAvatar = ({ user, position }) => {
 
   return (
     <UserContainer
-    color={user.color}
-    onLayout={establishUserDimensions}
-    onPress={logUserInfo}
-    top={SCREEN_HEIGHT_POSITION}
-    left={SCREEN_WIDTH_POSITION}
+      color={user.color}
+      onLayout={establishUserDimensions}
+      onPress={logUserInfo}
+      top={SCREEN_HEIGHT_POSITION}
+      left={SCREEN_WIDTH_POSITION}
     >
-    <Text color="white">{user.name}</Text>
-    {user.hand && user.hand.cards.length && <Text >{user.hand.cards.length}</Text>}
-  </UserContainer>
-);
-    // <UserContainer
-    //   color={user.color}
-    //   onLayout={establishUserDimensions}
-    //   onLongPress={logUserInfo}
-    // >
-    //   <Text color="white">{user.name[0]}</Text>
-    // <CardCount>
-    //   <CountText>{Math.random() > .5 ? 7 : 13}</CountText>
-    // </CardCount>
-    // </UserContainer>
+      <Text color="white">{user.name}</Text>
+      {user.hand.cards.length ? (
+        <Text>{user.hand.cards.length}</Text>
+      ): <Text>0</Text>}
+    </UserContainer>
+  );
+  // <UserContainer
+  //   color={user.color}
+  //   onLayout={establishUserDimensions}
+  //   onLongPress={logUserInfo}
+  // >
+  //   <Text color="white">{user.name[0]}</Text>
+  // <CardCount>
+  //   <CountText>{Math.random() > .5 ? 7 : 13}</CountText>
+  // </CardCount>
+  // </UserContainer>
   //);
 };
 export default UserAvatar;
@@ -68,7 +70,7 @@ export default UserAvatar;
 //   color: "white";
 //   background-color: ${({ color }) => color || "grey"};
 // `;
-const UserContainer = styled.TouchableOpacity`
+const UserContainer = styled.View`
   width: 60px;
   height: 60px;
   display: flex;
@@ -95,11 +97,11 @@ const CardCount = styled.View`
   background-color: white;
   border-radius: inherit;
   display: flex;
-  `;
+`;
 
 const CountText = styled.Text`
-width: inherit;
-display: flex;
-flex-direction: row-reverse;
-font-size: 11px;
+  width: inherit;
+  display: flex;
+  flex-direction: row-reverse;
+  font-size: 11px;
 `;
