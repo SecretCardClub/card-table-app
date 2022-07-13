@@ -38,7 +38,7 @@ export default function SignUp({ navigation }) {
           type: User.UT.UPDATE_USER,
           payload : { ...User, ...res  }
         })
-        navigate('MainStack')
+        navigate('Home')
       }
       else {
         console.log(`${ERROR_MSG} NO USER FOUND`, res)
@@ -56,7 +56,7 @@ export default function SignUp({ navigation }) {
 
 
   return (
-    <ScreenView nav={nav} >
+    <ScreenView >
         <H1> Hello </H1>
         <P>Please enter a user name </P>
         <Input

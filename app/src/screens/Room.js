@@ -7,8 +7,6 @@ import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
 import Card from "../classes/Card"
 
-import PlayerHand from '../components/PlayerHand'
-
 const SCREEN = `Room screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
 let renders = 0;
@@ -59,7 +57,7 @@ export default function Room ({ navigation }) {
   }
 
   const nav = (screenName) => {
-    return (e) => {
+    return (evt) => {
       navigate(screenName)
     }
   }
@@ -67,9 +65,9 @@ export default function Room ({ navigation }) {
 
 
   const addPile = (e) => {
-    const suits = ['Hearts', 'Clubs', 'Spades', 'Diamonds'];
+    const suits = ['H', 'C', 'S', 'D'];
     const ranks = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
-    const newPile = new Pile();
+    const newPile = new Pile({});
     for (let i = 0; i < suits.length; i++) {
       for (let j = 0; j < ranks.length; j++) {
         const newCard = new Card(suits[i], ranks[j]);
@@ -90,16 +88,15 @@ export default function Room ({ navigation }) {
     socket.emit && socket.emit({
       type: RT.UPDATE_MOVABLE,
       payload: newMovable,
-      emitAll: true,
+      dispatch: true,
     })
   }
 
   return Room.socket ?
   (
-    <ScreenView nav={nav} >
-
-      <SandboxContextProvider>
-        <Sandbox movables={Room.table} socket={socket}/>
+    <ScreenView >
+      <SandboxContextProvider movables={Room.table}>
+        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
       </SandboxContextProvider>
 
       <Header >
@@ -108,9 +105,6 @@ export default function Room ({ navigation }) {
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
       </Header>
-
-      <PlayerHand pile={Object.values(Room.table)[0] || {componentState: {cards: []}}}></PlayerHand>
-
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />
@@ -119,7 +113,7 @@ export default function Room ({ navigation }) {
   )
   :
   (
-    <ScreenView nav={nav} >
+    <ScreenView >
       <Header>
         <H3>Connecting...</H3>
       </Header>
@@ -168,6 +162,7 @@ const UserList = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-around;
 `
 
 

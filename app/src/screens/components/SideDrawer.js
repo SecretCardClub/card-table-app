@@ -1,4 +1,6 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useContext } from 'react'
+import { NavigationContext } from '@react-navigation/native';
+
 import styled, { css } from 'styled-components/native'
 import { Animated } from 'react-native'
 import { BORDER_RADIUS } from './constants'
@@ -8,12 +10,18 @@ import { Button } from './Buttons'
 
 const DRAWER_OPEN_VALUE = -55
 const ANIMATION_DUR = 250
-export const SideDrawer = ({  nav }) => {
+export const SideDrawer = ({}) => {
 
-
+  const navigation = useContext(NavigationContext);
+  const { navigate } = navigation
   const [drawerOpen, setDrawerOpen] = useState(false)
   const right = useRef(new Animated.Value(drawerOpen ? DRAWER_OPEN_VALUE : 0)).current;
 
+  const nav = (screenName) => {
+    return (evt) => {
+      navigate(screenName)
+    }
+  }
 
   const toggleDrawer = (evt) => {
     if(!drawerOpen) {
@@ -43,6 +51,8 @@ export const SideDrawer = ({  nav }) => {
       <SideDrawerContainer >
         <ToggleDrawerButton title={drawerOpen ? '>' : '<'} onPress={toggleDrawer} />
         <DrawerButtonContainer>
+          <DrawerButton title="Dev"  onPress={nav('Dev')}  />
+          <DrawerButton title="Dev"  onPress={nav('Dev')}  />
           <DrawerButton title="Dev"  onPress={nav('Dev')}  />
         </DrawerButtonContainer>
       </SideDrawerContainer>
