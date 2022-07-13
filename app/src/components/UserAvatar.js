@@ -40,6 +40,7 @@ const UserAvatar = ({ user, position }) => {
     left={SCREEN_WIDTH_POSITION}
     >
     <Text color="white">{user.name}</Text>
+    {user.hand && user.hand.cards.length && <Text >{user.hand.cards.length}</Text>}
   </UserContainer>
 );
     // <UserContainer
@@ -76,7 +77,7 @@ const UserContainer = styled.TouchableOpacity`
   border-radius: 50%;
   position: absolute;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   top: ${({ top }) => `${top}px`};
   left: ${({ left }) => `${left}px`};

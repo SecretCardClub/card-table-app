@@ -38,7 +38,7 @@ const helpers = {
     }
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
-  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars, users, roomUser) => {
+  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars, users, room) => {
     return {
       CardPile: (movable) => {
         return {
@@ -106,23 +106,26 @@ const helpers = {
                 helpers.updateComponentState(options);
 
               } else if (dzId && dzId.type === "user") {
-                console.log("user drop zone detected: ", dzId);
-                console.log("userAvatars: ", userAvatars);
-                console.log("selectedUser: ", userAvatars[dzId.id].id);
+                let dzUser = users.filter(user => user.id === dzId.id)[0];
+                let updatedUser = JSON.parse(JSON.stringify(dzUser));
+                const userIndex = users.indexOf(dzUser);
+                const dzPileCards = [...updatedUser.hand.cards];
+                const movingCards = [ ...movables[movingPileId].componentState.cards];
+                const updatedCards = [...movingCards, ...dzPileCards];
+                updatedUser.hand.cards = updatedCards;
+                const updatedMovables = {...movables};
+                delete updatedMovables[movingPileId];
+                const updatedUsers =  [...users];
+                updatedUsers[userIndex] = updatedUser;
 
-                const dzPileCards = [...users[dzId.id].hand.cards];
-                // const movingCards = [ ...movables[movingPileId].componentState.cards];
-                // const updatedCards = [...movingCards, ...dzPileCards];
+                const updatedRoom = {...room, Users: updatedUsers, table: updatedMovables};
+                delete updatedRoom.socket;
 
-                console.log(movables[movingPileId])
-
-                // delete updatedMovables[movingPileId];
-                // socket.emit({
-                //   type: socket.RT.UPDATE_ROOM,
-                //   payload: roomState,
-                //   emitAll: true,
-                // });
-
+                socket.emit({
+                  type: socket.RT.UPDATE_ROOM_STATE,
+                  payload: updatedRoom,
+                  emitAll: true,
+                });
               }
             }
           }
