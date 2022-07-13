@@ -117,6 +117,7 @@ const helpers = {
                 delete updatedMovables[movingPileId];
                 const updatedUsers =  [...users];
                 updatedUsers[userIndex] = updatedUser;
+
                 const updatedRoom = {...room, Users: updatedUsers, table: updatedMovables};
                 delete updatedRoom.socket;
 
