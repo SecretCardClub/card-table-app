@@ -40,6 +40,7 @@ const UserAvatar = ({ user, position }) => {
     left={SCREEN_WIDTH_POSITION}
     >
     <Text color="white">{user.name}</Text>
+    {user.hand && user.hand.cards.length && <Text >{user.hand.cards.length}</Text>}
   </UserContainer>
 );
     // <UserContainer

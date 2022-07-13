@@ -23,7 +23,7 @@ if (Device.OS !== "web") {
 
 const ANIMATION_INTERVAL = 50;
 
-export default function Sandbox({ movables, socket, users, roomName }) {
+export default function Sandbox({ movables, socket, users, roomName, room }) {
   const [, dispatch] = useContext(DispatchContext);
   const [animationQueue, setAnimationQueue] = useState({});
   const [animating, setAnimating] = useState(false);
@@ -36,6 +36,7 @@ export default function Sandbox({ movables, socket, users, roomName }) {
     ctx.cardDimensions,
     ctx.userAvatarDimensions,
     users,
+    room,
   );
 
 
@@ -120,9 +121,6 @@ const SandboxContainer = styled.View`
   width: 100%;
   flex: 1;
   display: flex;
-  /* position: absolute; */
-  z-index: 0;
-  /* align-items: center; */
   background-color: rgb(255, 255, 255);
 `;
 

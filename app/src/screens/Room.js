@@ -98,11 +98,11 @@ export default function Room ({ navigation }) {
   return Room.socket ?
   (
     <ScreenView >
-      <SandboxContextProvider movables={Room.table}>
+      <SandboxContextProvider movables={Room.table} >
       {/* <UsersContainer>
         {Users && Users.map((user) => <UserAvatar key={user.id} user={user} />)}
       </UsersContainer> */}
-        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
+        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name} room={Room}/>
       </SandboxContextProvider>
 
       {/* <Header >

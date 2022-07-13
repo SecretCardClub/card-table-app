@@ -38,7 +38,7 @@ const helpers = {
     }
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
-  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars, users) => {
+  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars, users, room) => {
     return {
       CardPile: (movable) => {
         return {
@@ -108,7 +108,7 @@ const helpers = {
 
               } else if (dzId && dzId.type === "user") {
                 let dzUser = users.filter(user => user.id === dzId.id)[0];
-                let updatedUser = {...dzUser};
+                let updatedUser = JSON.parse(JSON.stringify(dzUser));
                 const userIndex = users.indexOf(dzUser);
                 const dzPileCards = [...updatedUser.hand.cards];
                 const movingCards = [ ...movables[movingPileId].componentState.cards];
@@ -116,23 +116,16 @@ const helpers = {
                 updatedUser.hand.cards = updatedCards;
                 const updatedMovables = {...movables};
                 delete updatedMovables[movingPileId];
-
+                const updatedUsers =  [...users];
+                updatedUsers[userIndex] = updatedUser;
+                const updatedRoom = {...room, Users: updatedUsers, table: updatedMovables};
+                delete updatedRoom.socket;
 
                 socket.emit({
-                  type: socket.RT.UPDATE_TABLE,
-                  payload: updatedMovables,
+                  type: socket.RT.UPDATE_ROOM_STATE,
+                  payload: updatedRoom,
                   emitAll: true,
                 });
-                const updatedUsers =  [...users];
-                console.log("updatedUsers before: ", updatedUsers)
-                updatedUsers[userIndex] = updatedUser;
-                console.log("updatedUsers after: ", updatedUsers)
-
-                // cant seem to update user from the Room Reducer
-                // not sure how to access userReducer from here
-                // tried a few different ways, but couldn't get it to work
-
-
               }
             }
           }
