@@ -77,7 +77,7 @@ const UserContainer = styled.TouchableOpacity`
   border-radius: 50%;
   position: absolute;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   top: ${({ top }) => `${top}px`};
   left: ${({ left }) => `${left}px`};

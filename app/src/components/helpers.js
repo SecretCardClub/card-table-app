@@ -70,7 +70,6 @@ const helpers = {
                 }
               });
               Object.values(movables).forEach((currentMovable) => {
-                console.log(currentMovable)
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
                   const { cardWidthPer, cardHeightPer } = cardDimensions;
