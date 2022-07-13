@@ -3,31 +3,46 @@ import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
 import { StateContext, DispatchContext } from "../appState/index";
 import styled from "styled-components/native";
 
-import PileMenu from "./PileMenu"
+import PileMenu from "./PileMenu";
+import Device from "../appState/Device";
 import Movable from "./Movable";
 import SandboxContext from "../context/sandboxContext";
-import helpers from "./helpers"
-import UserAvatar from "./UserAvatar"
-// import { P, H3, ScreenView, UserView, Button, Input } from '../screens/components/index'
+import helpers from "./helpers";
+import UserAvatar from "./UserAvatar";
 
+
+
+let deviceHeight, deviceWidth;
+if (Device.OS !== "web") {
+  deviceHeight = Device.Dims.height;
+  deviceWidth = Device.Dims.width;
+} else {
+  deviceHeight = window.innerHeight;
+  deviceWidth = window.innerWidth;
+}
+
+<<<<<<< HEAD
+export default function Sandbox ({ movables, socket, users, roomName }) {
+=======
 const ANIMATION_INTERVAL = 50;
 
-
-
-export default function Sandbox ({ movables, socket, users, roomName }) {
+export default function Sandbox({ movables, socket, users, roomName }) {
+>>>>>>> 7ffd29b50984936812632087b85ed4f4bd2bb1ce
   const [, dispatch] = useContext(DispatchContext);
-  const [animationQueue, setAnimationQueue] = useState({})
-  const [animating, setAnimating] = useState(false)
+  const [animationQueue, setAnimationQueue] = useState({});
+  const [animating, setAnimating] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const ctx = useContext(SandboxContext);
-  const components = helpers.getComponents(movables, dispatch, socket, ctx.cardDimensions, ctx.userAvatarDimensions);
+  const components = helpers.getComponents(
+    movables,
+    dispatch,
+    socket,
+    ctx.cardDimensions,
+    ctx.userAvatarDimensions
+  );
 
-  useEffect(() => {
 
-    let nextQueue = { ...animationQueue }
-    const animationArray = Object.values(nextQueue)
-    if(animationArray.length && !animating ) {
-
+<<<<<<< HEAD
       Animated.parallel(animationArray.map((config) => {
         const nextAnimation = Animated.timing(config.pan, config)
         const nextConfig = nextQueue[config.id]
@@ -42,38 +57,65 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
         setAnimationQueue(nextQueue)
       })
     }
+=======
+>>>>>>> 7ffd29b50984936812632087b85ed4f4bd2bb1ce
 
-  }, [animationQueue])
 
 
+<<<<<<< HEAD
   const addAnimation = (newAnimation) => {
     const { id, end } = newAnimation
+=======
+  useEffect(() => {
+    let nextQueue = { ...animationQueue };
+    const animationArray = Object.values(nextQueue);
+    if (animationArray.length && !animating) {
+      Animated.parallel(
+        animationArray.map((config) => {
+          const nextAnimation = Animated.timing(config.pan, config);
+          const nextConfig = nextQueue[config.id];
+          if (!nextConfig.duration) {
+            delete nextQueue[nextConfig.id];
+          } else {
+            nextConfig.duration = 0;
+          }
+          return nextAnimation;
+        })
+      ).start(() => {
+        setAnimationQueue(nextQueue);
+      });
+    }
+  }, [animationQueue]);
+
+  const addAnimation = (newAnimation) => {
+    const { id, end } = newAnimation;
+>>>>>>> 7ffd29b50984936812632087b85ed4f4bd2bb1ce
     let queued = animationQueue[id];
 
     if (queued) {
-      queued.duration += end - queued.start
-      queued.start = end
+      queued.duration += end - queued.start;
+      queued.start = end;
       queued.toValue = newAnimation.toValue;
+    } else {
+      queued = newAnimation;
+      const last = Date.now() - end > 10 ? 10 : Date.now() - end;
+      queued.duration = last;
+      queued.start = Date.now();
+      setAnimationQueue({ ...animationQueue, [id]: queued });
     }
-    else {
-      queued = newAnimation
-      const last = Date.now() - end > 10 ? 10 :  Date.now() - end
-      queued.duration = last
-      queued.start = Date.now()
-      setAnimationQueue({ ...animationQueue,  [id]: queued })
-    }
-  }
+  };
 
   const userLayoutHandler = (evt) => {
     console.log(evt.nativeEvent.layout);
   };
 
   return (
-    <SandboxContainer >
-{/*
-        <UsersContainer>
-          {users && users.map(user => <UserAvatar  key={user.id} user={user} />)}
-        </UsersContainer> */}
+    <SandboxContainer>
+
+      {users && users.map((user, ind, allUsers) => {
+        const positionPercent = ((ind + 1) / (allUsers.length + 1))
+        return <UserAvatar  key={user.id} user={user} position={positionPercent} />
+      })}
 
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
@@ -86,7 +128,11 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
             addAnimation={addAnimation}
             {...CB}
           >
-            <Component componentState={componentState} movables={movables} socket={socket} />
+            <Component
+              componentState={componentState}
+              movables={movables}
+              socket={socket}
+            />
           </Movable>
         );
       })}
@@ -94,9 +140,8 @@ export default function Sandbox ({ movables, socket, users, roomName }) {
   );
 }
 
-
 const SandboxContainer = styled.View`
-/* width: 100%; */
+  width: 100%;
   flex: 1;
   display: flex;
   /* position: absolute; */
@@ -106,14 +151,20 @@ const SandboxContainer = styled.View`
 `;
 
 const UsersContainer = styled.View`
-width: 100%
+  /* flex:1; */
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  height: auto;
-
+  height: 10%;
+  width: 100%;
+  width: ${deviceWidth};
 `;
 
+const MyView = styled.View`
+  width: inherit;
+  height: 80%;
+  background-color: light blue;
+`;
 const Header = styled.View`
   width: 100%;
   height: 10%;
@@ -131,4 +182,4 @@ const UserList = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-`
+`;

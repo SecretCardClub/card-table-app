@@ -70,6 +70,7 @@ export const initUser =  {
   name: null,
   Rooms: [],
   UT: USER_TYPES,
+  hand: {cards: []}
 }
 
 
