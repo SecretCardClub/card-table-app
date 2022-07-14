@@ -42,6 +42,26 @@ export default function Sandbox({ movables, socket, users, roomName, room }) {
 
 
 
+  useEffect(() => {
+    let nextQueue = { ...animationQueue };
+    const animationArray = Object.values(nextQueue);
+    if (animationArray.length && !animating) {
+      Animated.parallel(
+        animationArray.map((config) => {
+          const nextAnimation = Animated.timing(config.pan, config);
+          const nextConfig = nextQueue[config.id];
+          if (!nextConfig.duration) {
+            delete nextQueue[nextConfig.id];
+          } else {
+            nextConfig.duration = 0;
+          }
+          return nextAnimation;
+        })
+      ).start(() => {
+        setAnimationQueue(nextQueue);
+      });
+    }
+  }, [animationQueue]);
 
   useEffect(() => {
     let nextQueue = { ...animationQueue };
