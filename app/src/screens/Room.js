@@ -129,7 +129,7 @@ export default function Room ({ navigation }) {
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
       </Header> */}
-      <PlayerHand hand={roomUser.hand || {}} />
+      <PlayerHand player={User.name} hand={roomUser.hand || {}} Room={Room}/>
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />

@@ -29,7 +29,7 @@ export default function Sandbox({ movables, socket, users, roomName, room }) {
   const [animating, setAnimating] = useState(false);
   const [showBackground, setShowBackground] = useState(false);
   const ctx = useContext(SandboxContext);
-  const [components, setComponents] = useState(helpers.getComponents(
+  const components = helpers.getComponents(
     movables,
     dispatch,
     socket,
@@ -112,7 +112,6 @@ export default function Sandbox({ movables, socket, users, roomName, room }) {
           </Movable>
         );
       })}
-
 
     </SandboxContainer>
   );
