@@ -10,8 +10,8 @@ import helpers from "./helpers";
 import cardIndex from "../assets/cards/cardIndex.js";
 
 const CARD_LAYOUT = {
-  width: 100,
-  height: 140,
+  width: 80,
+  height: 114,
 };
 
 const CardPile = ({ componentState, movables, socket }) => {
@@ -214,100 +214,3 @@ const StyledImage = styled.Image`
   z-index: 1000;
   border-radius: 5px;
 `;
-
-// const CardTextPressable = styled.Pressable`
-//   align-self: flex-start;
-// `;
-
-// let currentMovable = {...movables[ctx.currentPile.id]}
-// let currentCards = [takenCard, ...currentMovable.componentState.cards];
-// let currentComponentState = {...currentMovable.componentState, cards: currentCards};
-// currentMovable = {...currentMovable, componentState: currentComponentState}
-// updatedMovables = {...updatedMovables, [currentMovable.id]: currentMovable}
-// ctx.setCurrentPile(currentMovable);
-
-// let updatedComponentState = { ...componentState, cards: updatedCards };
-// let updatedMovable = {
-//   ...movables[id],
-//   componentState: updatedComponentState,
-// };
-// let updatedMovables = { ...movables, [id]: updatedMovable };
-
-// let updatedComponentState = { ...componentState, dz: updatedDz };
-// let updatedMovable = {
-//   ...movables[id],
-//   componentState: updatedComponentState,
-// };
-// let updatedMovables = { ...movables, [id]: updatedMovable };
-
-// socket.emit({
-//   type: socket.RT.UPDATE_TABLE,
-//   payload: updatedMovables,
-//   emitAll: true,
-// });
-
-// const options = {
-//   id,
-//   type: "dz",
-//   updatedState: updatedDz,
-//   componentState,
-//   movables,
-//   socket,
-//   dispatch: true,
-// };
-// helpers.updateComponentState(options);
-
-// const keyTable = {
-//   "HA": "../assets/cards/HA.png",
-//   "H2": "../assets/cards/H2.png",
-//   "H3": "../assets/cards/H3.png",
-//   "H4": "../assets/cards/H4.png",
-//   "H5": "../assets/cards/H5.png",
-//   "H6": "../assets/cards/H6.png",
-//   "H7": "../assets/cards/H7.png",
-//   "H8": "../assets/cards/H8.png",
-//   "H9": "../assets/cards/H9.png",
-//   "H10": "../assets/cards/H10.png",
-//   "HJ": "../assets/cards/HJ.png",
-//   "HQ": "../assets/cards/HQ.png",
-//   "HK": "../assets/cards/HK.png",
-//   "DA": "../assets/cards/DA.png",
-//   "D2": "../assets/cards/D2.png",
-//   "D3": "../assets/cards/D3.png",
-//   "D4": "../assets/cards/D4.png",
-//   "D5": "../assets/cards/D5.png",
-//   "D6": "../assets/cards/D6.png",
-//   "D7": "../assets/cards/D7.png",
-//   "D8": "../assets/cards/D8.png",
-//   "D9": "../assets/cards/D9.png",
-//   "D10": "../assets/cards/D10.png",
-//   "DJ": "../assets/cards/DJ.png",
-//   "DQ": "../assets/cards/DQ.png",
-//   "DK": "../assets/cards/DK.png",
-//   "CA": "../assets/cards/CA.png",
-//   "C2": "../assets/cards/C2.png",
-//   "C3": "../assets/cards/C3.png",
-//   "C4": "../assets/cards/C4.png",
-//   "C5": "../assets/cards/C5.png",
-//   "C6": "../assets/cards/C6.png",
-//   "C7": "../assets/cards/C7.png",
-//   "C8": "../assets/cards/C8.png",
-//   "C9": "../assets/cards/C9.png",
-//   "C10": "../assets/cards/C10.png",
-//   "CJ": "../assets/cards/CJ.png",
-//   "CQ": "../assets/cards/CQ.png",
-//   "CK": "../assets/cards/CK.png",
-//   "SA": "../assets/cards/SA.png",
-//   "S2": "../assets/cards/S2.png",
-//   "S3": "../assets/cards/S3.png",
-//   "S4": "../assets/cards/S4.png",
-//   "S5": "../assets/cards/S5.png",
-//   "S6": "../assets/cards/S6.png",
-//   "S7": "../assets/cards/S7.png",
-//   "S8": "../assets/cards/S8.png",
-//   "S9": "../assets/cards/S9.png",
-//   "S10": "../assets/cards/S10.png",
-//   "SJ": "../assets/cards/SJ.png",
-//   "SQ": "../assets/cards/SQ.png",
-//   "SK": "../assets/cards/SK.png",
-// };

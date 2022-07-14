@@ -1,11 +1,14 @@
 import React, { useContext, useState, useEffect } from "react";
-import Sandbox from "../components/Sandbox";
+import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
 import styled from 'styled-components/native'
+
+import Sandbox from "../components/Sandbox";
 import { P, H3, ScreenView, UserView, Button, Input } from './components/index'
 import { StateContext, DispatchContext } from '../appState/index'
 import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
 import Card from "../classes/Card"
+import UserAvatar from "../components/UserAvatar";
 
 const SCREEN = `Room screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
@@ -95,16 +98,19 @@ export default function Room ({ navigation }) {
   return Room.socket ?
   (
     <ScreenView >
-      <SandboxContextProvider movables={Room.table}>
-        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name}/>
+      <SandboxContextProvider movables={Room.table} >
+      {/* <UsersContainer>
+        {Users && Users.map((user) => <UserAvatar key={user.id} user={user} />)}
+      </UsersContainer> */}
+        <Sandbox movables={Room.table} socket={socket} users={Users} roomName={Room.name} room={Room}/>
       </SandboxContextProvider>
 
-      <Header >
+      {/* <Header >
         <H3 >{Room.name}</H3>
         <UserList>
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
-      </Header>
+      </Header> */}
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />
@@ -130,7 +136,7 @@ const ChatList = styled.View`
 `
 const Header = styled.View`
   width: 100%;
-  height: 10%;
+  height: auto;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -148,7 +154,7 @@ const Table = styled.View`
 
 const Footer = styled.View`
   width: 100%;
-  height: 10%;
+  height: 5%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -166,34 +172,12 @@ const UserList = styled.View`
 `
 
 
-        // <ScreenView>
-        //   <P>Connected users</P>
-        //   <UserList>
-        //     {users && users.map((connUser, ind) => {
-        //       return (
-        //         <P key={ind} >  {connUser.name}  </P>
-        //       )
-        //     })}
-        //   </UserList>
-        //   <P>Chat</P>
-        //   <ChatList>
-        //     {chat && chat.map((msg, ind) => {
-        //       return (
-        //         <P key={ind} >{msg.user}: {msg.text} </P>
-        //       )
-        //     })}
-        //   </ChatList>
-        //   <Input
-        //     value={chatText}
-        //     onChangeText={setChatText}
-        //     placeholder="type to chat..."
-        //   />
-        //   <Button onPress={sendChat} >
-        //     <P>Send</P>
-        //   </Button>
-        //   {room.admin_id === user.id &&
-        //   (<Button onPress={closeRoom} >
-        //     <P>Close Room</P>
-        //   </Button>)}
-        // </ScreenView>
+const UsersContainer = styled.View`
+  /* flex:1; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  height: 10%;
+  width: 100%;
 
+`;

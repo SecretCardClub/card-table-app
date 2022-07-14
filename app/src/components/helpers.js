@@ -15,6 +15,7 @@ const helpers = {
       socket,
       dispatch,
       returnValue,
+      deletePileId,
     } = options;
     let updatedComponentState = { ...componentState, [type]: updatedState };
     let updatedMovable = {
@@ -22,6 +23,9 @@ const helpers = {
       componentState: updatedComponentState,
     };
     let updatedMovables = { ...movables, [id]: updatedMovable };
+    if (deletePileId) {
+      delete updatedMovables[deletePileId];
+    }
     if (dispatch) {
       socket.emit({
         type: socket.RT.UPDATE_TABLE,
@@ -34,7 +38,7 @@ const helpers = {
     }
   },
   // TODO: currently, needs cardDimensions from sandboxContext to work
-  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars) => {
+  getComponents: (movables, dispatch, socket, cardDimensions, userAvatars, users, room) => {
     return {
       CardPile: (movable) => {
         return {
@@ -49,21 +53,22 @@ const helpers = {
                 y: evt.pageY / height,
               };
               let dzId = false;
-              // Object.values(userAvatars).forEach((userAvatar) => {
-              //   const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
-              //     userAvatar;
 
-              //   if (
-              //     !dzId &&
-              //     gestureDropLocation.x > x_per &&
-              //     gestureDropLocation.x < x_per + avatarWidthPer &&
-              //     gestureDropLocation.y > y_per &&
-              //     gestureDropLocation.y < y_per + avatarHeightPer
-              //   ) {
-              //     console.log(userAvatar)
-              //     dzId = { id: userAvatar.id, type: "user" };
-              //   }
-              // });
+
+              Object.values(userAvatars).forEach((userAvatar) => {
+                const { x_per, y_per, avatarWidthPer, avatarHeightPer } =
+                  userAvatar;
+
+                if (
+                  !dzId &&
+                  gestureDropLocation.x > x_per &&
+                  gestureDropLocation.x < x_per + avatarWidthPer &&
+                  gestureDropLocation.y > y_per &&
+                  gestureDropLocation.y < y_per + avatarHeightPer
+                ) {
+                  dzId = { id: userAvatar.id, type: "user" };
+                }
+              });
               Object.values(movables).forEach((currentMovable) => {
                 if (!dzId && currentMovable.id !== movingPileId) {
                   const { x_per, y_per } = { ...currentMovable.panState };
@@ -88,24 +93,39 @@ const helpers = {
                   ...movables[movingPileId].componentState.cards,
                 ];
                 const updatedCards = [...movingCards, ...dzPileCards];
-                let updatedComponentState = {
-                  ...movables[dzId.id].componentState,
-                  cards: updatedCards,
-                };
-                let updatedMovable = {
-                  ...movables[dzId.id],
-                  componentState: updatedComponentState,
-                };
-                let updatedMovables = { ...movables, [dzId.id]: updatedMovable };
+                const options = {
+                  id: dzId.id,
+                  type: "cards",
+                  updatedState: updatedCards,
+                  componentState: movables[dzId.id].componentState,
+                  movables,
+                  socket,
+                  dispatch: true,
+                  deletePileId: movingPileId,
+                }
+                helpers.updateComponentState(options);
+
+              } else if (dzId && dzId.type === "user") {
+                let dzUser = users.filter(user => user.id === dzId.id)[0];
+                let updatedUser = JSON.parse(JSON.stringify(dzUser));
+                const userIndex = users.indexOf(dzUser);
+                const dzPileCards = [...updatedUser.hand.cards];
+                const movingCards = [ ...movables[movingPileId].componentState.cards];
+                const updatedCards = [...movingCards, ...dzPileCards];
+                updatedUser.hand.cards = updatedCards;
+                const updatedMovables = {...movables};
                 delete updatedMovables[movingPileId];
+                const updatedUsers =  [...users];
+                updatedUsers[userIndex] = updatedUser;
+
+                const updatedRoom = {...room, Users: updatedUsers, table: updatedMovables};
+                delete updatedRoom.socket;
+
                 socket.emit({
-                  type: socket.RT.UPDATE_TABLE,
-                  payload: updatedMovables,
+                  type: socket.RT.UPDATE_ROOM_STATE,
+                  payload: updatedRoom,
                   emitAll: true,
                 });
-              } else if (dzId && dzId.type === "user") {
-                console.log("user drop zone detected: ", dzId);
-
               }
             }
           }
