@@ -32,40 +32,23 @@ Dims.widthPercentToPixels = (percent, integer = true) => {
   return Dims.percentToPixels(percent, 'width', integer)
 }
 
-Dims.calcPosition = (x_per, y_per) => {
+Dims.calcPosition = (x_per, y_per, offset = true) => {
   if(!y_per) {
     y_per = x_per.y_per
     x_per = x_per.x_per
   }
-    // let x = width * x_per - widthDiv - 50;
-  // let y = height * y_per  - heightDiv - 35;
-  const widthDiv = Dims.width / 2;
-  // const heightDiv = Dims.height / 2;
 
-  const heightDiv = Dims.height / heightDivisor;
-
-  let x = Dims.width * x_per - widthDiv - 50;
-  // let y = Dims.height * y_per  - heightDiv;
-
-  // let x = Dims.width * x_per;
-  let y = Dims.height * y_per - 70;
-
-  if ( x > widthDiv ) {
-    x = widthDiv
+  let x, y;
+  if(offset) {
+    x = Dims.width * x_per  - 50;
+    y = Dims.height * y_per - 70;
   }
-  if ( (0 - widthDiv) > x ) {
-    x = (0 - widthDiv)
+  else {
+    x = Dims.width * x_per - 5;
+    y = Dims.height * y_per - 7
+
   }
 
-  if ( y > heightDiv ) {
-    y = heightDiv
-  }
-  if ( (0 - heightDiv) > y ) {
-    y = (0 - heightDiv)
-  }
-  // console.log({ x_per, y_per, x, y })
-  // console.log('\n', { x_per, x, width })
-  // console.log({ y_per, y, height })
   return { x, y }
 }
 

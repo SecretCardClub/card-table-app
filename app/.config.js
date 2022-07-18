@@ -1,5 +1,5 @@
 export const API_URL = 'https://23f1-2601-6c3-4001-8140-3ada-5329-d52-f696.ngrok.io'
-export const WS_URL = 'ws://shaky-wolves-show-76-101-255-78.loca.lt'
+export const WS_URL = 'ws://brown-carrots-sell-76-101-255-78.loca.lt'
 
 // const HOST = `10.0.0.145`
 // export const API_URL = `http://${HOST}:3000`

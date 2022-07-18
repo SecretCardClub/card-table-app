@@ -13,6 +13,7 @@ import usePan from '../hooks/usePan'
 
 
 const Card = (props) => {
+
   const [highlighted, setHighlighted] = useState(false);
   // const [pan, panResponder] = usePan()
 
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "auto",
     padding: 5,
-    backgroundColor: "green",
+    backgroundColor: "blue",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,
