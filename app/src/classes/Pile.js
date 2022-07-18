@@ -14,6 +14,7 @@ class Pile {
     this.color = color || generateColor();
     this.spread = false;
   }
+
   addCard(card) {
     this.cards.push(card);
     return this;
@@ -27,6 +28,7 @@ class Pile {
   getCards() {
     return this.cards;
   }
+
 }
 
 export default Pile;

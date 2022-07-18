@@ -7,6 +7,7 @@ import helpers from "./helpers";
 const PileMenu = ({ setShowMenu, menuFlipHandler, movables, componentState, socket }) => {
   const { id, cards } = componentState;
 
+
   const shuffle = (cards) => {
     let index = cards.length;
     while (index > 0) {

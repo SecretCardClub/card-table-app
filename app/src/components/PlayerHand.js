@@ -102,3 +102,4 @@ const StyledImage = styled.Image`
   border-color: ${({ highlighted }) =>
   highlighted && "red"};
 `;
+

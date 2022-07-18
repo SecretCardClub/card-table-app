@@ -113,6 +113,7 @@ export default function Sandbox({ movables, socket, users, roomName, room }) {
         return <UserAvatar  key={user.id} user={user} position={positionPercent} />
       })}
 
+
       {Object.values(movables).map((movable, ind) => {
         const { panState, componentState } = movable;
         panState.id = movable.id;

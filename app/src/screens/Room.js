@@ -43,6 +43,7 @@ export default function Room ({ navigation }) {
 
   }, [state.Room.Users])
 
+
   useEffect(() => {
     if (logs.states.Room || logs.states.all) {
       console.log(`${SCREEN} STATE: `, { Room, User })
@@ -200,3 +201,4 @@ const UsersContainer = styled.View`
   width: 100%;
 
 `;
+
