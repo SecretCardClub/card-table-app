@@ -9,6 +9,7 @@ import { SandboxContextProvider } from "../context/sandboxContext";
 import Pile from '../classes/Pile'
 import Card from "../classes/Card"
 import UserAvatar from "../components/UserAvatar";
+import PlayerHand from "../components/PlayerHand";
 
 const SCREEN = `Room screen`
 const ERROR_MSG = `${SCREEN} ERROR ->`
@@ -23,7 +24,24 @@ export default function Room ({ navigation }) {
   const { User, Room, dev } = state
   const { logs } = dev
   const { Users, chat, socket, RT } = Room;
+  const [roomUser, setRoomUser] = useState(Users.reduce((memo, user) => {
+    if(user.name === User.name) {
+      memo = user
+    }
+    return memo
+  }, {}));
 
+
+  useEffect(() => {
+
+    setRoomUser(Users.reduce((memo, user) => {
+      if(user.name === User.name) {
+        memo = user
+      }
+      return memo
+    }, {}))
+
+  }, [state.Room.Users])
 
   useEffect(() => {
     if (logs.states.Room || logs.states.all) {
@@ -111,6 +129,7 @@ export default function Room ({ navigation }) {
           {Users && Users.map(user => <UserView  key={user.id} {...user} />)}
         </UserList>
       </Header> */}
+      <PlayerHand player={User.name} hand={roomUser.hand || {}} Room={Room}/>
       <Footer>
         <Button onPress={addPile} title="Add Pile" width='50%' height='100%' />
         <Button onPress={goBack} title="Back" width='50%' height='100%' />

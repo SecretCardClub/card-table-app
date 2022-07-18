@@ -18,6 +18,9 @@ export default function roomReducer(roomState, action, logReducer = false) {
 
     case RT.UPDATE_ROOM_STATE:
       logReducer && console.log(`${REDUCER_MSG}  ACTION:  type:${type}   payload:`, payload)
+      if(roomState.socket && !payload.socket) {
+        payload.socket = roomState.socket || null
+      }
       roomState = { ...roomState, ...payload } ;
       return roomState;
 
